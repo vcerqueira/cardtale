@@ -88,9 +88,7 @@ class UVTimeSeries:
         self.diff_summary.summarise(self.series.diff()[1:], self.period, self.date_format)
         self.diff_summary.fit_distributions(self.series.diff()[1:])
 
-        self.tests = TestingComponents(self.series,
-                                       self.dt.formats,
-                                       period=self.period)
+        self.tests = TestingComponents(self.series, self.dt.formats, period=self.period)
 
     def decompose(self, add_residuals: bool = False):
         ts_decomp = STL(self.series, period=self.period).fit()
