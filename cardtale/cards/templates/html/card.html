@@ -1,0 +1,39 @@
+{% if show_content %}
+
+<h2 id="{{analysis_id}}"> {{analysis_header}} </h2>
+
+{{analysis_introduction}}
+
+{% for img in img_data %}
+
+<h3> {{img.plot_name}} </h3>
+
+{% if img.side_by_side %}
+
+
+<img src=data:image/png;base64,{{ img.src_lhs }} alt="Alt LHS" style="width:45%;padding:1px"><img
+        src=data:image/png;base64,{{ img.src_rhs }} alt="Alt LHS" style="width:45%;padding:1px">
+<figcaption>{{img.caption}}</figcaption>
+
+{% else %}
+
+<img src="data:image/png;base64,{{ img.src }}" class="plot" alt="Sample Plot" style="width:100%;padding:0px">
+<figcaption>{{img.caption}}</figcaption>
+
+
+{% endif %}
+
+<ul>
+    {% for point in img.analysis %}
+
+    <li> {{point}}</li>
+
+    {% endfor %}
+
+</ul>
+
+
+{% endfor %}
+
+{% else %}
+{% endif %}

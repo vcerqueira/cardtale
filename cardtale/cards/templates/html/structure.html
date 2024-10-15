@@ -1,0 +1,105 @@
+<html>
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Droid+Serif:wght@300;400;700&amp;display=swap"
+          rel="stylesheet">
+    <style>
+         * {
+         font-family: 'Droid Serif', serif;
+         }
+         h1 {
+         color: #102338;
+         }
+         h2 {
+         color: #102338;
+         }
+         h3 {
+         color: #102338;
+         }
+         h4{
+         margin-bottom: -15px;
+         }
+         section {
+         margin: auto;
+         }
+         section p {
+         font-size: 17px;
+         line-height: 1.45;
+         color: #000;
+         }
+         section ol {
+         color: #222;
+         font-size: 17px;
+         }
+         section ul {
+         color: #222;
+         font-size: 17px;
+         }
+         li {
+           text-align: start;
+         }
+         section img {
+         margin-bottom: 5px;
+         }
+         .post-title {
+         font-size: 26px;
+         }
+         .break-hspace {
+         margin-bottom: 0.75cm;
+         margin-top: 1.5cm;
+         }
+         .hspace {
+         margin-top: 1.5cm;
+         }
+         .fcaption {
+         font-size: 60%;
+         color: #000;
+         }
+         .subtitle {
+         line-height: 1.25;
+         font-size: 21px;
+         color: #777;
+         margin-bottom: 5px;
+         }
+         .ref {
+         font-size: 15px;
+         }
+         a {
+         color: #1A73E8;
+         text-decoration: none;
+         }
+
+
+    </style>
+</head>
+<body>
+<article>
+    <section>
+        <!--SUBTITLE-->
+        <!--        <p class="subtitle">6 graphics to explore your time series</p>-->
+        <div>
+            <hr class="break-hspace"/>
+        </div>
+    </section>
+
+
+    <!--TOC-->
+    <section>
+        <div>
+
+            {{ toc_content | safe }}
+
+        </div>
+
+    </section>
+
+
+    <section>
+
+        {{ card_content | safe }}
+
+    </section>
+
+
+</article>
+</body>
+</html>
