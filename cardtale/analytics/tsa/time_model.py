@@ -1,7 +1,7 @@
 import pandas as pd
 from scipy.stats import linregress
 
-from cardtale.data.config.methods import CORRELATION_TESTS
+from cardtale.core.config.methods import CORRELATION_TESTS
 
 
 class TimeLinearModel:

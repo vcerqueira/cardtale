@@ -2,12 +2,13 @@ import numpy as np
 import pandas as pd
 from statsmodels.tsa.seasonal import STL
 
-from cardtale.data.time_features import TimeDF
-from cardtale.analytics.tsa.summary import SeriesSummary
+
+from cardtale.core.time import TimeDF
+from cardtale.core.config.freq import AVAILABLE_FREQ
+from cardtale.core.config.typing import Period
+from cardtale.core.profile import SeriesProfile
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.config import SERIES, INDEX
-from cardtale.data.config.frequency import AVAILABLE_FREQ
-from cardtale.data.config.typing import Period
 from cardtale.cards.strings import join_l
 
 unq_freq_list = pd.Series([*AVAILABLE_FREQ.values()]).unique().tolist()
@@ -23,10 +24,12 @@ ESTIMATED_PERIOD = 'Seasonal period was not provided. ' \
 UNKNOWN_PERIOD = 'Unknown period'
 
 
-class UVTimeSeries:
-    """
-    This is a data class for univariate time series
+class TimeSeriesData:
+    """ TimeSeriesData
 
+    Time series dataset following a Nixtla-based structure
+
+    #todo review docstrings
     Attributes:
         series (pd.Series): Univariate time series
         df (pd.DataFrame): Series as a pd.DF (index as column)
@@ -39,48 +42,61 @@ class UVTimeSeries:
     """
 
     def __init__(self,
-                 series: pd.Series,
-                 frequency: str,
-                 period: Period = None,
-                 verbose: bool = False):
+                 df: pd.DataFrame,
+                 freq: str,
+                 id_col: str = 'unique_id',
+                 time_col: str = 'ds',
+                 target_col: str = 'y',
+                 period: Period = None):
         """
-        Class constructor
-        :param series: Univariate time series
-        :param frequency: Sampling frequency of the data. Needs to be compatible with pandas
-        :param period: Main period of the data (e.g. 12 for monthly data)
+        :param df: Time series dataset following a nixtla-based structure
+        :type df: pd.DataFrame
+
+        :param freq: Sampling frequency of the data. Needs to be compatible with pandas
+        :param freq: str
+
+        :param id_col: Column name that for the time series identifier.
+        For single time series, id_col will be a constant value
+        :type id_col: str
+
+        :param time_col: Column name for the time variable
+        :type time_col: str
+
+        :param target_col: Column name for the target variable
+        :type target_col: str
+
+        :param period: Main period of the data (e.g. 12 for monthly data), in case multiple seasonality can be present
+        :type period: int
         """
 
-        assert frequency in AVAILABLE_FREQ.keys(), \
+        self.id_col = id_col
+        self.time_col = time_col
+        self.target_col = target_col
+
+        assert freq in AVAILABLE_FREQ.keys(), \
             UNAVAILABLE_FREQUENCY_ERROR
 
-        if not isinstance(series.index, pd.DatetimeIndex):
-            series.index = pd.to_datetime(series.index)
+        assert pd.api.types.is_datetime64_any_dtype(df[self.time_col]), \
+            "Column 'ds' must be of type pd.Timestamp"
 
-        if self.series_is_int(series):
-            series = series.astype(int)
+        if self.ts_is_integer(df[self.target_col]):
+            df[self.target_col] = df[self.target_col].astype(int)
 
-        self.series = series
-        self.series.index.name = INDEX
-        self.series.name = SERIES
-        self.df = series.reset_index()
+        self.df = df
 
-        self.verbose = verbose
-
-        self.dt = TimeDF(frequency)
+        self.dt = TimeDF(freq)
         self.dt.setup(self.series)
 
         if period is not None:
             self.period = period
         else:
             self.period = self.dt.formats.loc[self.dt.frequency, 'main_period_int']
-            if self.verbose:
-                print(ESTIMATED_PERIOD.format(self.period))
 
         self.date_format = self.dt.formats['format_pretty'][self.dt.frequency]
 
         self.summary, self.diff_summary = \
-            SeriesSummary(n_lags=self.period * 2), \
-            SeriesSummary(n_lags=self.period * 2)
+            SeriesProfile(n_lags=self.period * 2), \
+            SeriesProfile(n_lags=self.period * 2)
 
         self.summary.summarise(self.series, self.period, self.date_format)
         self.summary.fit_distributions(self.series)
@@ -124,7 +140,7 @@ class UVTimeSeries:
         return data_groups
 
     @staticmethod
-    def series_is_int(series: pd.Series) -> bool:
-        is_close = np.allclose(series, series.astype(int), equal_nan=True)
+    def ts_is_integer(series: pd.Series) -> bool:
+        is_int = np.allclose(series, series.astype(int), equal_nan=True)
 
-        return is_close
+        return is_int

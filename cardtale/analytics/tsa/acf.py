@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from statsmodels.tsa.stattools import acf, pacf
 
-from cardtale.data.utils.categories import as_categorical
+from cardtale.core.utils.categories import as_categorical
 
 
 class AutoCorrelation:

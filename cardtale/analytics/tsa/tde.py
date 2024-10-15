@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from cardtale.data.config.landmarks import SHUFFLE
+from cardtale.core.config.landmarks import SHUFFLE
 
 
 class TimeDelayEmbedding:

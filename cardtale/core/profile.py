@@ -8,12 +8,12 @@ from scipy.stats import skew, kurtosis, kurtosistest, skewtest
 
 from cardtale.analytics.tsa.distributions import KolmogorovSmirnov
 from cardtale.analytics.tsa.acf import AutoCorrelation
-from cardtale.data.config.analysis import ALPHA, STATS_TO_ROUND, ROUND_N
+from cardtale.core.config.analysis import ALPHA, STATS_TO_ROUND, ROUND_N
 
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 
 
-class SeriesSummary:
+class SeriesProfile:
     """
     This is a class for summarising the time series (descriptive stats)
 

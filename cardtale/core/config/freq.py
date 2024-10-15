@@ -5,6 +5,7 @@ AVAILABLE_FREQ = {
     'D': 'Daily',
     'W': 'Weekly',
     'M': 'Monthly',
+    'ME': 'Monthly',
     'MS': 'Monthly',
     'Q': 'Quarterly',
     'QS': 'Quarterly',

@@ -11,3 +11,7 @@ CHANGE_ALPHA = 0.01
 
 ROUND_N = 2
 STATS_TO_ROUND = ['mean', '50%', 'std', 'min', 'max']
+
+CHANGE_METHOD = 'CUSUM'
+DECOMPOSITION_METHOD = 'STL (Season-Trend decomposition using LOESS)'
+CORRELATION_TESTS = ['pearson', 'kendall', 'spearman']

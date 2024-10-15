@@ -5,7 +5,7 @@ from scipy import stats
 
 import pandas as pd
 
-from cardtale.data.config.analysis import ALPHA
+from cardtale.core.config.analysis import ALPHA
 
 warnings.filterwarnings('ignore', category=RuntimeWarning)
 

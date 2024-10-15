@@ -4,8 +4,8 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from cardtale.data.config.frequency import FREQ_TAB, FREQUENCIES, PERIOD_DF, SEASONS
-from cardtale.data.utils.categories import as_categorical
+from cardtale.core.config.freq import FREQ_TAB, FREQUENCIES, PERIOD_DF, SEASONS
+from cardtale.core.utils.categories import as_categorical
 from cardtale.visuals.config import PERIOD, FREQ_NAME, SERIES
 
 DFTuple = Tuple[pd.DataFrame, pd.DataFrame]
@@ -23,21 +23,21 @@ class TimeDF:
     todo check gluonts features: https://ts.gluon.ai/stable/api/gluonts/gluonts.time_feature.html
     """
 
-    def __init__(self, frequency: str):
-        self.frequency = frequency
+    def __init__(self, freq: str):
+        self.freq = freq
         self.formats = None
         self.sequence = None
         self.recurrent = None
-        self.frequency_name = ''
+        self.freq_name = ''
 
     def setup(self, series: pd.Series):
         index = series.index
 
         assert isinstance(index, pd.DatetimeIndex), INDEX_NOT_DT_ERROR
 
-        self.formats = self.get_granularities(self.frequency)
+        self.formats = self.get_granularities(self.freq)
 
-        valid_periods = self.get_periods(self.frequency)
+        valid_periods = self.get_periods(self.freq)
         valid_periods.name = PERIOD
 
         self.formats = pd.concat([self.formats, valid_periods], axis=1)
@@ -46,10 +46,9 @@ class TimeDF:
 
         self.sequence, self.recurrent = self.get_frequency_set(index)
 
-        self.recurrent = pd.concat([self.recurrent,
-                                    self.get_averages(series)], axis=1)
+        self.recurrent = pd.concat([self.recurrent, self.get_averages(series)], axis=1)
 
-        self.frequency_name = self.formats.loc[self.frequency][FREQ_NAME].lower()
+        self.freq_name = self.formats.loc[self.freq][FREQ_NAME].lower()
 
     def get_averages(self, series: pd.Series):
         """

@@ -4,7 +4,7 @@ from cardtale.analytics.testing.components.trend import TrendTesting
 from cardtale.analytics.testing.components.seasonality import SeasonalityTestingMulti
 from cardtale.analytics.testing.components.variance import VarianceTesting
 from cardtale.analytics.testing.components.change import ChangeTesting
-from cardtale.data.config.typing import Period
+from cardtale.core.config.typing import Period
 
 INDEX_NOT_DTI_ERROR = 'Time series index must be a pd.DatetimeIndex object'
 
