@@ -90,7 +90,7 @@ FREQUENCIES = [*FREQUENCY_TABLE]
 
 FREQ_TAB = pd.DataFrame(FREQUENCY_TABLE).T
 
-PERIOD_DICT = {
+FREQUENCY_INT_DICT = {
     'min': {'min': 0,
             'H': 60,
             'D': 60 * 24,
@@ -124,4 +124,4 @@ PERIOD_DICT = {
     'YS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 0, 'YS': 0},
 }
 
-PERIOD_DF = pd.DataFrame(PERIOD_DICT)
+FREQ_INT_DF = pd.DataFrame(FREQUENCY_INT_DICT)

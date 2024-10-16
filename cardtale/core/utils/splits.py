@@ -3,7 +3,6 @@ from typing import List
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from cardtale.data.utils.categories import as_categorical
 from cardtale.visuals.config import SERIES
 
 MAX_PARTITION_SIZE = 0.5
@@ -34,8 +33,9 @@ class DataSplit:
 
         return df
 
-    @staticmethod
-    def change_partition(data: pd.DataFrame,
+    @classmethod
+    def change_partition(cls,
+                         data: pd.DataFrame,
                          cp_index: int,
                          partition_names: List[str] = CHANGE_DEFAULT_NAMES,
                          return_series: bool = False):
@@ -63,6 +63,17 @@ class DataSplit:
 
         df = pd.concat([p1_df, p2_df])
 
-        df['Part'] = as_categorical(df, 'Part')
+        df['Part'] = cls.df_var_to_categorical(df, 'Part')
 
         return df
+
+    @staticmethod
+    def df_var_to_categorical(df: pd.DataFrame, variable: str):
+        assert variable in df.columns, 'Unknown column'
+
+        unq_values = df[variable].unique()
+
+        var_as_cat = pd.Categorical(df[variable], categories=unq_values)
+
+        return var_as_cat
+

@@ -70,6 +70,10 @@ class SeriesProfile:
 
         self.ns_zones = None
 
+    def run(self, series: pd.Series, period: int, dt_format: str, ):
+        self.summarise(series, period, dt_format)
+        self.fit_distributions(series)
+
     def summarise(self, series: pd.Series, period: int, dt_format: str):
         """
         Summarising a time series

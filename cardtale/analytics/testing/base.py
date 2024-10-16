@@ -6,7 +6,6 @@ from cardtale.analytics.testing.components.variance import VarianceTesting
 from cardtale.analytics.testing.components.change import ChangeTesting
 from cardtale.core.config.typing import Period
 
-INDEX_NOT_DTI_ERROR = 'Time series index must be a pd.DatetimeIndex object'
 
 
 class TestingMetaData:
@@ -37,7 +36,6 @@ class TestingComponents:
                  series: pd.Series,
                  frequency_df: pd.DataFrame,
                  period: Period):
-        assert isinstance(series.index, pd.DatetimeIndex), INDEX_NOT_DTI_ERROR
 
         self.metadata = TestingMetaData(
             series=series,

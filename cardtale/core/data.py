@@ -92,6 +92,7 @@ class TimeSeriesData:
         self.setup()
 
     def setup(self):
+        # done
         if self.ts_is_integer(self.df[self.target_col]):
             self.df[self.target_col] = self.df[self.target_col].astype(int)
             self.is_integer_valued = True
@@ -100,11 +101,10 @@ class TimeSeriesData:
 
         self.dt.setup(self.df, self.time_col, self.target_col)
 
-        self.summary.summarise(self.series, self.period, self.date_format)
-        self.summary.fit_distributions(self.series)
+        s = pd.Series(data=self.df[self.target_col], index=self.df[self.time_col], name=self.target_col)
 
-        self.diff_summary.summarise(self.series.diff()[1:], self.period, self.date_format)
-        self.diff_summary.fit_distributions(self.series.diff()[1:])
+        self.summary.run(s, self.period, self.date_format)
+        self.diff_summary.run(s.diff()[1:], self.period, self.date_format)
 
     def decompose(self, add_residuals: bool = False):
         ts_decomp = STL(self.series, period=self.period).fit()
@@ -140,6 +140,7 @@ class TimeSeriesData:
         return data_groups
 
     def _assert_datatypes(self, df: pd.DataFrame, freq: str):
+        # done
         """
         :param df: Time series dataset
         :type df: pd.DataFrame
@@ -156,6 +157,8 @@ class TimeSeriesData:
 
     @staticmethod
     def ts_is_integer(series: pd.Series) -> bool:
+        # done
+
         is_int = np.allclose(series, series.astype(int), equal_nan=True)
 
         return is_int

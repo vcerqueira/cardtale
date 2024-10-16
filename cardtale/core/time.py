@@ -4,9 +4,8 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from cardtale.core.config.freq import FREQ_TAB, FREQUENCIES, PERIOD_DF, SEASONS
-from cardtale.core.utils.categories import as_categorical
-from cardtale.visuals.config import PERIOD, FREQ_NAME
+from cardtale.core.config.freq import FREQ_TAB, FREQUENCIES, FREQ_INT_DF, SEASONS
+from cardtale.core.utils.splits import DataSplit
 
 DFTuple = Tuple[pd.DataFrame, pd.DataFrame]
 
@@ -62,13 +61,13 @@ class TimeDF:
         """
         Preparing frequency table
         """
-        valid_periods = self.get_periods(self.freq)
+        valid_periods = self.get_valid_int_freqs(self.freq)
 
         self.formats = self.get_freqs(self.freq)
         self.formats = pd.concat([self.formats, valid_periods], axis=1)
         self.formats.fillna(1, inplace=True)
-        self.formats[PERIOD] = self.formats[PERIOD].astype(int)
-        self.freq_name = self.formats.loc[self.freq][FREQ_NAME].lower()
+        self.formats['period'] = self.formats['period'].astype(int)
+        self.freq_name = self.formats.loc[self.freq]['name'].lower()
 
     def get_freq_averages(self, series: pd.Series):
         """
@@ -124,7 +123,7 @@ class TimeDF:
         recurrent_df = pd.DataFrame(recurrent_freq)
 
         for col in CATEGORICAL_COLUMNS:
-            recurrent_df[col] = as_categorical(recurrent_df, col)
+            recurrent_df[col] = DataSplit.df_var_to_categorical(recurrent_df, col)
 
         n_unq = recurrent_df.nunique()
 
@@ -147,10 +146,17 @@ class TimeDF:
         return valid_freq
 
     @staticmethod
-    def get_periods(frequency: str):
-        all_periods = PERIOD_DF[frequency]
+    def get_valid_int_freqs(freq: str):
+        """ get_valid_freqs
+
+        Get valid periods for the respective frequency. For example, monthly data can have 4 (quarter), or 12 (year)
+
+        :param freq: Sampling frequency
+        :type freq: str
+        """
+        all_periods = FREQ_INT_DF[freq]
         valid_periods = all_periods[all_periods > 0]
-        valid_periods.name = PERIOD
+        valid_periods.name = 'period'
 
         return valid_periods
 
