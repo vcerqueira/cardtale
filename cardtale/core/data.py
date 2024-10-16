@@ -5,7 +5,8 @@ from cardtale.core.time import TimeDF
 from cardtale.core.config.freq import AVAILABLE_FREQ
 from cardtale.core.config.typing import Period
 from cardtale.core.profile import SeriesProfile
-from cardtale.analytics.testing.base import TestingComponents
+# from cardtale.analytics.testing.base import TestingComponents
+# from cardtale.analytics.testing.components.base import Tester
 from cardtale.cards.strings import join_l
 
 unq_freq_list = pd.Series([*AVAILABLE_FREQ.values()]).unique().tolist()
@@ -34,7 +35,6 @@ class TimeSeriesData:
         dt (TimeDF): Temporal information class object
         summary (SeriesSummary): summary stats of the series
         diff_summary (SeriesSummary): summary stats of the differenced series
-        tests (TestingComponents): TestingComponents object with series tests
         verbose (bool): Whether to print status during process
     """
 
@@ -86,11 +86,11 @@ class TimeSeriesData:
 
         self.summary = SeriesProfile(n_lags=self.period * 2)
         self.diff_summary = SeriesProfile(n_lags=self.period * 2)
-        self.tests = TestingComponents(df=self.df,
-                                       time_col=self.time_col,
-                                       target_col=self.target_col,
-                                       freq_df=self.dt.formats,
-                                       period=self.period)
+        # self.tests = TestingComponents(df=self.df,
+        #                                time_col=self.time_col,
+        #                                target_col=self.target_col,
+        #                                freq_df=self.dt.formats,
+        #                                period=self.period)
 
         self.setup()
 
@@ -104,7 +104,7 @@ class TimeSeriesData:
 
         self.dt.setup(self.df, self.time_col, self.target_col)
 
-        s = pd.Series(data=self.df[self.target_col], index=self.df[self.time_col], name=self.target_col)
+        s = self.get_target_series(self.df, self.target_col, self.time_col)
 
         self.summary.run(s, self.period, self.date_format)
         self.diff_summary.run(s.diff()[1:], self.period, self.date_format)
@@ -144,3 +144,9 @@ class TimeSeriesData:
         is_int = np.allclose(series, series.astype(int), equal_nan=True)
 
         return is_int
+
+    @staticmethod
+    def get_target_series(df, target_col, time_col):
+        s = pd.Series(data=df[target_col], index=df[time_col], name=target_col)
+
+        return s

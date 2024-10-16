@@ -2,21 +2,21 @@ from typing import Dict, Tuple
 
 import pandas as pd
 
-from cardtale.analytics.tsa.heteroskedasticity import het_tests, HETEROSKEDASTICITY_TESTS
 from cardtale.analytics.testing.landmarking.variance import VarianceLandmarks
-from cardtale.analytics.testing.components.base import Tester
+from cardtale.analytics.testing.components.base import UnivariateTester
 from cardtale.analytics.testing.preprocess.log import LogTransformation
 from cardtale.analytics.testing.preprocess.boxcox import BoxCox
 from cardtale.analytics.tsa.distributions import KolmogorovSmirnov
-
+from cardtale.analytics.tsa.heteroskedasticity import het_tests, HETEROSKEDASTICITY_TESTS
+from cardtale.core.config.analysis import ALPHA
+from cardtale.core.data import TimeSeriesData
 from cardtale.cards.strings import join_l, gettext
-from cardtale.data.config.analysis import ALPHA
 
 
-class VarianceTesting(Tester):
+class VarianceTesting(UnivariateTester):
 
-    def __init__(self, series: pd.Series):
-        super().__init__(series)
+    def __init__(self, tsd: TimeSeriesData):
+        super().__init__(tsd)
 
         self.prob_heteroskedastic: float = -1
         self.group_var = []

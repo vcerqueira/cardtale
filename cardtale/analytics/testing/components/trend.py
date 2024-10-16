@@ -3,19 +3,26 @@ from typing import Tuple, Dict
 import pandas as pd
 
 from cardtale.analytics.testing.landmarking.trend import TrendLandmarks
-from cardtale.analytics.testing.components.base import Tester
+from cardtale.analytics.testing.components.base import UnivariateTester
 from cardtale.analytics.tsa.ndiffs import R_NDIFF_TESTS, RNDiffs
 from cardtale.analytics.tsa.time_model import TimeLinearModel
 from cardtale.cards.strings import gettext
+from cardtale.core.data import TimeSeriesData
 
 TREND_T = 'trend'
 LEVEL_T = 'level'
 
 
-class UnivariateTrendTesting(Tester):
+class UnivariateTrendTesting(UnivariateTester):
 
-    def __init__(self, series):
-        super().__init__(data=series)
+    def __init__(self, tsd: TimeSeriesData):
+        """
+        todo docs
+        :param df:
+        :param time_col:
+        :param target_col:
+        """
+        super().__init__(tsd=tsd)
 
         self.tests = {TREND_T: pd.Series(dtype=int),
                       LEVEL_T: pd.Series(dtype=int)}
@@ -29,7 +36,7 @@ class UnivariateTrendTesting(Tester):
         for k, name in R_NDIFF_TESTS.items():
             try:
                 for test_type in [TREND_T, LEVEL_T]:
-                    self.tests[test_type][name] = RNDiffs.r_ndiffs(self.data, test=k, test_type=test_type)
+                    self.tests[test_type][name] = RNDiffs.r_ndiffs(self.series, test=k, test_type=test_type)
             except ValueError:
                 continue
 
@@ -46,12 +53,12 @@ class UnivariateTrendTesting(Tester):
 
     def run_landmarks(self):
         trend_lm = TrendLandmarks()
-        trend_lm.make_tests(self.data)
+        trend_lm.make_tests(self.series)
 
         self.performance = trend_lm.results
 
     def run_misc(self):
-        self.time_model.fit(self.data)
+        self.time_model.fit(self.series)
 
     def results_in_list(self):
         trend_t = self.tests[TREND_T]

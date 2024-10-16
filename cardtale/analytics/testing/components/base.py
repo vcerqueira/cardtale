@@ -1,20 +1,19 @@
-from typing import Union
-
-import pandas as pd
+from cardtale.core.data import TimeSeriesData
 
 
 class Tester:
     """
     Tester abstract class
 
+    todo docs
+
     Attributes:
-        series (pd.Series): Univariate time series
         tests (dict): Test results
         performance (dict): Performance results
     """
 
-    def __init__(self, data: Union[pd.Series, pd.DataFrame]):
-        self.data = data
+    def __init__(self, tsd: TimeSeriesData):
+        self.tsd = tsd
         self.tests = {}
         self.performance = {}
 
@@ -35,3 +34,13 @@ class Tester:
         Running miscellaneous experiments
         """
         pass
+
+
+class UnivariateTester(Tester):
+
+    def __init__(self, tsd: TimeSeriesData):
+        super().__init__(tsd)
+
+        self.series = tsd.get_target_series(df=self.tsd.df,
+                                            time_col=self.tsd.time_col,
+                                            target_col=self.tsd.target_col)

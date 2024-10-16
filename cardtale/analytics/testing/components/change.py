@@ -2,21 +2,21 @@ import pandas as pd
 from scipy.stats import ks_2samp
 
 from cardtale.analytics.tsa.change import ChangeDetection
-from cardtale.analytics.testing.components.base import Tester
-from cardtale.data.config.methods import CHANGE_METHOD
-from cardtale.data.config.analysis import ALPHA
+from cardtale.analytics.testing.components.base import UnivariateTester
+from cardtale.core.config.analysis import CHANGE_METHOD, ALPHA
+from cardtale.core.data import TimeSeriesData
 
 NO_CHANGE_ERROR = 'No change point has been detected'
 
 
-class ChangeTesting(Tester):
+class ChangeTesting(UnivariateTester):
 
-    def __init__(self, series: pd.Series):
-        super().__init__(series)
+    def __init__(self, tsd: TimeSeriesData):
+        super().__init__(tsd)
 
         self.detected_change = False
         self.method = CHANGE_METHOD
-        self.detection = ChangeDetection(series)
+        self.detection = ChangeDetection(self.series)
 
     def run_misc(self):
         self.detection.detect_changes()

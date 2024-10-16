@@ -14,14 +14,11 @@ TEST_NAME = 'seasonality'
 
 class SeasonalLandmarks(Landmarks):
 
-    def __init__(self,
-                 period: Period,
-                 named_period: Optional[str]):
+    def __init__(self, period: Period):
 
         super().__init__(test_name=TEST_NAME)
 
         self.period = period
-        self.named_period = named_period
 
     def run_experiment(self,
                        series: pd.Series,
@@ -48,17 +45,6 @@ class SeasonalLandmarks(Landmarks):
                                        prefix=f'Period={self.period}_')
                 train_x.append(fourier.transform(X_train.index))
                 test_x.append(fourier.transform(X_test.index))
-
-        if config['rbf']:
-            if self.named_period is not None:
-                rbf_terms = RBFTerms(n_terms=N_TERMS,
-                                     period=self.named_period,
-                                     prefix=f'Period={self.named_period}_')
-
-                rbf_terms.fit(X_train.index)
-
-                train_x.append(rbf_terms.transform(X_train.index))
-                test_x.append(rbf_terms.transform(X_test.index))
 
         train_x_df = pd.concat(train_x, axis=1)
         test_x_df = pd.concat(test_x, axis=1)

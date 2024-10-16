@@ -8,19 +8,19 @@ import pandas as pd
 from cardtale.analytics.tsa.ndiffs import RNDiffs, R_NSDIFF_TESTS
 from cardtale.analytics.tsa.group_moments import GroupMoments
 from cardtale.analytics.testing.landmarking.seasonality import SeasonalLandmarks
-from cardtale.analytics.testing.components.base import Tester
-from cardtale.analytics.testing.components.trend import TrendTesting
+from cardtale.analytics.testing.components.base import UnivariateTester
+from cardtale.analytics.testing.components.trend import UnivariateTrendTesting
 from cardtale.cards.strings import join_l, gettext
-from cardtale.data.config.analysis import ALPHA
-from cardtale.data.config.typing import Period
-from cardtale.visuals.config import SERIES
-from cardtale.data.utils.errors import AnalysisLogicalError, LOGICAL_ERROR_MSG
+from cardtale.core.config.analysis import ALPHA
+from cardtale.core.config.typing import Period
+from cardtale.core.utils.errors import AnalysisLogicalError, LOGICAL_ERROR_MSG
+from cardtale.core.data import TimeSeriesData
 
 MEANS = 'eq_means'
 SDEVS = 'eq_std'
 
 
-class SeasonalityTesting(Tester):
+class SeasonalityTesting(UnivariateTester):
     """
     todo add estimated cycle to list of plausible cycles
     todo add effect of seasonal differencing -- need to implement inv season diff
@@ -29,12 +29,10 @@ class SeasonalityTesting(Tester):
     def __init__(self,
                  series: pd.Series,
                  period: Period,
-                 named_freq: str,
-                 named_period: Optional[str]):
+                 named_freq: str):
         super().__init__(series)
 
         self.period = period if period != 1 else None
-        self.named_period = named_period
         self.named_freq = named_freq
         self.est_period = -1
         self.prob_seasonality = -1
@@ -53,9 +51,7 @@ class SeasonalityTesting(Tester):
         self.prob_seasonality = self.tests.mean()
 
     def run_landmarks(self):
-        seasonal_lm = SeasonalLandmarks(
-            period=self.period,
-            named_period=self.named_period)
+        seasonal_lm = SeasonalLandmarks(period=self.period)
 
         seasonal_lm.make_tests(self.series)
 

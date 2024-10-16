@@ -1,38 +1,45 @@
 import pandas as pd
 
-from cardtale.analytics.testing.components.trend import TrendTesting
+from cardtale.analytics.testing.components.trend import UnivariateTrendTesting
 from cardtale.analytics.testing.components.seasonality import SeasonalityTestingMulti
 from cardtale.analytics.testing.components.variance import VarianceTesting
 from cardtale.analytics.testing.components.change import ChangeTesting
 from cardtale.core.config.typing import Period
+from cardtale.core.data import TimeSeriesData
 
-
-class TestingMetaData:
-
-    def __init__(self,
-                 df: pd.DataFrame,
-                 time_col: str,
-                 target_col: str,
-                 freq_df: pd.DataFrame,
-                 period: Period):
-        """
-
-        :param df:
-        :param time_col:
-        :param target_col:
-        :param freq_df:
-        :param period:
-        """
-        self.df = df
-        self.time_col = time_col
-        self.target_col = target_col
-        self.n = self.df.shape[0]
-        self.freq_df = freq_df
-        self.period = period
-
+#
+# class TestingMetaData:
+#
+#     def __init__(self,
+#                  df: pd.DataFrame,
+#                  time_col: str,
+#                  target_col: str,
+#                  freq_df: pd.DataFrame,
+#                  period: Period):
+#         """
+#         todo docs
+#
+#         :param df: Time series dataset
+#         :type df: pd.DataFrame
+#
+#         :param time_col:
+#         :param target_col:
+#
+#         :param freq_df:
+#
+#         :param period:
+#         """
+#         self.df = df
+#         self.time_col = time_col
+#         self.target_col = target_col
+#         self.n = self.df.shape[0]
+#         self.freq_df = freq_df
+#         self.period = period
+#
 
 class TestingComponents:
     """
+    todo docs
     This is an class which combines all the tests and experiments
 
     Attributes:
@@ -43,26 +50,14 @@ class TestingComponents:
         seasonality (SeasonalityTestingMulti): Seasonality tests
     """
 
-    def __init__(self,
-                 df: pd.DataFrame,
-                 time_col: str,
-                 target_col: str,
-                 freq_df: pd.DataFrame,
-                 period: Period):
-        self.metadata = TestingMetaData(
-            df=df,
-            time_col=time_col,
-            target_col=target_col,
-            freq_df=freq_df,
-            period=period
-        )
+    def __init__(self, tsd: TimeSeriesData):
 
-        self.trend = TrendTesting(df)
-        self.variance = VarianceTesting(df)
-        self.change = ChangeTesting(df)
-        self.seasonality = SeasonalityTestingMulti(df,
-                                                   self.metadata.freq_df,
-                                                   self.metadata.period)
+        self.trend = UnivariateTrendTesting(tsd)
+        self.variance = VarianceTesting(tsd)
+        self.change = ChangeTesting(tsd)
+        self.seasonality = SeasonalityTestingMulti(series=df,
+                                                   frequency_df=self.metadata.freq_df,
+                                                   period=self.metadata.period)
 
     def run(self, seasonal_df: pd.DataFrame):
         """
