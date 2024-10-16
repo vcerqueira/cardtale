@@ -14,12 +14,10 @@ N_MONTHS = 12
 SEASON_LEN = 3
 CATEGORICAL_COLUMNS = ['Month', 'Weekday', 'Quarter']
 
-INDEX_NOT_DT_ERROR = 'Input variable "index" must be a pd.DatetimeIndex object'
-
 
 class TimeDF:
     """
-    todo check greykit features:     - https://github.com/linkedin/greykite/blob/master/greykite/common/features/timeseries_features.py
+    todo check greykit features: https://github.com/linkedin/greykite/blob/master/greykite/common/features/timeseries_features.py
     todo check gluonts features: https://ts.gluon.ai/stable/api/gluonts/gluonts.time_feature.html
     """
 
@@ -30,23 +28,18 @@ class TimeDF:
         self.recurrent = None
         self.freq_name = ''
 
-    def setup(self, series: pd.Series):
-        index = series.index
-
-        assert isinstance(index, pd.DatetimeIndex), INDEX_NOT_DT_ERROR
-
+    def setup(self, df: pd.DataFrame, time_col: str, target_col: str):
         self.formats = self.get_granularities(self.freq)
 
         valid_periods = self.get_periods(self.freq)
-        valid_periods.name = PERIOD
 
         self.formats = pd.concat([self.formats, valid_periods], axis=1)
         self.formats.fillna(1, inplace=True)
         self.formats[PERIOD] = self.formats[PERIOD].astype(int)
 
-        self.sequence, self.recurrent = self.get_frequency_set(index)
+        self.sequence, self.recurrent = self.get_frequency_set(df[time_col])
 
-        self.recurrent = pd.concat([self.recurrent, self.get_averages(series)], axis=1)
+        self.recurrent = pd.concat([self.recurrent, self.get_averages(df[target_col])], axis=1)
 
         self.freq_name = self.formats.loc[self.freq][FREQ_NAME].lower()
 
@@ -126,6 +119,7 @@ class TimeDF:
     def get_periods(frequency: str):
         all_periods = PERIOD_DF[frequency]
         valid_periods = all_periods[all_periods > 0]
+        valid_periods.name = PERIOD
 
         return valid_periods
 

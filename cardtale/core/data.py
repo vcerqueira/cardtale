@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 from statsmodels.tsa.seasonal import STL
 
-
 from cardtale.core.time import TimeDF
 from cardtale.core.config.freq import AVAILABLE_FREQ
 from cardtale.core.config.typing import Period
@@ -72,39 +71,40 @@ class TimeSeriesData:
         self.id_col = id_col
         self.time_col = time_col
         self.target_col = target_col
+        self.is_integer_valued = False
 
-        assert freq in AVAILABLE_FREQ.keys(), \
-            UNAVAILABLE_FREQUENCY_ERROR
-
-        assert pd.api.types.is_datetime64_any_dtype(df[self.time_col]), \
-            "Column 'ds' must be of type pd.Timestamp"
-
-        if self.ts_is_integer(df[self.target_col]):
-            df[self.target_col] = df[self.target_col].astype(int)
+        self._assert_datatypes(df, freq)
 
         self.df = df
-
         self.dt = TimeDF(freq)
-        self.dt.setup(self.series)
 
         if period is not None:
             self.period = period
         else:
-            self.period = self.dt.formats.loc[self.dt.frequency, 'main_period_int']
+            self.period = self.dt.formats.loc[self.dt.freq, 'main_period_int']
 
-        self.date_format = self.dt.formats['format_pretty'][self.dt.frequency]
+        self.date_format = self.dt.formats['format_pretty'][self.dt.freq]
 
-        self.summary, self.diff_summary = \
-            SeriesProfile(n_lags=self.period * 2), \
-            SeriesProfile(n_lags=self.period * 2)
+        self.summary = SeriesProfile(n_lags=self.period * 2)
+        self.diff_summary = SeriesProfile(n_lags=self.period * 2)
+        self.tests = TestingComponents(self.df, self.dt.formats, period=self.period)
+
+        self.setup()
+
+    def setup(self):
+        if self.ts_is_integer(self.df[self.target_col]):
+            self.df[self.target_col] = self.df[self.target_col].astype(int)
+            self.is_integer_valued = True
+        else:
+            self.is_integer_valued = False
+
+        self.dt.setup(self.df, self.time_col, self.target_col)
 
         self.summary.summarise(self.series, self.period, self.date_format)
         self.summary.fit_distributions(self.series)
 
         self.diff_summary.summarise(self.series.diff()[1:], self.period, self.date_format)
         self.diff_summary.fit_distributions(self.series.diff()[1:])
-
-        self.tests = TestingComponents(self.series, self.dt.formats, period=self.period)
 
     def decompose(self, add_residuals: bool = False):
         ts_decomp = STL(self.series, period=self.period).fit()
@@ -138,6 +138,21 @@ class TimeSeriesData:
         data_groups = {k: x.values for k, x in data_groups}
 
         return data_groups
+
+    def _assert_datatypes(self, df: pd.DataFrame, freq: str):
+        """
+        :param df: Time series dataset
+        :type df: pd.DataFrame
+
+        :param freq: Sampling frequency
+        :type freq: str
+        """
+
+        assert freq in AVAILABLE_FREQ.keys(), \
+            UNAVAILABLE_FREQUENCY_ERROR
+
+        assert pd.api.types.is_datetime64_any_dtype(df[self.time_col]), \
+            "Column 'ds' must be of type pd.Timestamp"
 
     @staticmethod
     def ts_is_integer(series: pd.Series) -> bool:
