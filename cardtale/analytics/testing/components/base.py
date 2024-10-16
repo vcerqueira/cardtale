@@ -1,3 +1,5 @@
+from typing import Union
+
 import pandas as pd
 
 
@@ -11,8 +13,8 @@ class Tester:
         performance (dict): Performance results
     """
 
-    def __init__(self, series: pd.Series):
-        self.series = series
+    def __init__(self, data: Union[pd.Series, pd.DataFrame]):
+        self.data = data
         self.tests = {}
         self.performance = {}
 

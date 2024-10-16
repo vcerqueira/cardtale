@@ -1,13 +1,11 @@
 import numpy as np
 import pandas as pd
-from statsmodels.tsa.seasonal import STL
 
 from cardtale.core.time import TimeDF
 from cardtale.core.config.freq import AVAILABLE_FREQ
 from cardtale.core.config.typing import Period
 from cardtale.core.profile import SeriesProfile
 from cardtale.analytics.testing.base import TestingComponents
-from cardtale.visuals.config import SERIES, INDEX
 from cardtale.cards.strings import join_l
 
 unq_freq_list = pd.Series([*AVAILABLE_FREQ.values()]).unique().tolist()
@@ -77,6 +75,7 @@ class TimeSeriesData:
 
         self.df = df
         self.dt = TimeDF(freq)
+        self.seas_df = None
 
         if period is not None:
             self.period = period
@@ -87,7 +86,11 @@ class TimeSeriesData:
 
         self.summary = SeriesProfile(n_lags=self.period * 2)
         self.diff_summary = SeriesProfile(n_lags=self.period * 2)
-        self.tests = TestingComponents(self.df, self.dt.formats, period=self.period)
+        self.tests = TestingComponents(df=self.df,
+                                       time_col=self.time_col,
+                                       target_col=self.target_col,
+                                       freq_df=self.dt.formats,
+                                       period=self.period)
 
         self.setup()
 
@@ -106,34 +109,13 @@ class TimeSeriesData:
         self.summary.run(s, self.period, self.date_format)
         self.diff_summary.run(s.diff()[1:], self.period, self.date_format)
 
-    def decompose(self, add_residuals: bool = False):
-        ts_decomp = STL(self.series, period=self.period).fit()
-
-        components = {
-            'Trend': ts_decomp.trend,
-            'Seasonal': ts_decomp.seasonal,
-        }
-
-        if add_residuals:
-            components['Residuals'] = ts_decomp.resid
-
-        components_df = pd.DataFrame(components).reset_index()
-
-        return components_df
-
-    def run_tests(self):
-        seasonal_df = self.get_seasonal()
-        self.tests.run(seasonal_df)
-
-    def get_seasonal(self):
-        return pd.concat([self.df, self.dt.recurrent], axis=1)
+        self.seas_df = pd.concat([self.df, self.dt.recurrent], axis=1)
 
     def get_period_groups(self, grouping_period: str):
-        seas_df = self.get_seasonal()
+        # done... questions about self.target_col
+        assert grouping_period in self.seas_df, UNKNOWN_PERIOD
 
-        assert grouping_period in seas_df, UNKNOWN_PERIOD
-
-        data_groups = seas_df.groupby(seas_df[grouping_period])[SERIES]
+        data_groups = self.seas_df.groupby(self.seas_df[grouping_period])[self.target_col]
 
         data_groups = {k: x.values for k, x in data_groups}
 

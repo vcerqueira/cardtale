@@ -46,7 +46,7 @@ class CardsBuilder:
         if self.data.verbose:
             print('Running tests...')
 
-        self.data.run_tests()
+        self.data.tests.run(seasonal_df=self.data.seas_sf)
 
         if self.data.verbose:
             print('Tests finished. \n Analysing results...')

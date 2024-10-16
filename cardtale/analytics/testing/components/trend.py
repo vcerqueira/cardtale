@@ -12,10 +12,10 @@ TREND_T = 'trend'
 LEVEL_T = 'level'
 
 
-class TrendTesting(Tester):
+class UnivariateTrendTesting(Tester):
 
     def __init__(self, series):
-        super().__init__(series)
+        super().__init__(data=series)
 
         self.tests = {TREND_T: pd.Series(dtype=int),
                       LEVEL_T: pd.Series(dtype=int)}
@@ -29,7 +29,7 @@ class TrendTesting(Tester):
         for k, name in R_NDIFF_TESTS.items():
             try:
                 for test_type in [TREND_T, LEVEL_T]:
-                    self.tests[test_type][name] = RNDiffs.r_ndiffs(self.series, test=k, test_type=test_type)
+                    self.tests[test_type][name] = RNDiffs.r_ndiffs(self.data, test=k, test_type=test_type)
             except ValueError:
                 continue
 
@@ -46,12 +46,12 @@ class TrendTesting(Tester):
 
     def run_landmarks(self):
         trend_lm = TrendLandmarks()
-        trend_lm.make_tests(self.series)
+        trend_lm.make_tests(self.data)
 
         self.performance = trend_lm.results
 
     def run_misc(self):
-        self.time_model.fit(self.series)
+        self.time_model.fit(self.data)
 
     def results_in_list(self):
         trend_t = self.tests[TREND_T]
@@ -94,7 +94,7 @@ class TrendTesting(Tester):
 class TrendShowTests:
 
     @staticmethod
-    def show_line_plot(tests: TrendTesting) -> Tuple[bool, Dict]:
+    def show_line_plot(tests: UnivariateTrendTesting) -> Tuple[bool, Dict]:
         """
         todo identical tests for distribution plot. what other tests should I do?
         show_me, show_results = TrendTesting.show_distribution_plot(ds.tests.trend)
@@ -120,7 +120,7 @@ class TrendShowTests:
         return show_me, show_results
 
     @staticmethod
-    def show_distribution_plot(tests: TrendTesting) -> Tuple[bool, Dict]:
+    def show_distribution_plot(tests: UnivariateTrendTesting) -> Tuple[bool, Dict]:
         """
         show_me, show_results = TrendTesting.show_distribution_plot(ds.tests.trend)
 

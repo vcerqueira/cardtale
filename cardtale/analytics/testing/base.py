@@ -7,16 +7,27 @@ from cardtale.analytics.testing.components.change import ChangeTesting
 from cardtale.core.config.typing import Period
 
 
-
 class TestingMetaData:
 
     def __init__(self,
-                 series: pd.Series,
-                 frequency_df: pd.DataFrame,
+                 df: pd.DataFrame,
+                 time_col: str,
+                 target_col: str,
+                 freq_df: pd.DataFrame,
                  period: Period):
-        self.series = series
-        self.n = self.series.__len__()
-        self.frequency_df = frequency_df
+        """
+
+        :param df:
+        :param time_col:
+        :param target_col:
+        :param freq_df:
+        :param period:
+        """
+        self.df = df
+        self.time_col = time_col
+        self.target_col = target_col
+        self.n = self.df.shape[0]
+        self.freq_df = freq_df
         self.period = period
 
 
@@ -33,21 +44,24 @@ class TestingComponents:
     """
 
     def __init__(self,
-                 series: pd.Series,
-                 frequency_df: pd.DataFrame,
+                 df: pd.DataFrame,
+                 time_col: str,
+                 target_col: str,
+                 freq_df: pd.DataFrame,
                  period: Period):
-
         self.metadata = TestingMetaData(
-            series=series,
-            frequency_df=frequency_df,
+            df=df,
+            time_col=time_col,
+            target_col=target_col,
+            freq_df=freq_df,
             period=period
         )
 
-        self.trend = TrendTesting(series)
-        self.variance = VarianceTesting(series)
-        self.change = ChangeTesting(series)
-        self.seasonality = SeasonalityTestingMulti(series,
-                                                   self.metadata.frequency_df,
+        self.trend = TrendTesting(df)
+        self.variance = VarianceTesting(df)
+        self.change = ChangeTesting(df)
+        self.seasonality = SeasonalityTestingMulti(df,
+                                                   self.metadata.freq_df,
                                                    self.metadata.period)
 
     def run(self, seasonal_df: pd.DataFrame):
@@ -70,5 +84,3 @@ class TestingComponents:
         self.change.run_statistical_tests()
         self.change.run_landmarks()
         self.change.run_misc()
-
-
