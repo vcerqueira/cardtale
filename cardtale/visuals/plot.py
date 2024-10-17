@@ -5,7 +5,7 @@ from typing import Union, List
 
 from plotnine.exceptions import PlotnineWarning
 
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
 
 NameOptList = Union[List[str], str]
 
@@ -31,8 +31,13 @@ class Plot:
         plot_name (dict): Plot name identifier
     """
 
-    def __init__(self, data: UVTimeSeries, name: NameOptList, multi_plot: bool):
-        self.data = data
+    HEIGHT = 4.5
+    HEIGHT_SMALL = 5
+    WIDTH = 12
+    WIDTH_SMALL = 6
+
+    def __init__(self, tsd: TimeSeriesData, name: NameOptList, multi_plot: bool):
+        self.tsd = tsd
         self.plot = None
         self.name = name
         self.multi_plot = multi_plot
@@ -42,10 +47,10 @@ class Plot:
         self.show_me = False
         self.img_data = {}
         self.plot_name = ''
-        self.width = 9
-        self.height = 4
-        self.width_sm = 6
-        self.height_sm = 5
+        self.width = self.WIDTH
+        self.height = self.HEIGHT
+        self.width_s = self.WIDTH_SMALL
+        self.height_s = self.HEIGHT_SMALL
 
     def build(self, **kwargs):
         """
@@ -75,12 +80,12 @@ class Plot:
             }
         else:
             img_code_lhs = self.get_encode(self.plot['lhs'],
-                                           height=self.height_sm,
-                                           width=self.width_sm)
+                                           height=self.height_s,
+                                           width=self.width_s)
 
             img_code_rhs = self.get_encode(self.plot['rhs'],
-                                           height=self.height_sm,
-                                           width=self.width_sm)
+                                           height=self.height_s,
+                                           width=self.width_s)
 
             self.img_data = {
                 'src_lhs': img_code_lhs,

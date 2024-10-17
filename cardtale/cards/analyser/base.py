@@ -2,7 +2,7 @@ from typing import List
 
 from jinja2 import Environment, FileSystemLoader
 
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
 from cardtale.cards.strings import gettext
 
 from cardtale.cards.config import (TEMPLATE_DIR,
@@ -28,8 +28,9 @@ class ReportAnalyser:
         content_pdf (str): PDF str content before building report
     """
 
-    def __init__(self, data: UVTimeSeries):
-        self.data = data
+    def __init__(self, tsd: TimeSeriesData):
+        self.tsd = tsd
+
         self.plots = {}
         self.metadata = {}
         self.show_content = True

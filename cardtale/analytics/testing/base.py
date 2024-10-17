@@ -11,7 +11,6 @@ class TestingComponents:
     This is an class which combines all the tests and experiments
 
     Attributes:
-        metadata (TestingMetaData): Time series metadata
         trend (TrendTesting): Trend tests
         variance (VarianceTesting): Variance tests
         change (ChangeTesting): Change tests
@@ -28,7 +27,6 @@ class TestingComponents:
         """
         Run all tests
 
-        :param seasonal_df: Seasonal data
         """
         self.trend.run_statistical_tests()
         self.trend.run_landmarks()

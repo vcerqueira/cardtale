@@ -18,9 +18,7 @@ class UnivariateTrendTesting(UnivariateTester):
     def __init__(self, tsd: TimeSeriesData):
         """
         todo docs
-        :param df:
-        :param time_col:
-        :param target_col:
+
         """
         super().__init__(tsd=tsd)
 

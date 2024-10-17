@@ -2,41 +2,40 @@ from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.line_plots import LinePlot
 from cardtale.cards.strings import gettext
 
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
 from cardtale.visuals.config import PLOT_NAMES
 
 
 class SeriesLinePlot(Plot):
+    HEIGHT = 4.5
+    WIDTH = 12
 
-    def __init__(self, name: str, data: UVTimeSeries):
-        super().__init__(data=data,multi_plot=False, name=name)
+    def __init__(self, tsd: TimeSeriesData, name: str):
+        super().__init__(tsd=tsd, multi_plot=False, name=name)
 
+        self.plot_name = PLOT_NAMES['struc_line']
         self.caption = gettext('series_line_plot_caption')
         self.show_me = True
 
-        self.plot_name = PLOT_NAMES['struc_line']
-        self.height = 4.5
-        self.width = 12
-
     def build(self):
-        self.plot = LinePlot.univariate(data=self.data.df,
-                                        x_axis_col='Index',
-                                        y_axis_col='Series',
+        self.plot = LinePlot.univariate(data=self.tsd.df,
+                                        x_axis_col=self.tsd.time_col,
+                                        y_axis_col=self.tsd.target_col,
                                         add_smooth=True)
 
     def analyse(self):
         range_analysis = \
-            gettext('series_line_plot_analysis1').format(int(self.data.summary.stats['count']),
-                                                         self.data.dt.frequency_name,
-                                                         self.data.summary.dt_range[0],
-                                                         self.data.summary.dt_range[1])
+            gettext('series_line_plot_analysis1').format(int(self.tsd.summary.stats['count']),
+                                                         self.tsd.dt.frequency_name,
+                                                         self.tsd.summary.dt_range[0],
+                                                         self.tsd.summary.dt_range[1])
 
         stats_analysis = \
-            gettext('series_line_plot_analysis2').format(self.data.summary.stats['mean'],
-                                                         self.data.summary.stats['50%'],
-                                                         self.data.summary.stats['std'],
-                                                         self.data.summary.stats['min'],
-                                                         self.data.summary.stats['max'])
+            gettext('series_line_plot_analysis2').format(self.tsd.summary.stats['mean'],
+                                                         self.tsd.summary.stats['50%'],
+                                                         self.tsd.summary.stats['std'],
+                                                         self.tsd.summary.stats['min'],
+                                                         self.tsd.summary.stats['max'])
 
         self.analysis.append(range_analysis)
         self.analysis.append(stats_analysis)

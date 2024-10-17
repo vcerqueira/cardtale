@@ -1,5 +1,3 @@
-import re
-
 import pandas as pd
 # from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
