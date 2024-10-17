@@ -5,7 +5,7 @@ import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
 from cardtale.cards.analyser.change import ChangeAnalysis
 from cardtale.cards.analyser.seasonality import SeasonalityAnalysis
 from cardtale.cards.analyser.structural import StructuralAnalysis
@@ -13,21 +13,25 @@ from cardtale.cards.analyser.trend import TrendAnalysis
 from cardtale.cards.analyser.variance import VarianceAnalysis
 from cardtale.cards.analyser.base import ReportAnalyser
 from cardtale.cards.config import TEMPLATE_DIR, STRUCTURE_TEMPLATE
-from cardtale.data.config.typing import Period
+from cardtale.core.config.typing import Period
 
 
 class CardsBuilder:
 
     def __init__(self,
-                 series: pd.Series,
-                 frequency: str,
-                 period: Period,
-                 verbose: bool):
+                 df: pd.DataFrame,
+                 freq: str,
+                 id_col: str = 'unique_id',
+                 time_col: str = 'ds',
+                 target_col: str = 'y',
+                 period: Period = None):
 
-        self.data = UVTimeSeries(series=series,
-                                 frequency=frequency,
-                                 period=period,
-                                 verbose=verbose)
+        self.tsd = TimeSeriesData(df=df,
+                                  freq=freq,
+                                  id_col=id_col,
+                                  time_col=time_col,
+                                  target_col=target_col,
+                                  period=period)
 
         self.sections = {
             'structural': StructuralAnalysis(data=self.data),
