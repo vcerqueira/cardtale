@@ -1,6 +1,5 @@
-from pprint import pprint
 import re
-from typing import Optional, Tuple, Dict
+from typing import Tuple, Dict
 
 import numpy as np
 import pandas as pd
@@ -12,7 +11,6 @@ from cardtale.analytics.testing.components.base import UnivariateTester
 from cardtale.analytics.testing.components.trend import UnivariateTrendTesting
 from cardtale.cards.strings import join_l, gettext
 from cardtale.core.config.analysis import ALPHA
-from cardtale.core.config.typing import Period
 from cardtale.core.utils.errors import AnalysisLogicalError, LOGICAL_ERROR_MSG
 from cardtale.core.data import TimeSeriesData
 
@@ -26,18 +24,15 @@ class SeasonalityTesting(UnivariateTester):
     todo add effect of seasonal differencing -- need to implement inv season diff
     """
 
-    def __init__(self,
-                 series: pd.Series,
-                 period: Period,
-                 named_freq: str):
-        super().__init__(series)
+    def __init__(self, tsd: TimeSeriesData, freq_naming: str):
+        super().__init__(tsd)
 
-        self.period = period if period != 1 else None
-        self.named_freq = named_freq
+        self.period = tsd.period if tsd.period != 1 else None
         self.est_period = -1
         self.prob_seasonality = -1
         self.moments = {}
         self.moments_bool = {}
+        self.freq_naming = freq_naming
 
     def run_statistical_tests(self):
         for k, name in R_NSDIFF_TESTS.items():
@@ -57,10 +52,10 @@ class SeasonalityTesting(UnivariateTester):
 
         self.performance = seasonal_lm.results
 
-    def run_misc(self, seasonal_df: pd.DataFrame):
-        freq = re.sub('ly$', '', self.named_freq)
+    def run_misc(self):
+        freq = re.sub('ly$', '', self.freq_naming)
 
-        data_group = seasonal_df.groupby(freq)[SERIES]
+        data_group = self.tsd.seas_df.groupby(freq)[self.tsd.target_col]
         data_group_list = [x.values for _, x in data_group]
 
         self.moments = GroupMoments.compare_groups(data_group_list)
@@ -104,14 +99,6 @@ class SeasonalityTesting(UnivariateTester):
 
         :return: text content
         """
-        print(st_freq)
-        print(lm_freq)
-        pprint(show_plots)
-        # show_plots = {'Monthly': {'seas_subseries': {'show': False, 'which': {'by_st': False, 'by_perf': False}}, 'seas_summary': {'show': False}}, 'Quarterly': {'seas_subseries': {'show': True, 'which': {'by_st': False, 'by_perf': True}}, 'seas_summary': {'show': False}}, 'Yearly': {'seas_subseries': {'show': True, 'which': {'by_st': False, 'by_perf': True}}, 'seas_summary': {'show': True}}}
-        # st_freq='Monthly'
-        # lm_freq='Yearly'
-        # from pprint import pprint
-        # pprint(show_plots)
 
         by_st = show_plots[st_freq]['seas_subseries']['which']['by_st']
         by_perf = show_plots[lm_freq]['seas_subseries']['which']['by_perf']
@@ -151,9 +138,8 @@ class SeasonalityTesting(UnivariateTester):
         within_group_analysis = {}
         for k, sub_series in data_groups.items():
             # print(k)
-            trend = TrendTesting(pd.Series(sub_series))
-            trend.run_statistical_tests()
-            within_group_analysis[k] = trend.prob_level
+            prob_trend, prob_level = UnivariateTrendTesting.run_tests_on_series(pd.Series(sub_series))
+            within_group_analysis[k] = prob_level
 
         within_group_analysis_s = pd.Series(within_group_analysis)
         perc_within = 100 * (within_group_analysis_s > 0.6).mean()
@@ -181,14 +167,9 @@ class SeasonalityTesting(UnivariateTester):
 
 class SeasonalityTestingMulti:
 
-    def __init__(self,
-                 series: pd.Series,
-                 frequency_df: pd.DataFrame,
-                 period: Period):
+    def __init__(self, tsd: TimeSeriesData):
 
-        self.series = series
-        self.frequency_df = frequency_df
-        self.period = period
+        self.tsd = tsd
         self.tests = {}
         self.period_tests = None
         self.summary = None
@@ -199,23 +180,19 @@ class SeasonalityTestingMulti:
         self.show_plots = {}
         self.failed_periods = {}
 
-    def run_tests(self, seasonal_df: pd.DataFrame):
-        self.period_tests = SeasonalityTesting(series=self.series,
-                                               period=self.period,
-                                               named_freq='',
-                                               named_period=None)
+    def run_tests(self):
+        self.period_tests = SeasonalityTesting(tsd=self.tsd, freq_naming='')
 
         self.period_tests.run_statistical_tests()
 
-        for _, freq in self.frequency_df.iterrows():
-            freq_tests = SeasonalityTesting(series=self.series,
-                                            period=freq['period'],
-                                            named_freq=freq['name'],
-                                            named_period=freq['index'])
+        freq_df = self.tsd.dt.formats
+
+        for _, freq in freq_df.iterrows():
+            freq_tests = SeasonalityTesting(tsd=self.tsd, freq_naming=freq['name'])
 
             freq_tests.run_statistical_tests()
             freq_tests.run_landmarks()
-            freq_tests.run_misc(seasonal_df)
+            freq_tests.run_misc()
 
             if freq_tests.moments_bool['eq_std']:
                 if freq['name'] in self.analysed_periods:

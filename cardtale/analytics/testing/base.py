@@ -55,9 +55,7 @@ class TestingComponents:
         self.trend = UnivariateTrendTesting(tsd)
         self.variance = VarianceTesting(tsd)
         self.change = ChangeTesting(tsd)
-        self.seasonality = SeasonalityTestingMulti(series=df,
-                                                   frequency_df=self.metadata.freq_df,
-                                                   period=self.metadata.period)
+        self.seasonality = SeasonalityTestingMulti(tsd=tsd)
 
     def run(self, seasonal_df: pd.DataFrame):
         """

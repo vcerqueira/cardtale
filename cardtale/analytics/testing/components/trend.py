@@ -97,6 +97,23 @@ class UnivariateTrendTesting(UnivariateTester):
 
         return analysis_text
 
+    @staticmethod
+    def run_tests_on_series(series: pd.Series):
+        tests = {TREND_T: pd.Series(dtype=int),
+                 LEVEL_T: pd.Series(dtype=int)}
+
+        for k, name in R_NDIFF_TESTS.items():
+            try:
+                for test_type in [TREND_T, LEVEL_T]:
+                    tests[test_type][name] = RNDiffs.r_ndiffs(series, test=k, test_type=test_type)
+            except ValueError:
+                continue
+
+        prob_trend = tests[TREND_T].mean()
+        prob_level = tests[LEVEL_T].mean()
+
+        return prob_trend, prob_level
+
 
 class TrendShowTests:
 
