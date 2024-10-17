@@ -5,8 +5,6 @@ from cardtale.core.time import TimeDF
 from cardtale.core.config.freq import AVAILABLE_FREQ
 from cardtale.core.config.typing import Period
 from cardtale.core.profile import SeriesProfile
-# from cardtale.analytics.testing.base import TestingComponents
-# from cardtale.analytics.testing.components.base import Tester
 from cardtale.cards.strings import join_l
 
 unq_freq_list = pd.Series([*AVAILABLE_FREQ.values()]).unique().tolist()
@@ -29,13 +27,11 @@ class TimeSeriesData:
 
     #todo review docstrings
     Attributes:
-        series (pd.Series): Univariate time series
         df (pd.DataFrame): Series as a pd.DF (index as column)
         period (Period): Main period of the data (e.g. 12 for monthly data)
         dt (TimeDF): Temporal information class object
         summary (SeriesSummary): summary stats of the series
         diff_summary (SeriesSummary): summary stats of the differenced series
-        verbose (bool): Whether to print status during process
     """
 
     def __init__(self,
@@ -86,11 +82,6 @@ class TimeSeriesData:
 
         self.summary = SeriesProfile(n_lags=self.period * 2)
         self.diff_summary = SeriesProfile(n_lags=self.period * 2)
-        # self.tests = TestingComponents(df=self.df,
-        #                                time_col=self.time_col,
-        #                                target_col=self.target_col,
-        #                                freq_df=self.dt.formats,
-        #                                period=self.period)
 
         self.setup()
 
