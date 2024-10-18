@@ -1,13 +1,14 @@
 import pandas as pd
-from plotnine import *
+import plotnine as p9
 from numerize import numerize
 
-from cardtale.visuals.config import (BROWN_HARD,
-                                    PISTACHIO_HARD,
-                                    WHITE)
+from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class PartialViolinPlot:
+    SHIFT = 0.15
+    LSIZE = 0.8
+    FILL_ALHPA = 0.7
 
     @staticmethod
     def alt_sign(x):
@@ -20,57 +21,41 @@ class PartialViolinPlot:
                        x_axis_col: str,
                        y_axis_col: str,
                        group_col: str,
-                       numerize_y: bool = True,
                        x_lab: str = '',
                        y_lab: str = '',
                        title: str = ''):
-        x = stage(x_axis_col, after_scale='x+shift*cls.alt_sign(x)')
+        x = p9.stage(x_axis_col, after_scale='x+cls.SHIFT*cls.alt_sign(x)')
 
-        shift = 0.15
-        lsize = 0.8
-        fill_alpha = 0.7
-
-        m1 = aes(x=stage(x_axis_col, after_scale='x+shift*cls.alt_sign(x)'))
-        m2 = aes(x=stage(x_axis_col, after_scale='x-shift*cls.alt_sign(x)'),
-                 group=group_col)
+        aes_ = {'x': x_axis_col, 'y': y_axis_col, 'fill': x_axis_col}
+        aes_m1 = {'x': p9.stage(x_axis_col, after_scale='x+cls.SHIFT*cls.alt_sign(x)')}
+        aes_m2 = {'x': p9.stage(x_axis_col, after_scale='x-cls.SHIFT*cls.alt_sign(x)'), 'group': group_col}
 
         plot = \
-            ggplot(data=data,
-                   mapping=aes(x=x_axis_col, y=y_axis_col, fill=x_axis_col)) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  axis_text=element_text(size=12),
-                  #panel_background=element_rect(fill=WHITE),
-                  #plot_background=element_rect(fill=WHITE),
-                  #strip_background=element_rect(fill=WHITE),
-                  #legend_background=element_rect(fill=WHITE),
-                  legend_title=element_blank(),
-                  legend_position=None) + \
-            geom_violin(m1,
-                        style='left-right',
-                        alpha=fill_alpha,
-                        size=lsize,
-                        show_legend=False) + \
-            geom_point(m2,
-                       color='none',
-                       alpha=fill_alpha,
-                       size=4,
-                       show_legend=False) + \
-            geom_boxplot(width=.15,
-                         alpha=fill_alpha,
-                         size=.5,
-                         show_legend=False) + \
-            scale_fill_manual(values=[PISTACHIO_HARD, BROWN_HARD])
-
-        plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
-
-        if numerize_y:
-            plot = \
-                plot + \
-                scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
+            p9.ggplot(data=data, mapping=p9.aes(**aes_)) + \
+            p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+            p9.theme(plot_margin=.0125,
+                     axis_text=p9.element_text(size=12),
+                     legend_title=p9.element_blank(),
+                     legend_position=None) + \
+            p9.geom_violin(p9.aes(**aes_m1),
+                           style='left-right',
+                           alpha=cls.FILL_ALHPA,
+                           size=cls.LSIZE,
+                           show_legend=False) + \
+            p9.geom_point(p9.aes(**aes_m2),
+                          color='none',
+                          alpha=cls.FILL_ALHPA,
+                          size=4,
+                          show_legend=False) + \
+            p9.geom_boxplot(width=.15,
+                            alpha=cls.FILL_ALHPA,
+                            size=.5,
+                            show_legend=False) + \
+            p9.scale_fill_manual(values=[THEME_PALETTE[THEME]['hard'],
+                                         THEME_PALETTE[THEME]['hard_alt']]) + \
+            p9.xlab(x_lab) + \
+            p9.ylab(y_lab) + \
+            p9.ggtitle(title) + \
+            p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
 
         return plot

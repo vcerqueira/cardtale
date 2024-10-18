@@ -11,12 +11,9 @@ class PlotDensity:
     def by_pair(data: pd.DataFrame,
                 x_axis_col: str,
                 group_col: str,
-                numerize_x: bool = True,
-                numerize_y: bool = True,
                 x_lab: str = '',
                 y_lab: str = '',
                 title: str = ''):
-
         COLORS = [THEME_PALETTE[THEME['hard']],
                   THEME_PALETTE[THEME['hard_alt']]]
 
@@ -47,16 +44,8 @@ class PlotDensity:
                p9.ylab(y_lab) + \
                p9.ggtitle(title) + \
                p9.scale_fill_manual(values=COLORS) + \
-               p9.scale_color_manual(values=COLORS)
-
-        if numerize_x:
-            plot = \
-                plot + \
-                p9.scale_x_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
-
-        if numerize_y:
-            plot = \
-                plot + \
-                p9.scale_y_continuous(labels=lambda lst: [f'{x:.1e}' for x in lst])
+               p9.scale_color_manual(values=COLORS) + \
+               p9.scale_x_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
+               p9.scale_y_continuous(labels=lambda lst: [f'{x:.1e}' for x in lst])
 
         return plot

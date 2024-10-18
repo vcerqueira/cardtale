@@ -20,7 +20,9 @@ class SeriesComponentsPlot(Plot):
         self.tests = tests
 
     def build(self):
-        self.plot = LinePlot.multivariate_grid(data=self.tsd.stl_df, scales='free')
+        self.plot = LinePlot.multivariate_grid(data=self.tsd.stl_df,
+                                               x_axis_col=self.tsd.time_col,
+                                               scales='free')
 
     def analyse(self):
 

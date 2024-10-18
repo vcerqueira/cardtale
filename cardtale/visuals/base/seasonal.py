@@ -1,11 +1,9 @@
 import pandas as pd
+import plotnine as p9
 from numerize import numerize
-from plotnine import *
 
 from cardtale.visuals.base.summary import SummaryStatPlot
-from cardtale.visuals.config import (PISTACHIO_HARD,
-                                    PISTACHIO_SOFT,
-                                    WHITE)
+from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class SeasonalPlot:
@@ -20,53 +18,43 @@ class SeasonalPlot:
               x_axis_col: str,
               y_axis_col: str,
               group_col: str,
-              numerize_y: bool = True,
               x_lab: str = '',
               y_lab: str = '',
               title: str = '',
               add_labels: bool = True,
               add_smooth: bool = False):
 
+        aes_ = {'x': x_axis_col, 'y': y_axis_col, 'group': group_col, 'color': group_col}
+        aes_t = {'label': group_col}
+
         plot = \
-            ggplot(data) + \
-            aes(x=x_axis_col,
-                y=y_axis_col,
-                group=group_col,
-                color=group_col) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  axis_text=element_text(size=10),
-                  #panel_background=element_rect(fill=WHITE),
-                  #plot_background=element_rect(fill=WHITE),
-                  #strip_background=element_rect(fill=WHITE),
-                  #legend_background=element_rect(fill=WHITE),
-                  legend_title=element_blank()) + \
-            scale_color_gradientn(colors=cls.COLOR_LIST)
+            p9.ggplot(data) + \
+            p9.aes(**aes_) + \
+            p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+            p9.theme(plot_margin=.0125,
+                     axis_text=p9.element_text(size=10),
+                     legend_title=p9.element_blank()) + \
+            p9.scale_color_gradientn(colors=cls.COLOR_LIST)
 
         if add_smooth:
-            plot += geom_smooth(group=1,
-                                size=3,
-                                color='lightgray',
-                                alpha=0.4)
+            plot += p9.geom_smooth(group=1,
+                                   size=3,
+                                   color='lightgray',
+                                   alpha=0.4)
 
-        plot += geom_line()
+        plot += p9.geom_line()
 
         if add_labels:
             data_labs = data.groupby(group_col).apply(lambda x: x.iloc[[0, -1], :])
 
-            plot += geom_text(data=data_labs,
-                              mapping=aes(label=group_col))
+            plot += p9.geom_text(data=data_labs, mapping=p9.aes(**aes_t))
 
         plot = \
             plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
-
-        if numerize_y:
-            plot = \
-                plot + \
-                scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
+            p9.xlab(x_lab) + \
+            p9.ylab(y_lab) + \
+            p9.ggtitle(title) + \
+            p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
 
         return plot
 
@@ -75,7 +63,6 @@ class SeasonalPlot:
                    x_axis_col: str,
                    y_axis_col: str,
                    group_col: str,
-                   numerize_y: bool = True,
                    x_lab: str = '',
                    y_lab: str = '',
                    title: str = ''):
@@ -83,37 +70,28 @@ class SeasonalPlot:
         stat_by_group, _ = SummaryStatPlot.summary_by_group(data, y_axis_col, group_col, 'mean')
         stat_by_group = stat_by_group.reset_index()
 
-        plot = \
-            ggplot(data) + \
-            aes(x=x_axis_col,
-                y=y_axis_col) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  axis_text_x=element_text(size=8, angle=90),
-                  #panel_background=element_rect(fill=WHITE),
-                  #plot_background=element_rect(fill=WHITE),
-                  #strip_background=element_rect(fill=WHITE),
-                  #legend_background=element_rect(fill=WHITE),
-                  legend_title=element_blank(),
-                  strip_background_x=element_text(color=PISTACHIO_SOFT),
-                  strip_text_x=element_text(size=11))
-
-        plot += geom_line()
-        plot += facet_grid(f'. ~{group_col}')
-        plot += geom_hline(data=stat_by_group,
-                           mapping=aes(yintercept=y_axis_col),
-                           colour=PISTACHIO_HARD,
-                           size=1)
+        aes_ = {'x': x_axis_col, 'y': y_axis_col}
+        aes_hl = {'yintercept': y_axis_col}
 
         plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
-
-        if numerize_y:
-            plot = \
-                plot + \
-                scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
+            p9.ggplot(data) + \
+            p9.aes(**aes_) + \
+            p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+            p9.theme(plot_margin=.0125,
+                     axis_text_x=p9.element_text(size=8, angle=90),
+                     legend_title=p9.element_blank(),
+                     strip_background_x=p9.element_text(color=THEME_PALETTE[THEME]['soft']),
+                     strip_text_x=p9.element_text(size=11)) + \
+            p9.geom_line() + \
+            p9.facet_grid(f'. ~{group_col}') + \
+            p9.geom_hline(data=stat_by_group,
+                          mapping=p9.aes(**aes_hl),
+                          colour=THEME_PALETTE[THEME][
+                              'hard'],
+                          size=1) + \
+            p9.xlab(x_lab) + \
+            p9.ylab(y_lab) + \
+            p9.ggtitle(title) + \
+            p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
 
         return plot

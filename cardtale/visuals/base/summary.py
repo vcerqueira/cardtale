@@ -1,14 +1,10 @@
 import pandas as pd
 
-from plotnine import *
+import plotnine as p9
 from numerize import numerize
 
-from cardtale.data.utils.categories import as_categorical
-
-from cardtale.visuals.config import (PISTACHIO_HARD,
-                                    PISTACHIO_BLACK,
-                                    PISTACHIO_MID,
-                                    WHITE)
+from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
+from cardtale.core.utils.splits import DataSplit
 
 
 class SummaryStatPlot:
@@ -38,7 +34,6 @@ class SummaryStatPlot:
                     y_col: str,
                     group_col: str,
                     func: str,
-                    numerize_y: bool = True,
                     x_lab: str = '',
                     y_lab: str = '',
                     title: str = ''):
@@ -54,37 +49,27 @@ class SummaryStatPlot:
                                                         func=func)
 
         group_stat_df = group_stat.reset_index()
-        group_stat_df[group_col] = as_categorical(group_stat_df, group_col)
+        group_stat_df[group_col] = DataSplit.df_var_to_categorical(group_stat_df, group_col)
+
+        aes_ = {'x': group_col, 'y': y_col, 'group': 1}
 
         plot = \
-            ggplot(group_stat_df) + \
-            aes(x=group_col, y=y_col, group=1) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  axis_text=element_text(size=10),
-                  #panel_background=element_rect(fill=WHITE),
-                  #plot_background=element_rect(fill=WHITE),
-                  #strip_background=element_rect(fill=WHITE),
-                  #legend_background=element_rect(fill=WHITE),
-                  legend_title=element_blank(),
-                  legend_position=None)
-
-        plot += geom_line(color=PISTACHIO_MID, size=.7, linetype='dashed')
-        plot += geom_point(color=PISTACHIO_HARD, size=3)
-        plot += geom_hline(yintercept=overall_stat,
-                           linetype='solid',
-                           color=PISTACHIO_BLACK,
-                           size=1.1)
-
-        if numerize_y:
-            plot = \
-                plot + \
-                scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
-
-        plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
+            p9.ggplot(group_stat_df) + \
+            p9.aes(**aes_) + \
+            p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+            p9.theme(plot_margin=.0125,
+                     axis_text=p9.element_text(size=10),
+                     legend_title=p9.element_blank(),
+                     legend_position=None) + \
+            p9.geom_line(color=THEME_PALETTE[THEME]['mid'], size=.7, linetype='dashed') + \
+            p9.geom_point(color=THEME_PALETTE[THEME]['hard'], size=3) + \
+            p9.geom_hline(yintercept=overall_stat,
+                          linetype='solid',
+                          color=THEME_PALETTE[THEME]['black'],
+                          size=1.1) + \
+            p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
+            p9.xlab(x_lab) + \
+            p9.ylab(y_lab) + \
+            p9.ggtitle(title)
 
         return plot

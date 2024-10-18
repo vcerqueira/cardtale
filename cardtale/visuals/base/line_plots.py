@@ -139,41 +139,35 @@ class LinePlot:
             p9.ggtitle(title) + \
             p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
 
-
         return plot
 
     @staticmethod
     def multivariate_grid(data: pd.DataFrame,
+                          x_axis_col: str,
                           scales: str,
-                          numerize_y: bool = True,
                           x_lab: str = '',
                           y_lab: str = '',
                           title: str = ''):
 
-        melted_data = pd.melt(data, 'Index')
+        melted_data = pd.melt(data, x_axis_col)
+
+        aes_ = {'x': x_axis_col, 'y': 'value'}
+        facet_ = {'rows': 'variable ~.', 'scales': scales}
 
         plot = \
             p9.ggplot(melted_data) + \
-            p9.aes(x='Index', y='value') + \
-            p9.facet_grid('variable ~.', scales=scales) + \
+            p9.aes(**aes_) + \
+            p9.facet_grid(**facet_) + \
             p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
             p9.theme(plot_margin=.0125,
                      axis_text=p9.element_text(size=11),
                      legend_title=p9.element_blank(),
                      strip_text=p9.element_text(size=13),
-                     legend_position='none')
-
-        plot += p9.geom_line(color=PISTACHIO_HARD, size=1)
-
-        plot = \
-            plot + \
+                     legend_position='none') + \
+            p9.geom_line(color=THEME_PALETTE[THEME]['hard'], size=1) + \
             p9.xlab(x_lab) + \
             p9.ylab(y_lab) + \
-            p9.ggtitle(title)
-
-        if numerize_y:
-            plot = \
-                plot + \
-                p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
+            p9.ggtitle(title) + \
+            p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
 
         return plot
