@@ -107,6 +107,7 @@ class Plot:
     @staticmethod
     def get_encode(plot, height, width):
         img_buffer = io.BytesIO()
+
         plot.save(img_buffer, height=height, width=width, format='png')
         img_buffer.seek(0)
         decode_str = base64.b64encode(img_buffer.getvalue()).decode()

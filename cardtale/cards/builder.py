@@ -12,6 +12,7 @@ from cardtale.cards.analyser.variance import VarianceAnalysis
 from cardtale.cards.analyser.base import ReportAnalyser
 from cardtale.cards.config import TEMPLATE_DIR, STRUCTURE_TEMPLATE
 from cardtale.core.config.typing import Period
+from cardtale.analytics.testing.base import TestingComponents
 
 
 class CardsBuilder:
@@ -31,12 +32,14 @@ class CardsBuilder:
                                   target_col=target_col,
                                   period=period)
 
+        self.tests = TestingComponents(self.tsd)
+
         self.sections = {
-            'structural': StructuralAnalysis(data=self.data),
-            'trend': TrendAnalysis(data=self.data),
-            'seasonality': SeasonalityAnalysis(data=self.data),
-            'variance': VarianceAnalysis(data=self.data),
-            'change': ChangeAnalysis(data=self.data),
+            'structural': StructuralAnalysis(tsd=self.tsd, tests=self.tests),
+            'trend': TrendAnalysis(tsd=self.tsd, tests=self.tests),
+            'seasonality': SeasonalityAnalysis(tsd=self.tsd, tests=self.tests),
+            'variance': VarianceAnalysis(tsd=self.tsd, tests=self.tests),
+            'change': ChangeAnalysis(tsd=self.tsd, tests=self.tests),
         }
 
         self.plot_id = -1
@@ -45,19 +48,15 @@ class CardsBuilder:
         self.secs_included = []
 
     def build_cards(self, doc_name: str, create_doc):
-        if self.data.verbose:
-            print('Running tests...')
+        print('Running tests...')
 
-        self.data.tests.run(seasonal_df=self.data.seas_sf)
+        self.tests.run()
 
-        if self.data.verbose:
-            print('Tests finished. \n Analysing results...')
+        print('Tests finished. \n Analysing results...')
 
         self.secs_included, self.secs_to_omit = [], []
         if not self.sections_analysed:
             for sec in self.sections:
-                if self.data.verbose:
-                    print(f'...{sec}')
                 self.sections[sec].analyse()
 
                 if not self.sections[sec].show_content:
@@ -67,23 +66,15 @@ class CardsBuilder:
 
             self.sections_analysed = True
 
-        if self.data.verbose:
-            print('Analysis finished. \n Building report...')
-
         if create_doc:
-            self.build_doc(doc_name, 'pdf')
+            self.build_doc()
 
-        if self.data.verbose:
-            print(f'Done.')
-
-    def build_doc(self, doc_name: str, doc_format: str = 'pdf'):
+    def build_doc(self):
         self.plot_id = 1
 
         body_content = ''
         for sec in self.sections:
             # sec = 'structural'
-            if self.data.verbose:
-                print(f'...Building section {sec}')
 
             self.sections[sec].build_plots()
             for plt in self.sections[sec].plots:

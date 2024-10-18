@@ -3,8 +3,9 @@ from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import gettext
 from cardtale.analytics.testing.components.seasonality import SeasonalityTesting
 
-from cardtale.data.uvts import UVTimeSeries
-from cardtale.visuals.config import INDEX, PLOT_NAMES
+from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
+from cardtale.visuals.config import PLOT_NAMES
 
 MEANS = 'eq_means'
 SDEVS = 'eq_std'
@@ -13,7 +14,8 @@ SDEVS = 'eq_std'
 class SeasonalSubSeriesPlot(Plot):
 
     def __init__(self,
-                 data: UVTimeSeries,
+                 tsd: TimeSeriesData,
+                 tests: TestingComponents,
                  name: str,
                  named_seasonality: str,
                  x_axis_col: str,
@@ -29,7 +31,7 @@ class SeasonalSubSeriesPlot(Plot):
         :param tests_were_analysed: Whether statistical tests were already analysed in
         a previous plot. This happens if a seasonal line plot is shown before (for main period)
         """
-        super().__init__(data=data, multi_plot=False, name=name)
+        super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.tests_were_analysed = tests_were_analysed
 
@@ -45,22 +47,18 @@ class SeasonalSubSeriesPlot(Plot):
         self.plot_name = PLOT_NAMES[self.plot_id]
         self.plot_name += f' ({self.x_axis_col}ly)'
 
+        self.tests = tests
+
     def build(self):
-        self.plot = SeasonalPlot.sub_series(data=self.data.get_seasonal(),
+        self.plot = SeasonalPlot.sub_series(data=self.tsd.seas_df,
                                             group_col=self.x_axis_col,
-                                            x_axis_col=INDEX,
+                                            x_axis_col=self.tsd.time_col,
                                             y_axis_col=self.y_axis_col)
 
     def analyse(self):
-        print('self.named_seasonality')
-        print(self.named_seasonality)
-        print('self.plot_id')
-        print(self.plot_id)
         freq_named = f'{self.x_axis_col}ly'
-        print('freq_named')
-        print(freq_named)
 
-        show_plots, failed_periods = self.data.tests.seasonality.get_show_analysis()
+        show_plots, failed_periods = self.tests.seasonality.get_show_analysis()
 
         """
         show_plots={'Monthly': {'seas_subseries': {'show': False,
@@ -80,30 +78,25 @@ class SeasonalSubSeriesPlot(Plot):
         """
 
         if show_plots[self.named_seasonality][self.plot_id]['show']:
-            print('...sim')
             self.show_me = True
         else:
-            print('...nao')
             return
 
-        print('...passou')
         if not show_plots[freq_named]['seas_summary']['show']:
             groups_comps = gettext('seasonality_summary_fail').format(f'{self.x_axis_col.lower()}s')
             self.analysis.append(groups_comps)
 
-        tests = self.data.tests.seasonality.tests[self.named_seasonality].tests
-        named_level_st = self.data.tests.trend.prob_level_str
+        tests = self.tests.seasonality.tests[self.named_seasonality].tests
+        named_level_st = self.tests.trend.prob_level_str
 
         if not self.tests_were_analysed:
             seas_str_analysis = SeasonalityTesting.seasonal_tests_parser(tests, freq_named.lower())
             self.analysis.append(seas_str_analysis)
 
-        data_groups = self.data.get_period_groups(grouping_period=self.x_axis_col)
+        data_groups = self.tsd.get_period_groups(grouping_period=self.x_axis_col)
         within_groups_analysis = SeasonalityTesting.seasonal_subseries_st_parser(self.x_axis_col, data_groups,
                                                                                  named_level_st)
         self.analysis.append(within_groups_analysis)
-
-        print('aqui')
 
         effect_analysis = SeasonalityTesting.seasonal_subseries_parser(show_plots,
                                                                        st_freq=self.named_seasonality,

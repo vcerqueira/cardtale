@@ -2,19 +2,21 @@ from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import join_l, gettext
 from cardtale.analytics.testing.components.seasonality import SeasonalityTesting
-from cardtale.data.uvts import UVTimeSeries
-from cardtale.visuals.config import SERIES, PLOT_NAMES
+from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
+from cardtale.visuals.config import PLOT_NAMES
 
 
 class SeasonalLinePlot(Plot):
 
     def __init__(self,
-                 data: UVTimeSeries,
+                 tsd: TimeSeriesData,
+                 tests: TestingComponents,
                  name: str,
                  named_seasonality: str,
                  x_axis_col: str,
                  group_col: str):
-        super().__init__(data=data, multi_plot=False, name=name)
+        super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.named_seasonality = named_seasonality
         self.caption = gettext('seasonality_line_month_year_caption')
@@ -26,11 +28,12 @@ class SeasonalLinePlot(Plot):
         self.plot_name = PLOT_NAMES['seas_line']
         self.plot_name += f' ({self.x_axis_col}ly)'
 
-    def build(self):
+        self.tests = tests
 
-        self.plot = SeasonalPlot.lines(data=self.data.get_seasonal(),
+    def build(self):
+        self.plot = SeasonalPlot.lines(data=self.tsd.seas_df,
                                        x_axis_col=self.x_axis_col,
-                                       y_axis_col=SERIES,
+                                       y_axis_col=self.tsd.target_col,
                                        group_col=self.group_col,
                                        add_smooth=True)
 
@@ -43,7 +46,7 @@ class SeasonalLinePlot(Plot):
         """
         self.show_me = True
 
-        tests = self.data.tests.seasonality.tests[self.named_seasonality].tests
+        tests = self.tests.seasonality.tests[self.named_seasonality].tests
         main_freq = self.caption_expr[0]
 
         period = f'{self.group_col}ly'.lower()
@@ -51,7 +54,7 @@ class SeasonalLinePlot(Plot):
         seas_str_analysis = SeasonalityTesting.seasonal_tests_parser(tests, period)
         self.analysis.append(seas_str_analysis)
 
-        show_analysis, failed_periods = self.data.tests.seasonality.get_show_analysis()
+        show_analysis, failed_periods = self.tests.seasonality.get_show_analysis()
 
         self_perf = show_analysis[main_freq]['seas_subseries']['which']['by_perf']
         if self_perf:

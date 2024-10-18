@@ -3,6 +3,7 @@ from typing import List
 from jinja2 import Environment, FileSystemLoader
 
 from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
 from cardtale.cards.strings import gettext
 
 from cardtale.cards.config import (TEMPLATE_DIR,
@@ -28,8 +29,9 @@ class ReportAnalyser:
         content_pdf (str): PDF str content before building report
     """
 
-    def __init__(self, tsd: TimeSeriesData):
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
         self.tsd = tsd
+        self.tests = tests
 
         self.plots = {}
         self.metadata = {}

@@ -1,11 +1,8 @@
 import pandas as pd
-
-from plotnine import *
+import plotnine as p9
 from numerize import numerize
 
-from cardtale.visuals.config import (PISTACHIO_HARD,
-                                        PISTACHIO_SOFT,
-                                        WHITE)
+from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class PlotHistogram:
@@ -14,77 +11,26 @@ class PlotHistogram:
     def univariate(data: pd.DataFrame,
                    x_axis_col: str,
                    n_bins: int,
-                   numerize_x: bool = True,
                    x_lab: str = '',
                    y_lab: str = '',
                    title: str = ''):
-        """
+        aes_ = {'x': x_axis_col}
 
-
-        :param numerize_x:
-        :param data:
-        :param x_axis_col:
-        :param n_bins:
-        :param x_lab:
-        :param y_lab:
-        :param title:
-        :return:
-        """
-        plot = ggplot(data) + \
-               aes(x=x_axis_col) + \
-               theme_minimal(base_family='Palatino', base_size=12) + \
-               theme(plot_margin=.015,
-                     axis_text=element_text(size=12),
-                     # panel_background=element_rect(fill=WHITE),
-                     # plot_background=element_rect(fill=WHITE),
-                     # strip_background=element_rect(fill=WHITE),
-                     # legend_background=element_rect(fill=WHITE),
-                     legend_title=element_blank(),
-                     legend_position=None) + \
-               geom_histogram(alpha=.95,
-                              bins=n_bins,
-                              color=PISTACHIO_SOFT,
-                              fill=PISTACHIO_HARD)
-
-        plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
-
-        if numerize_x:
-            plot = \
-                plot + \
-                scale_x_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
-                scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
-
-        return plot
-
-    @staticmethod
-    def by_group(data: pd.DataFrame,
-                 x_axis_col: str,
-                 group_col: str,
-                 x_lab: str = '',
-                 y_lab: str = '',
-                 title: str = ''):
-        plot = ggplot(data) + \
-               aes(x=x_axis_col, fill=group_col) + \
-               theme_minimal(base_family='Palatino', base_size=12) + \
-               theme(plot_margin=.015,
-                     axis_text=element_text(size=12),
-                     # panel_background=element_rect(fill=WHITE),
-                     # plot_background=element_rect(fill=WHITE),
-                     # strip_background=element_rect(fill=WHITE),
-                     # legend_background=element_rect(fill=WHITE),
-                     legend_title=element_blank(),
-                     legend_position=None) + \
-               geom_histogram(alpha=.9,
-                              bins=50)
-
-        plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
+        plot = p9.ggplot(data) + \
+               p9.aes(**aes_) + \
+               p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+               p9.theme(plot_margin=.015,
+                        axis_text=p9.element_text(size=12),
+                        legend_title=p9.element_blank(),
+                        legend_position=None) + \
+               p9.geom_histogram(alpha=.95,
+                                 bins=n_bins,
+                                 color=THEME_PALETTE[THEME]['soft'],
+                                 fill=THEME_PALETTE[THEME]['hard']) + \
+               p9.xlab(x_lab) + \
+               p9.ylab(y_lab) + \
+               p9.ggtitle(title) + \
+               p9.scale_x_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
+               p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
 
         return plot

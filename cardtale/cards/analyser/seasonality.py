@@ -1,12 +1,13 @@
 from cardtale.cards.analyser.base import ReportAnalyser
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.plots.seas_meta import SeasonalMetaPlots
 
 
 class SeasonalityAnalysis(ReportAnalyser):
 
-    def __init__(self, data: UVTimeSeries):
-        super().__init__(data)
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
+        super().__init__(tsd, tests)
 
         self.plots = {}
         self.meta_plot = None
@@ -19,8 +20,7 @@ class SeasonalityAnalysis(ReportAnalyser):
     def analyse(self):
         pass
 
-    def build_plots(self, plot_dir=None):
+    def build_plots(self):
+        self.meta_plot = SeasonalMetaPlots(tsd=self.tsd, tests=self.tests)
 
-        self.meta_plot = SeasonalMetaPlots(data=self.data)
-
-        self.plots = self.meta_plot.make_plots(plot_dir)
+        self.plots = self.meta_plot.make_plots()

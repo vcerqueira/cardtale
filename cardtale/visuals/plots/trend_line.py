@@ -6,38 +6,38 @@ from cardtale.visuals.base.line_plots import LinePlot
 from cardtale.cards.strings import join_l, gettext
 from cardtale.analytics.testing.components.trend import TrendShowTests
 
-from cardtale.data.uvts import UVTimeSeries
-from cardtale.visuals.config import INDEX, PLOT_NAMES
-from cardtale.data.config.analysis import TREND_STRENGTH_INTERVAL
+from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
+from cardtale.visuals.config import PLOT_NAMES
+from cardtale.core.config.analysis import TREND_STRENGTH_INTERVAL
 
 
 class TrendLinePlot(Plot):
 
-    def __init__(self, name: str, data: UVTimeSeries):
-        super().__init__(data=data, multi_plot=False, name=name)
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: str):
+        super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('trend_line_plot_caption')
-
         self.plot_name = PLOT_NAMES['trend_line']
+        self.tests = tests
 
     def build(self):
-        self.plot = LinePlot.univariate_w_support(data=self.data.df,
-                                                  x_axis_col=INDEX,
+        self.plot = LinePlot.univariate_w_support(data=self.tsd.df,
+                                                  x_axis_col=self.tsd.time_col,
                                                   y_axis_col_main='Trend',
-                                                  y_axis_col_supp='Series')
+                                                  y_axis_col_supp=self.tsd.target_col)
 
     def analyse(self):
-        tests = self.data.tests.trend
 
-        self.show_me, show_results = TrendShowTests.show_distribution_plot(tests)
+        self.show_me, show_results = TrendShowTests.show_distribution_plot(self.tests.trend)
 
         if not self.show_me:
             return
 
-        time_corr_avg = tests.time_model.time_corr_avg
-        corr_side = tests.time_model.side
+        time_corr_avg = self.tests.trend.time_model.time_corr_avg
+        corr_side = self.tests.trend.time_model.side
 
-        trend, no_trend, level, no_level = tests.results_in_list()
+        trend, no_trend, level, no_level = self.tests.trend.results_in_list()
 
         dt = pd.Series(TREND_STRENGTH_INTERVAL) - np.abs(time_corr_avg)
         trend_label = dt[dt < 0].index[0]
@@ -65,4 +65,4 @@ class TrendLinePlot(Plot):
 
         self.analysis.append(lvl_anls)
 
-        self.analysis.append(tests.parse_t_performance())
+        self.analysis.append(self.tests.trend.parse_t_performance())

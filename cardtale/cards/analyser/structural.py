@@ -5,19 +5,20 @@ from cardtale.visuals.plots.struc_acf import SeriesACFPlot
 from cardtale.visuals.plots.struc_pacf import SeriesPACFPlot
 from cardtale.cards.analyser.base import ReportAnalyser
 from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
 
 
 class StructuralAnalysis(ReportAnalyser):
 
-    def __init__(self, tsd: TimeSeriesData):
-        super().__init__(tsd)
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
+        super().__init__(tsd, tests)
 
         self.plots = {
             'line_plot': SeriesLinePlot(tsd=tsd, name='series_plot'),
-            'dist_plot': SeriesDistPlots(data=data, name=['hist_plot', 'boxplot_plot']),
-            'comp_plot': SeriesComponentsPlot(data=data, name='components_plot'),
-            'acf_plot': SeriesACFPlot(data=data, name='acf_plot'),
-            'pacf_plot': SeriesPACFPlot(data=data, name='pacf_plot'),
+            'dist_plot': SeriesDistPlots(tsd=tsd, name=['hist_plot', 'boxplot_plot']),
+            'comp_plot': SeriesComponentsPlot(tsd=tsd, tests=tests, name='components_plot'),
+            'acf_plot': SeriesACFPlot(tsd=tsd, name='acf_plot'),
+            'pacf_plot': SeriesPACFPlot(tsd=tsd, name='pacf_plot'),
         }
 
         self.metadata = {

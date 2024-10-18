@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 
 from cardtale.core.time import TimeDF
+from cardtale.analytics.tsa.decomposition import get_stl_components
 from cardtale.core.config.freq import AVAILABLE_FREQ
 from cardtale.core.config.typing import Period
 from cardtale.core.profile import SeriesProfile
@@ -72,6 +73,7 @@ class TimeSeriesData:
         self.df = df
         self.dt = TimeDF(freq)
         self.seas_df = None
+        self.stl_df = None
 
         if period is not None:
             self.period = period
@@ -101,6 +103,7 @@ class TimeSeriesData:
         self.diff_summary.run(s.diff()[1:], self.period, self.date_format)
 
         self.seas_df = pd.concat([self.df, self.dt.recurrent], axis=1)
+        self.stl_df = get_stl_components(series=s, period=self.period)
 
     def get_period_groups(self, grouping_period: str):
         # done... questions about self.target_col

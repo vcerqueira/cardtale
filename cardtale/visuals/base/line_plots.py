@@ -1,20 +1,11 @@
 from typing import List, Optional, Dict
 
 import pandas as pd
-
-# from kats.consts import TimeSeriesChangePoint
-
-from plotnine import *
+import plotnine as p9
 from plotnine.geoms.geom_hline import geom_hline
 from numerize import numerize
 
-from cardtale.visuals.config import (PISTACHIO_HARD,
-                                      PISTACHIO_SOFT,
-                                      PISTACHIO_BLACK,
-                                      PISTACHIO_MID,
-                                      PISTACHIO_FILL,
-                                      BROWN_HARD,
-                                      WHITE)
+from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 OptHLines = Optional[List[geom_hline]]
 
@@ -25,33 +16,30 @@ class LinePlot:
     def univariate(data: pd.DataFrame,
                    x_axis_col: str,
                    y_axis_col: str,
-                   line_color: str = PISTACHIO_HARD,
-                   hline_color: str = PISTACHIO_MID,
+                   line_color: str = THEME_PALETTE[THEME]['hard'],
+                   hline_color: str = THEME_PALETTE[THEME]['mid'],
                    x_lab: str = '',
                    y_lab: str = '',
                    title: str = '',
-                   numerize_y: bool = True,
                    hlines: OptHLines = None,
                    add_smooth: bool = False,
                    ribbons: Optional[Dict[str, str]] = None):
 
+        aes_ = {'x': x_axis_col, 'y': y_axis_col, 'group': 1}
+
         plot = \
-            ggplot(data) + \
-            aes(x=x_axis_col, y=y_axis_col, group=1) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  # panel_background=element_rect(fill=WHITE),
-                  # plot_background=element_rect(fill=WHITE),
-                  # strip_background=element_rect(fill=WHITE),
-                  # legend_background=element_rect(fill=WHITE),
-                  axis_text=element_text(size=12),
-                  legend_title=element_blank(),
-                  legend_position=None)
+            p9.ggplot(data) + \
+            p9.aes(**aes_) + \
+            p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+            p9.theme(plot_margin=.0125,
+                     axis_text=p9.element_text(size=12),
+                     legend_title=p9.element_blank(),
+                     legend_position=None)
 
         if add_smooth:
-            plot += geom_smooth(color=PISTACHIO_SOFT, size=5)
+            plot += p9.geom_smooth(color=THEME_PALETTE[THEME]['soft'], size=5)
 
-        plot += geom_line(color=line_color, size=1)
+        plot += p9.geom_line(color=line_color, size=1)
 
         if hlines is not None:
             for y_inter in hlines:
@@ -61,89 +49,17 @@ class LinePlot:
                                    size=1.1)
 
         if ribbons is not None:
-            plot += geom_ribbon(aes(ymin=ribbons['Low'],
-                                    ymax=ribbons['High']),
-                                alpha=0.2)
+            ribbon_aes = {'ymin': ribbons['Low'], 'ymax': ribbons['High']}
+
+            plot += p9.geom_ribbon(p9.aes(**ribbon_aes), alpha=0.2)
 
         plot = \
             plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
-
-        if numerize_y:
-            plot = \
-                plot + \
-                scale_y_continuous(labels=lambda lst: [numerize.numerize(x)
-                                                       for x in lst])
-
-        return plot
-
-    @staticmethod
-    def univariate_with_h_segments(data: pd.DataFrame,
-                                   segments_data: pd.DataFrame,
-                                   x_axis_col: str,
-                                   y_axis_col: str,
-                                   line_color: str = PISTACHIO_MID,
-                                   segments_color: str = BROWN_HARD,
-                                   x_lab: str = '',
-                                   y_lab: str = '',
-                                   title: str = '',
-                                   numerize_y: bool = True):
-        """
-
-        plot = \
-            ggplot(series_df) + \
-            aes(x='Index', y='Series', group=1) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.125,
-                  axis_text=element_text(size=12),
-                  legend_title=element_blank(),
-                  legend_position=None)
-
-        plot += geom_line(color='black')
-
-        plot += geom_segment(
-            df,
-            aes(x='xl', xend='xr', y='yy', yend='yy'),
-            size=.7,
-            color='darkred',
-            arrow=arrow(ends='both')
-        )
-
-
-        """
-
-        plot = \
-            ggplot(data) + \
-            aes(x=x_axis_col, y=y_axis_col, group=1) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  axis_text=element_text(size=12),
-                  legend_title=element_blank(),
-                  legend_position=None)
-
-        plot += geom_line(color=line_color, size=1)
-
-        plot += geom_segment(
-            segments_data,
-            aes(x='xld', xend='xrd', y='yy', yend='yy'),
-            size=.7,
-            color=segments_color,
-            arrow=arrow(ends='both')
-        )
-
-        plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
-
-        if numerize_y:
-            plot = \
-                plot + \
-                scale_y_continuous(labels=lambda lst: [numerize.numerize(x)
-                                                       for x in lst])
+            p9.xlab(x_lab) + \
+            p9.ylab(y_lab) + \
+            p9.ggtitle(title) + \
+            p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x)
+                                                      for x in lst])
 
         return plot
 
@@ -152,54 +68,43 @@ class LinePlot:
                           x_axis_col: str,
                           y_axis_col: str,
                           change_points: List,
-                          numerize_y: bool = True,
                           x_lab: str = '',
                           y_lab: str = '',
                           title: str = ''):
-        """
 
+        aes_ = {'x': x_axis_col, 'y': y_axis_col, 'group': 1}
 
-        """
         plot = \
-            ggplot(data) + \
-            aes(x=x_axis_col, y=y_axis_col, group=1) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  axis_text=element_text(size=11),
-                  legend_title=element_blank(),
-                  # panel_background=element_rect(fill=WHITE),
-                  # plot_background=element_rect(fill=WHITE),
-                  # strip_background=element_rect(fill=WHITE),
-                  # legend_background=element_rect(fill=WHITE),
-                  legend_position=None)
+            p9.ggplot(data) + \
+            p9.aes(**aes_) + \
+            p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+            p9.theme(plot_margin=.0125,
+                     axis_text=p9.element_text(size=11),
+                     legend_title=p9.element_blank(),
+                     legend_position=None) + \
+            p9.geom_line(color=THEME_PALETTE[THEME]['hard'], size=1)
 
-        plot += geom_line(color=PISTACHIO_HARD, size=1)
-
+        # from kats.consts import TimeSeriesChangePoint
         for cp_ in change_points:
-            plot += geom_vline(xintercept=pd.Timestamp(cp_.start_time),
-                               linetype='dashed',
-                               color=PISTACHIO_BLACK,
-                               size=1.1)
+            plot += p9.geom_vline(xintercept=pd.Timestamp(cp_.start_time),
+                                  linetype='dashed',
+                                  color=THEME_PALETTE[THEME]['black'],
+                                  size=1.1)
 
-        plot += ylim(data['Series'].min(), data['Series'].max() * 1.1)
+        plot += p9.ylim(data[y_axis_col].min(), data[y_axis_col].max() * 1.1)
+
         # todo seems correct, but sometimes label appears in the middle of y-axis
-        plot += geom_label(label='Change Point',
-                           # y=int(data['Series'].max() * .95),
-                           y=data['Series'].max(),
-                           fill=PISTACHIO_FILL,
-                           x=pd.Timestamp(change_points[0].start_time),
-                           size=11)
-
-        if numerize_y:
-            plot = \
-                plot + \
-                scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
-
-        plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
+        plot = plot + \
+               p9.geom_label(label='Change Point',
+                             # y=int(data['Series'].max() * .95),
+                             y=data[y_axis_col].max(),
+                             fill=THEME_PALETTE[THEME]['fill'],
+                             x=pd.Timestamp(change_points[0].start_time),
+                             size=11) + \
+               p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
+               p9.xlab(x_lab) + \
+               p9.ylab(y_lab) + \
+               p9.ggtitle(title)
 
         return plot
 
@@ -212,73 +117,28 @@ class LinePlot:
                              y_lab: str = '',
                              title: str = ''):
 
-        plot = \
-            ggplot(data) + \
-            aes(x=x_axis_col, y=y_axis_col_main) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  axis_text_y=element_text(size=11),
-                  axis_text_x=element_text(size=10),
-                  # panel_background=element_rect(fill=WHITE),
-                  # plot_background=element_rect(fill=WHITE),
-                  # strip_background=element_rect(fill=WHITE),
-                  # legend_background=element_rect(fill=WHITE),
-                  legend_title=element_blank(),
-                  legend_position='none')
+        aes1_ = {'x': x_axis_col, 'y': y_axis_col_main}
+        aes2_ = {'x': x_axis_col, 'y': y_axis_col_supp}
 
-        plot += geom_line(mapping=aes(x=x_axis_col, y=y_axis_col_supp),
-                          size=1,
-                          color=PISTACHIO_SOFT)
-        plot += geom_line(size=3, color=PISTACHIO_HARD)
+        plot = \
+            p9.ggplot(data) + \
+            p9.aes(**aes1_) + \
+            p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+            p9.theme(plot_margin=.0125,
+                     axis_text_y=p9.element_text(size=11),
+                     axis_text_x=p9.element_text(size=10),
+                     legend_title=p9.element_blank(),
+                     legend_position='none')
 
         plot = \
             plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
+            p9.geom_line(mapping=p9.aes(**aes2_), size=1, color=THEME_PALETTE[THEME]['soft']) + \
+            p9.geom_line(size=3, color=THEME_PALETTE[THEME]['hard']) + \
+            p9.xlab(x_lab) + \
+            p9.ylab(y_lab) + \
+            p9.ggtitle(title) + \
+            p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
 
-        plot = \
-            plot + \
-            scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
-
-        return plot
-
-    @staticmethod
-    def multivariate(data: pd.DataFrame,
-                     x_axis_col: str,
-                     y_axis_col: str,
-                     group_col: str,
-                     x_lab: str = '',
-                     y_lab: str = '',
-                     title: str = '',
-                     add_smooth: bool = False):
-
-        plot = \
-            ggplot(data) + \
-            aes(x=x_axis_col,
-                y=y_axis_col,
-                group=group_col,
-                color=group_col) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  axis_text=element_text(size=10),
-                  # panel_background=element_rect(fill=WHITE),
-                  # plot_background=element_rect(fill=WHITE),
-                  # strip_background=element_rect(fill=WHITE),
-                  # legend_background=element_rect(fill=WHITE),
-                  legend_title=element_blank(),
-                  legend_position='top')
-
-        plot += geom_line(size=1)
-
-        if add_smooth:
-            plot += geom_smooth()
-
-        plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
 
         return plot
 
@@ -293,31 +153,27 @@ class LinePlot:
         melted_data = pd.melt(data, 'Index')
 
         plot = \
-            ggplot(melted_data) + \
-            aes(x='Index', y='value') + \
-            facet_grid('variable ~.', scales=scales) + \
-            theme_minimal(base_family='Palatino', base_size=12) + \
-            theme(plot_margin=.0125,
-                  axis_text=element_text(size=11),
-                  legend_title=element_blank(),
-                  # panel_background=element_rect(fill=WHITE),
-                  # plot_background=element_rect(fill=WHITE),
-                  # strip_background=element_rect(fill=WHITE),
-                  # legend_background=element_rect(fill=WHITE),
-                  strip_text=element_text(size=13),
-                  legend_position='none')
+            p9.ggplot(melted_data) + \
+            p9.aes(x='Index', y='value') + \
+            p9.facet_grid('variable ~.', scales=scales) + \
+            p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+            p9.theme(plot_margin=.0125,
+                     axis_text=p9.element_text(size=11),
+                     legend_title=p9.element_blank(),
+                     strip_text=p9.element_text(size=13),
+                     legend_position='none')
 
-        plot += geom_line(color=PISTACHIO_HARD, size=1)
+        plot += p9.geom_line(color=PISTACHIO_HARD, size=1)
 
         plot = \
             plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
+            p9.xlab(x_lab) + \
+            p9.ylab(y_lab) + \
+            p9.ggtitle(title)
 
         if numerize_y:
             plot = \
                 plot + \
-                scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
+                p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
 
         return plot

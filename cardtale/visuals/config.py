@@ -1,7 +1,5 @@
-SERIES = 'Series'
-INDEX = 'Index'
-PERIOD = 'period'
-FREQ_NAME = 'name'
+# PERIOD = 'period'
+# FREQ_NAME = 'name'
 
 PLOT_NAMES = {
     'trend_line': 'Trend Line Plot',
@@ -20,12 +18,17 @@ PLOT_NAMES = {
     'struc_pacf': 'Partial Auto-Correlation',
 }
 
-PISTACHIO_HARD = '#58a63e'
-PISTACHIO_BLACK = '#2b5c0e'
-PISTACHIO_MID = '#a9d39e'
-PISTACHIO_SOFT = '#b6dea8'
-PISTACHIO_FILL = '#edf7ea'
+THEME = 'pistachio'
+FONT_FAMILY='Palatino'
 
-BROWN_HARD = '#cf8806'
-
-WHITE = 'white'
+THEME_PALETTE = {
+    'pistachio': {
+        'hard': '#58a63e',
+        'hard_alt': '#cf8806',
+        'black': '#2b5c0e',
+        'mid': '#a9d39e',
+        'soft': '#b6dea8',
+        'fill': '#edf7ea',
+        'background': 'white',
+    }
+}

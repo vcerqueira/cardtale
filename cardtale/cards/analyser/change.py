@@ -1,4 +1,5 @@
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
 from cardtale.cards.analyser.base import ReportAnalyser
 from cardtale.visuals.plots.change_marking import ChangesMarksPlot
 from cardtale.visuals.plots.change_dist import ChangeDistPlots
@@ -6,12 +7,12 @@ from cardtale.visuals.plots.change_dist import ChangeDistPlots
 
 class ChangeAnalysis(ReportAnalyser):
 
-    def __init__(self, data: UVTimeSeries):
-        super().__init__(data=data)
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
+        super().__init__(tsd=tsd, tests=tests)
 
         self.plots = {
-            'marked_changes': ChangesMarksPlot(name='change_lines', data=data),
-            'dist_changes': ChangeDistPlots(name=['parts_dist', 'parts_dens'], data=data),
+            'marked_changes': ChangesMarksPlot(tsd=self.tsd, tests=self.tests, name='change_lines'),
+            'dist_changes': ChangeDistPlots(tsd=self.tsd, tests=self.tests, name=['parts_dist', 'parts_dens']),
         }
 
         self.marked_changes = None

@@ -1,18 +1,18 @@
 from cardtale.visuals.plots.var_dist import VarianceDistPlots
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
 from cardtale.cards.analyser.base import ReportAnalyser
 
 
 class VarianceAnalysis(ReportAnalyser):
 
-    def __init__(self, data: UVTimeSeries):
-        super().__init__(data)
-
-        self.data = data
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
+        super().__init__(tsd, tests)
 
         self.plots = {
-            'var_dist': VarianceDistPlots(name=['residuals_dist', 'series_part_dist'],
-                                          data=self.data)
+            'var_dist': VarianceDistPlots(tsd=self.tsd,
+                                          tests=self.tests,
+                                          name=['residuals_dist', 'series_part_dist'])
         }
 
         self.metadata = {

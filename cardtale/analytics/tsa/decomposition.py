@@ -2,7 +2,7 @@ import pandas as pd
 from statsmodels.tsa.seasonal import STL
 
 
-def decompose(series: pd.Series, period: int, add_residuals: bool = False) -> pd.DataFrame:
+def get_stl_components(series: pd.Series, period: int, add_residuals: bool = False) -> pd.DataFrame:
     """
 
     :param series:

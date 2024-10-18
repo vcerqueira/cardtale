@@ -1,31 +1,34 @@
 from cardtale.visuals.plot import Plot
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.base.line_plots import LinePlot
 from cardtale.cards.strings import gettext
-from cardtale.visuals.config import INDEX, SERIES, PLOT_NAMES
+from cardtale.visuals.config import PLOT_NAMES
 
 
 class ChangesMarksPlot(Plot):
 
-    def __init__(self, name: str, data: UVTimeSeries):
-        super().__init__(data=data, multi_plot=False, name=name)
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: str):
+        super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('change_line_plot_caption')
         self.plot_name = PLOT_NAMES['change_marking']
 
+        self.tests = tests
+
     def build(self):
 
         if self.show_me:
-            cp, _ = self.data.tests.change.get_change_points()
+            cp, _ = self.tests.change.get_change_points()
 
             self.plot = \
-                LinePlot.univariate_change(data=self.data.df,
-                                           x_axis_col=INDEX,
-                                           y_axis_col=SERIES,
+                LinePlot.univariate_change(data=self.tsd.df,
+                                           x_axis_col=self.tsd.time_col,
+                                           y_axis_col=self.tsd.target_col,
                                            change_points=cp)
 
     def analyse(self):
-        cp, _ = self.data.tests.change.get_change_points()
+        cp, _ = self.tests.change.get_change_points()
         n_cp = len(cp)
 
         if n_cp > 0:
@@ -36,7 +39,7 @@ class ChangesMarksPlot(Plot):
             else:
                 cp_direction = 'decreasing'
 
-            cp_time = first_cp.start_time.strftime(self.data.date_format)
+            cp_time = first_cp.start_time.strftime(self.tsd.date_format)
 
             if n_cp == 1:
                 n_anls = gettext('change_line_1point')
@@ -53,4 +56,4 @@ class ChangesMarksPlot(Plot):
 
     def format_caption(self, plot_id: int):
         self.img_data['caption'] = \
-            self.img_data['caption'].format(plot_id, self.data.tests.change.method)
+            self.img_data['caption'].format(plot_id, self.tests.change.method)

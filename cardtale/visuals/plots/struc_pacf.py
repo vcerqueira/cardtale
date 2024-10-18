@@ -3,8 +3,7 @@ import re
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.lollipop import Lollipop
 from cardtale.cards.strings import join_l, gettext
-
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
 from cardtale.visuals.config import PLOT_NAMES
 
 ACF_NAME, PACF_NAME = 'autocorrelation', 'partial autocorrelation'
@@ -12,8 +11,8 @@ ACF_NAME, PACF_NAME = 'autocorrelation', 'partial autocorrelation'
 
 class SeriesPACFPlot(Plot):
 
-    def __init__(self, name: str, data: UVTimeSeries):
-        super().__init__(data=data, multi_plot=False, name=name)
+    def __init__(self, tsd: TimeSeriesData, name: str):
+        super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('series_pacf_caption')
         self.show_me = True
@@ -22,14 +21,14 @@ class SeriesPACFPlot(Plot):
 
     def build(self):
 
-        self.plot = Lollipop.with_point(data=self.data.summary.pacf.acf_df,
+        self.plot = Lollipop.with_point(data=self.tsd.summary.pacf.acf_df,
                                         x_axis_col='Lag',
                                         y_axis_col='ACF',
-                                        h_threshold=self.data.summary.pacf.significance_thr)
+                                        h_threshold=self.tsd.summary.pacf.significance_thr)
 
     def analyse(self):
 
-        acf_ = self.data.summary.pacf.acf_analysis
+        acf_ = self.tsd.summary.pacf.acf_analysis
 
         if len(acf_['significant_ids']) < 1:
             acf_analysis_sign = gettext('series_acf_analysis_wn')
@@ -59,4 +58,4 @@ class SeriesPACFPlot(Plot):
 
     def format_caption(self, plot_id: int):
         self.img_data['caption'] = self.img_data['caption'].format(plot_id,
-                                                                   self.data.summary.acf.n_lags)
+                                                                   self.tsd.summary.acf.n_lags)

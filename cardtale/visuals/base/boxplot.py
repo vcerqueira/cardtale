@@ -1,50 +1,11 @@
 import pandas as pd
 
-from plotnine import *
+import plotnine as p9
 from numerize import numerize
-from cardtale.visuals.config import (PISTACHIO_HARD,
-                                    PISTACHIO_BLACK,
-                                    WHITE)
+from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class Boxplot:
-
-    @staticmethod
-    def univariate(data: pd.DataFrame,
-                   x_axis_col: str,
-                   y_axis_col: str,
-                   x_lab: str = '',
-                   y_lab: str = '',
-                   title: str = ''):
-        """
-        :param y_axis_col:
-        :param data:
-        :param x_axis_col:
-        :param n_bins:
-        :param x_lab:
-        :param y_lab:
-        :param title:
-        :return:
-        """
-
-        plot = ggplot(data, aes(x=x_axis_col, y=y_axis_col)) + \
-               theme_minimal(base_family='Palatino', base_size=12) + \
-               theme(plot_margin=0.015,
-                     axis_text=element_text(size=12),
-                     axis_text_x=element_blank(),
-                     legend_title=element_blank(),
-                     legend_position=None) + \
-               geom_boxplot(fill='#66CDAA',
-                            width=0.3,
-                            show_legend=False)
-
-        plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
-
-        return plot
 
     @staticmethod
     def univariate_flipped(data: pd.DataFrame,
@@ -52,31 +13,22 @@ class Boxplot:
                            x_lab: str = '',
                            y_lab: str = '',
                            title: str = ''):
-        plot = ggplot(data, aes(x=1, y=y_axis_col)) + \
-               theme_minimal(base_family='Palatino', base_size=12) + \
-               theme(plot_margin=0.015,
-                     axis_text=element_text(size=12),
-                     axis_text_y=element_blank(),
-                     #panel_background=element_rect(fill=WHITE),
-                     #plot_background=element_rect(fill=WHITE),
-                     #strip_background=element_rect(fill=WHITE),
-                     #legend_background=element_rect(fill=WHITE),
-                     legend_title=element_blank(),
-                     legend_position=None) + \
-               geom_boxplot(fill=PISTACHIO_HARD,
-                            color=PISTACHIO_BLACK,
-                            show_legend=False)
+        aes_ = {'x': 1, 'y': y_axis_col}
 
-        plot = \
-            plot + \
-            xlab(x_lab) + \
-            ylab(y_lab) + \
-            ggtitle(title)
-
-        plot = \
-            plot + \
-            scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
-
-        plot += coord_flip()
+        plot = p9.ggplot(data, p9.aes(**aes_)) + \
+               p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
+               p9.theme(plot_margin=0.015,
+                        axis_text=p9.element_text(size=12),
+                        axis_text_y=p9.element_blank(),
+                        legend_title=p9.element_blank(),
+                        legend_position=None) + \
+               p9.geom_boxplot(fill=THEME_PALETTE[THEME]['hard'],
+                               color=THEME_PALETTE[THEME]['black'],
+                               show_legend=False) + \
+               p9.xlab(x_lab) + \
+               p9.ylab(y_lab) + \
+               p9.ggtitle(title) + \
+               p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
+               p9.coord_flip()
 
         return plot

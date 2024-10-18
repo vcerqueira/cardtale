@@ -10,24 +10,28 @@ from cardtale.cards.strings import join_l, gettext
 from cardtale.analytics.tsa.tde import TimeDelayEmbedding
 from cardtale.analytics.testing.components.trend import TrendShowTests
 
-from cardtale.data.uvts import UVTimeSeries
-from cardtale.visuals.config import SERIES, PLOT_NAMES
+from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
+from cardtale.visuals.config import PLOT_NAMES
 
 
 class TrendDistPlots(Plot):
 
-    def __init__(self, name: List[str], data: UVTimeSeries):
-        super().__init__(data=data, multi_plot=True, name=name)
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: List[str]):
+        super().__init__(tsd=tsd, multi_plot=True, name=name)
 
         self.caption = gettext('trend_lagplot_dhist_caption')
 
         self.plot_name = PLOT_NAMES['trend_dist']
+        self.tests = tests
 
     def build(self):
-        """
 
-        """
-        series_df = TimeDelayEmbedding.ts_as_supervised(self.data.series, horizon=0, n_lags=2)
+        s = self.tsd.get_target_series(df=self.tsd.df,
+                                       time_col=self.tsd.time_col,
+                                       target_col=self.tsd.target_col)
+
+        series_df = TimeDelayEmbedding.ts_as_supervised(s, horizon=0, n_lags=2)
 
         trend_lagplot = Scatterplot.lagplot(data=series_df,
                                             x_axis_col='t-1',
@@ -36,10 +40,10 @@ class TrendDistPlots(Plot):
                                             x_lab='Series at time t',
                                             y_lab='Series at time t+1')
 
-        diff_df = self.data.series.pct_change()[1:].reset_index()
+        diff_df = s.pct_change()[1:].reset_index()
 
         trend_dhist = PlotHistogram.univariate(data=diff_df,
-                                               x_axis_col=SERIES,
+                                               x_axis_col=self.tsd.target_col,
                                                n_bins=15,
                                                x_lab='% Change',
                                                y_lab='Count')
@@ -47,14 +51,13 @@ class TrendDistPlots(Plot):
         self.plot = {'lhs': trend_dhist, 'rhs': trend_lagplot}
 
     def analyse(self):
-        tests = self.data.tests.trend
 
-        self.show_me, show_results = TrendShowTests.show_distribution_plot(tests)
+        self.show_me, show_results = TrendShowTests.show_distribution_plot(self.tests.trend)
 
         if not self.show_me:
             return
 
-        diff_stats = self.data.diff_summary
+        diff_stats = self.tsd.diff_summary
 
         if len(diff_stats.reject_dists) > 0:
             format_txt_d1 = f'{join_l(diff_stats.reject_dist_nms)}.'
@@ -103,4 +106,4 @@ class TrendDistPlots(Plot):
         self.analysis.append(kurtosis_analysis)
         self.analysis.append(skewness_analysis)
 
-        self.analysis.append(tests.parse_differencing_performance())
+        self.analysis.append(self.tests.trend.parse_differencing_performance())

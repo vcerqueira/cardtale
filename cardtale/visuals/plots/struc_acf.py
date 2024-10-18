@@ -1,5 +1,5 @@
 from cardtale.visuals.plot import Plot
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
 from cardtale.visuals.base.lollipop import Lollipop
 from cardtale.cards.strings import join_l, gettext
 from cardtale.visuals.config import PLOT_NAMES
@@ -7,8 +7,8 @@ from cardtale.visuals.config import PLOT_NAMES
 
 class SeriesACFPlot(Plot):
 
-    def __init__(self, name: str, data: UVTimeSeries):
-        super().__init__(data=data, multi_plot=False, name=name)
+    def __init__(self, tsd: TimeSeriesData, name: str):
+        super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('series_acf_caption')
         self.show_me = True
@@ -17,14 +17,14 @@ class SeriesACFPlot(Plot):
 
     def build(self):
 
-        self.plot = Lollipop.with_point(data=self.data.summary.acf.acf_df,
+        self.plot = Lollipop.with_point(data=self.tsd.summary.acf.acf_df,
                                         x_axis_col='Lag',
                                         y_axis_col='ACF',
-                                        h_threshold=self.data.summary.acf.significance_thr)
+                                        h_threshold=self.tsd.summary.acf.significance_thr)
 
     def analyse(self):
 
-        acf_ = self.data.summary.acf.acf_analysis
+        acf_ = self.tsd.summary.acf.acf_analysis
 
         if len(acf_['significant_ids']) < 1:
             acf_analysis_sign = gettext('series_acf_analysis_wn')
@@ -62,13 +62,6 @@ class SeriesACFPlot(Plot):
 
         self.analysis.append(seasonal_lag_analysis)
 
-        # todo i dont0 like this... it doesnt work. i think it is too much informaion at this stage as well
-        # if len(acf_['auto_seasonality']) > 0:
-        #     if acf_['auto_seasonality'][0] != self.data.period:
-        #         acf_other_m = gettext('series_acf_analysis_other_m').format(self.data.period,
-        #                                                                     acf_['auto_seasonality'][0])
-        #         self.analysis.append(acf_other_m)
-
     def format_caption(self, plot_id: int):
         self.img_data['caption'] = self.img_data['caption'].format(plot_id,
-                                                                   self.data.summary.acf.n_lags)
+                                                                   self.tsd.summary.acf.n_lags)

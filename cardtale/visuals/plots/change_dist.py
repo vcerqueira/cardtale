@@ -1,48 +1,55 @@
 from typing import List
 
 from cardtale.visuals.plot import Plot
-from cardtale.data.uvts import UVTimeSeries
+from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.base.violin_partial import PartialViolinPlot
 from cardtale.visuals.base.density import PlotDensity
 from cardtale.analytics.tsa.distributions import KolmogorovSmirnov
 from cardtale.cards.strings import gettext
-from cardtale.data.utils.splits import DataSplit
-from cardtale.visuals.config import SERIES, PLOT_NAMES
+from cardtale.core.utils.splits import DataSplit
+from cardtale.visuals.config import PLOT_NAMES
 
 
 class ChangeDistPlots(Plot):
 
-    def __init__(self, name: List[str], data: UVTimeSeries):
-        super().__init__(data=data, multi_plot=True, name=name)
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: List[str]):
+        super().__init__(tsd=tsd, multi_plot=True, name=name)
 
         self.caption = gettext('change_beforeafter_1st_caption')
         self.plot_name = PLOT_NAMES['change_dist']
 
+        self.tests = tests
+
     def build(self):
 
         if self.show_me:
-            cp, cp_idx = self.data.tests.change.get_change_points()
+            cp, cp_idx = self.tests.change.get_change_points()
 
-            data_parts = DataSplit.change_partition(self.data.df, cp_idx[0])
+            data_parts = DataSplit.change_partition(self.tsd.df, cp_idx[0])
 
             parts_dist = PartialViolinPlot.partial_violin(data=data_parts,
                                                           x_axis_col='Part',
-                                                          y_axis_col=SERIES,
+                                                          y_axis_col=self.tsd.target_col,
                                                           group_col='Id')
 
-            parts_dens = PlotDensity.by_pair(data_parts, x_axis_col=SERIES, group_col='Part')
+            parts_dens = PlotDensity.by_pair(data_parts, x_axis_col=self.tsd.target_col, group_col='Part')
 
             self.plot = {'lhs': parts_dist, 'rhs': parts_dens}
 
     def analyse(self):
-        cp, cp_idx = self.data.tests.change.get_change_points()
+        cp, cp_idx = self.tests.change.get_change_points()
 
         if len(cp) > 0:
             self.show_me = True
 
-            change_in_dist = self.data.tests.change.change_significance(self.data.series)
+            s = self.tsd.get_target_series(df=self.tsd.df,
+                                           time_col=self.tsd.time_col,
+                                           target_col=self.tsd.target_col)
 
-            before, after = DataSplit.change_partition(self.data.df, cp_idx[0], return_series=True)
+            change_in_dist = self.tests.change.change_significance(s)
+
+            before, after = DataSplit.change_partition(self.tsd.df, cp_idx[0], return_series=True)
             dist_bf, dist_af = KolmogorovSmirnov.best_dist_in_two_parts(before, after)
 
             if change_in_dist:
