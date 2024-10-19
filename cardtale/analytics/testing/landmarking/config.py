@@ -1,20 +1,7 @@
-from sklearn.ensemble import RandomForestRegressor
+import lightgbm as lgb
 from sklearn.linear_model import RidgeCV
 
-N_LAGS = 2
-HORIZON = 1
-SHUFFLE = False
-TEST_SIZE = 0.2
 N_TERMS = 3
-
-MODELS = {
-    'RF': RandomForestRegressor,
-    'Ridge': RidgeCV,
-}
-
-LEARNING_ALGORITHM = 'Ridge'
-
-MODEL = MODELS[LEARNING_ALGORITHM]()
 
 EXPERIMENT_MODES = {
     'trend': {

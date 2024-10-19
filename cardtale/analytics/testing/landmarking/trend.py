@@ -3,7 +3,7 @@ import pandas as pd
 from cardtale.analytics.tsa.tde import TimeDelayEmbedding
 from cardtale.analytics.testing.preprocess.differencing import Differencing
 from cardtale.analytics.testing.landmarking.base import Landmarks
-from cardtale.data.config.landmarks import EXPERIMENT_MODES
+from cardtale.core.config.landmarks import EXPERIMENT_MODES
 
 TEST_NAME = 'trend'
 
@@ -16,11 +16,7 @@ class TrendLandmarks(Landmarks):
         super().__init__(test_name=TEST_NAME)
 
     def run_experiment(self, series: pd.Series, config_name: str):
-        """
-        todo get importance of t - maybe build workflow class to handle all that
-        https://otexts.com/fpp3/useful-predictors.html
 
-        """
 
         config = EXPERIMENT_MODES[self.test_name][config_name]
 

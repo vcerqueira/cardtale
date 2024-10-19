@@ -12,6 +12,21 @@ AVAILABLE_FREQ = {
     'Y': 'Yearly',
 }
 
+HORIZON_BY_FREQUENCY = {
+    'H': 24,
+    'D': 14,
+    'W': 8,
+    'M': 12,
+    'ME': 12,
+    'MS': 12,
+    'Q': 6,
+    'QS': 6,
+    'Y': 3,
+}
+
+LAGS_BY_FREQUENCY = {k: int(HORIZON_BY_FREQUENCY[k] * 1.25)
+                     for k in HORIZON_BY_FREQUENCY}
+
 MONTH_LIST = [
     'January',
     'February',

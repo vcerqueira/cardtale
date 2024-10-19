@@ -3,7 +3,6 @@ from typing import Union
 import numpy as np
 import pandas as pd
 
-from cardtale.data.config.typing import LearningAlgorithm
 from cardtale.data.config.landmarks import (HORIZON,
                                      N_LAGS,
                                      TEST_SIZE,
@@ -12,6 +11,11 @@ from cardtale.data.config.landmarks import (HORIZON,
 from cardtale.data.utils.mase import MASE
 
 UNKNOWN_TEST_ERROR = 'Unknown experiment type'
+
+
+# https://nixtlaverse.nixtla.io/mlforecast/docs/how-to-guides/target_transforms_guide.html#differences
+
+
 
 
 class Landmarks:

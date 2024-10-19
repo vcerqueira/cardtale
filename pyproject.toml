@@ -27,7 +27,7 @@ classifiers = [
 
 dependencies = [
     "pandas==2.2.3",
-    "scikit-learn==1.5.2",
+    "lightgbm==4.5.0",
     "neuralforecast==1.7.5",
     "mlforecast==0.13.4",
     "numerize==0.12",
