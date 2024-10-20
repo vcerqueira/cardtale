@@ -72,12 +72,15 @@ class TimeSeriesData:
 
         self.df = df
         self.dt = TimeDF(freq)
+        self.dt.setup(self.df, self.time_col, self.target_col)
         self.seas_df = None
         self.stl_df = None
 
         if period is not None:
             self.period = period
         else:
+            print(self.dt.formats)
+            print(self.dt.freq)
             self.period = self.dt.formats.loc[self.dt.freq, 'main_period_int']
 
         self.date_format = self.dt.formats['format_pretty'][self.dt.freq]
@@ -94,8 +97,6 @@ class TimeSeriesData:
             self.is_integer_valued = True
         else:
             self.is_integer_valued = False
-
-        self.dt.setup(self.df, self.time_col, self.target_col)
 
         s = self.get_target_series(self.df, self.target_col, self.time_col)
 

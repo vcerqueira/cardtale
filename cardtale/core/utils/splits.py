@@ -3,8 +3,6 @@ from typing import List
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from cardtale.visuals.config import SERIES
-
 MAX_PARTITION_SIZE = 0.5
 GQ_DEFAULT_NAMES = ['First', 'Last']
 CHANGE_DEFAULT_NAMES = ['Before Change', 'After Change']
@@ -51,7 +49,7 @@ class DataSplit:
         Before, After = train_test_split(data, train_size=cp_index, shuffle=False)
 
         if return_series:
-            return Before[SERIES], After[SERIES]
+            return Before, After
 
         n_bf, n_af = Before.shape[0], After.shape[0]
 
@@ -76,4 +74,3 @@ class DataSplit:
         var_as_cat = pd.Categorical(df[variable], categories=unq_values)
 
         return var_as_cat
-
