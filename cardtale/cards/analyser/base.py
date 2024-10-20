@@ -46,8 +46,7 @@ class ReportAnalyser:
         for k in self.plots:
             self.plots[k].analyse()
 
-        self.plots = {k: self.plots[k] for k in self.plots
-                      if self.plots[k].show_me}
+        self.plots = {k: self.plots[k] for k in self.plots if self.plots[k].show_me}
 
         if len(self.plots) < 1:
             self.show_content = False

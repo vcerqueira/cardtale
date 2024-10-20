@@ -46,9 +46,8 @@ class SeasonalityTesting(UnivariateTester):
         self.prob_seasonality = self.tests.mean()
 
     def run_landmarks(self):
-        seasonal_lm = SeasonalLandmarks(period=self.period)
-
-        seasonal_lm.make_tests(self.series)
+        seasonal_lm = SeasonalLandmarks(tsd=self.tsd)
+        seasonal_lm.run()
 
         self.performance = seasonal_lm.results
 

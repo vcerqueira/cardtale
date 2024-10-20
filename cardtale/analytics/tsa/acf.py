@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from statsmodels.tsa.stattools import acf, pacf
 
-from cardtale.core.utils.categories import as_categorical
+from cardtale.core.utils.splits import DataSplit
 
 
 class AutoCorrelation:
@@ -42,7 +42,7 @@ class AutoCorrelation:
         })
 
         self.acf_df['Lag'] = ['t'] + [f't-{i}' for i in range(1, self.n_lags + 1)]
-        self.acf_df['Lag'] = as_categorical(self.acf_df, 'Lag')
+        self.acf_df['Lag'] = DataSplit.df_var_to_categorical(self.acf_df, 'Lag')
 
     def calc_pacf(self, data: pd.Series):
         self.significance_thr = 2 / np.sqrt(len(data))
@@ -62,7 +62,7 @@ class AutoCorrelation:
         })
 
         self.acf_df['Lag'] = ['t'] + [f't-{i}' for i in range(1, self.n_lags + 1)]
-        self.acf_df['Lag'] = as_categorical(self.acf_df, 'Lag')
+        self.acf_df['Lag'] = DataSplit.df_var_to_categorical(self.acf_df, 'Lag')
 
     def significance_analysis(self, period: int):
         """

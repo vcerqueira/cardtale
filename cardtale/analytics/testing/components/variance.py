@@ -4,8 +4,7 @@ import pandas as pd
 
 from cardtale.analytics.testing.landmarking.variance import VarianceLandmarks
 from cardtale.analytics.testing.components.base import UnivariateTester
-from cardtale.analytics.testing.preprocess.log import LogTransformation
-from cardtale.analytics.testing.preprocess.boxcox import BoxCox
+from cardtale.analytics.tsa.log import LogTransformation
 from cardtale.analytics.tsa.distributions import KolmogorovSmirnov
 from cardtale.analytics.tsa.heteroskedasticity import het_tests, HETEROSKEDASTICITY_TESTS
 from cardtale.core.config.analysis import ALPHA
@@ -36,9 +35,8 @@ class VarianceTesting(UnivariateTester):
         self.prob_heteroskedastic = self.tests.mean()
 
     def run_landmarks(self):
-
-        var_lm = VarianceLandmarks()
-        var_lm.make_tests(self.series)
+        var_lm = VarianceLandmarks(tsd=self.tsd)
+        var_lm.run()
 
         self.performance = var_lm.results
 
@@ -120,10 +118,12 @@ class VarianceTesting(UnivariateTester):
         if transform is None:
             return transform
 
-        if transform == 'Logarithm':
-            series_t = LogTransformation.transform(series)
-        else:
-            series_t = BoxCox().transform(series)
+        # if transform == 'Logarithm':
+        #     series_t = LogTransformation.transform(series)
+        # else:
+        #     series_t = BoxCox().transform(series)
+
+        series_t = LogTransformation.transform(series)
 
         dist_or, dist_t = KolmogorovSmirnov.best_dist_in_two_parts(series, series_t)
 

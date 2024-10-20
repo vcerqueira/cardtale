@@ -50,8 +50,8 @@ class UnivariateTrendTesting(UnivariateTester):
             self.prob_level_str = 'a strong evidence'
 
     def run_landmarks(self):
-        trend_lm = TrendLandmarks()
-        trend_lm.make_tests(self.series)
+        trend_lm = TrendLandmarks(tsd=self.tsd)
+        trend_lm.run()
 
         self.performance = trend_lm.results
 

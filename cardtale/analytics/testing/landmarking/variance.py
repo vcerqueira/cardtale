@@ -1,57 +1,50 @@
-from typing import Optional
+from sklearn.preprocessing import FunctionTransformer, PowerTransformer
+from mlforecast import MLForecast
+from mlforecast.target_transforms import GlobalSklearnTransformer
 
-import pandas as pd
-
-from cardtale.analytics.tsa.tde import TimeDelayEmbedding
+from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.landmarking.base import Landmarks
-from cardtale.analytics.testing.preprocess.log import LogTransformation
-from cardtale.analytics.testing.preprocess.boxcox import BoxCox
-from cardtale.data.config.landmarks import EXPERIMENT_MODES
-
-TEST_NAME = 'variance'
+from cardtale.analytics.testing.landmarking.config import EXPERIMENT_MODES, MODEL, N_WINDOWS
+from cardtale.analytics.tsa.log import LogTransformation
+from cardtale.core.config.freq import HORIZON_BY_FREQUENCY, LAGS_BY_FREQUENCY
 
 
 class VarianceLandmarks(Landmarks):
+    TEST_NAME = 'variance'
 
-    def __init__(self):
-        super().__init__(test_name=TEST_NAME)
+    def __init__(self, tsd: TimeSeriesData):
+        super().__init__(tsd=tsd, test_name=self.TEST_NAME)
 
-        self.box_cox: Optional[BoxCox] = None
+    def run_mlf_cv(self, config_name: str):
 
-    def run_experiment(self, series: pd.Series, config_name: str):
+        conf = EXPERIMENT_MODES[self.test_name][config_name]
 
-        config = EXPERIMENT_MODES[self.test_name][config_name]
+        if conf['log']:
+            log_transform = FunctionTransformer(func=LogTransformation.transform,
+                                                inverse_func=LogTransformation.inverse_transform)
 
-        train, test, X_train, Y_train, X_test, Y_test = \
-            TimeDelayEmbedding.get_splits(data=series,
-                                          horizon=self.horizon,
-                                          n_lags=self.n_lags,
-                                          test_size=self.test_size)
+            target_t = [GlobalSklearnTransformer(log_transform)]
+        elif conf['boxcox']:
+            sk_boxcox = PowerTransformer(method='box-cox', standardize=False)
 
-        Y_test_or = Y_test.copy()
-        Y_train_or = Y_train.copy()
+            target_t = [GlobalSklearnTransformer(sk_boxcox)]
+        else:
+            target_t = None
 
-        if config['log']:
-            X_train = LogTransformation.transform(X_train)
-            Y_train = LogTransformation.transform(Y_train)
-            X_test = LogTransformation.transform(X_test)
-        elif config['boxcox']:
-            self.box_cox = BoxCox()
-            _ = self.box_cox.transform(train)
+        df = self.tsd.df.copy()
 
-            X_train = self.box_cox.transform_df_lambda(X_train)
-            Y_train = self.box_cox.transform_df_lambda(Y_train)
-            X_test = self.box_cox.transform_df_lambda(X_test)
+        self.mlf = MLForecast(
+            models=MODEL,
+            freq=self.tsd.dt.freq,
+            target_transforms=target_t,
+            lags=list(range(1, LAGS_BY_FREQUENCY[self.tsd.dt.freq] + 1)),
+        )
 
-        preds = self.train_and_predict(X_train, Y_train, X_test)
+        cv_df = self.mlf.cross_validation(
+            df=df,
+            h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq],
+            n_windows=N_WINDOWS,
+            refit=False,
+        )
 
-        if config['log']:
-            preds = LogTransformation.inverse_transform(preds)
-        elif config['boxcox']:
-            preds = self.box_cox.inverse_transform_df(preds)
-
-        preds.index = Y_test_or.index
-
-        error_by_h, error = self.score(Y_test_or, preds, Y_train_or)
-
-        return error
+        return cv_df

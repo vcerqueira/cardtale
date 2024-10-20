@@ -1,18 +1,22 @@
 import lightgbm as lgb
-from sklearn.linear_model import RidgeCV
 
 N_TERMS = 3
+TEST_SIZE = 0.2
+N_WINDOWS = 5
+MODEL = {'lgb': lgb.LGBMRegressor(verbosity=-1)}
 
 EXPERIMENT_MODES = {
     'trend': {
-        'base': {'T': False, 'n_diffs': 0},  # t as feature
-        'T_feature': {'T': True, 'n_diffs': 0},  # t as feature
-        'diff_1': {'T': False, 'n_diffs': 1},  # first differences
-        'both': {'T': True, 'n_diffs': 1},
+        'base': {'trend_feature': False, 'first_diff': False},  # t as feature
+        'trend_feature': {'trend_feature': True, 'first_diff': False},  # t as feature
+        'first_differences': {'trend_feature': False, 'first_diff': True},  # first differences
+        'both': {'trend_feature': True, 'first_diff': True},
     },
     'seasonality': {
-        'base': {'fourier': False, 'rbf': False},
-        'both': {'fourier': True, 'rbf': True},
+        'base': {'fourier': False, 'seasonal_differences': False},
+        'fourier': {'fourier': True, 'seasonal_differences': False},
+        'seas_diffs': {'fourier': False, 'seasonal_differences': True},
+        'both': {'fourier': True, 'seasonal_differences': True},
     },
     'variance': {
         'base': {'log': False, 'boxcox': False},

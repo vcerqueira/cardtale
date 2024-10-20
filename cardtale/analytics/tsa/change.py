@@ -7,7 +7,6 @@ import pandas as pd
 # from kats.detectors.robust_stat_detection import RobustStatDetector
 # from kats.detectors.cusum_detection import CUSUMDetector
 
-from cardtale.visuals.config import INDEX
 
 INDEX_NAME_KATS = 'time'
 
@@ -24,10 +23,10 @@ class ChangeDetection:
 
     @staticmethod
     def get_kats_data_str(series: pd.Series):
-        series.index.name = INDEX
+        series.index.name = 'index'
         df = series.reset_index()
 
-        df = df.rename(columns={INDEX: INDEX_NAME_KATS})
+        df = df.rename(columns={'index': INDEX_NAME_KATS})
 
         # return TimeSeriesData(df=df)
         return 0
