@@ -24,14 +24,18 @@ class SeasonalLandmarks(Landmarks):
         else:
             target_t = None
 
+        df_ = self.tsd.df.copy()
+
         if conf['fourier']:
-            df, _ = fourier(df=self.tsd.df,
+            df, _ = fourier(df=df_,
                             freq=self.tsd.dt.freq,
                             season_length=self.tsd.period,
                             k=N_TERMS,
                             h=0)
+            static_features = []
         else:
-            df = self.tsd.df.copy()
+            df = df_.copy()
+            static_features = None
 
         self.mlf = MLForecast(
             models=MODEL,
@@ -45,6 +49,7 @@ class SeasonalLandmarks(Landmarks):
             h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq],
             n_windows=N_WINDOWS,
             refit=False,
+            static_features=static_features
         )
 
         return cv_df

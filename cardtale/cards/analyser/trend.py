@@ -1,8 +1,12 @@
+import pandas as pd
+
 from cardtale.cards.analyser.base import ReportAnalyser
 from cardtale.visuals.plots.trend_line import TrendLinePlot
 from cardtale.visuals.plots.trend_dist import TrendDistPlots
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
+
+pd.options.mode.chained_assignment = None
 
 
 class TrendAnalysis(ReportAnalyser):
@@ -10,7 +14,7 @@ class TrendAnalysis(ReportAnalyser):
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
         super().__init__(tsd, tests)
 
-        # todo do i need this assignment? surely not mate
+        # todo do i need this assignment? surely not
         self.tsd.df['Trend'] = self.tsd.stl_df['Trend']
 
         self.plots = {

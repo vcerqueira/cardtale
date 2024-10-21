@@ -50,7 +50,9 @@ class TimeDF:
         """
         self.set_formats()
 
-        self.sequence, self.recurrent = self.get_freq_set(df[time_col])
+        idx = df[[time_col]].set_index(time_col).index
+
+        self.sequence, self.recurrent = self.get_freq_set(idx)
 
         s = pd.Series(data=df[target_col], index=df[time_col], name=target_col)
         freq_avg = self.get_freq_averages(s)
@@ -98,13 +100,16 @@ class TimeDF:
         """
         todo I can subset this info by frequency, but I don't think it help in any major way
         """
+
+        assert isinstance(index, pd.DatetimeIndex)
+
         forward_freq = {
             'Year': index.to_period('Y'),
             'Quarter': index.to_period('Q'),
             'Month': index.to_period('M'),
             'Week': index.to_period('W'),
             'Day': index.to_period('D'),
-            'Hour': index.to_period('H'),
+            'Hour': index.to_period('h'),
         }
 
         recurrent_freq = {

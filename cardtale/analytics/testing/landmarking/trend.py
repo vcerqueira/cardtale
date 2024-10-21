@@ -15,6 +15,7 @@ class TrendLandmarks(Landmarks):
         super().__init__(tsd=tsd, test_name=self.TEST_NAME)
 
     def run_mlf_cv(self, config_name: str):
+        print(config_name)
 
         conf = EXPERIMENT_MODES[self.test_name][config_name]
 
@@ -23,14 +24,17 @@ class TrendLandmarks(Landmarks):
         else:
             target_t = None
 
+        df_ = self.tsd.df.copy()
+
         if conf['trend_feature']:
-            df, _ = trend(df=self.tsd.df,
+            df_, _ = trend(df=df_,
                           freq=self.tsd.dt.freq,
                           h=0,
                           id_col=self.tsd.id_col,
                           time_col=self.tsd.time_col)
+            static_features = []
         else:
-            df = self.tsd.df.copy()
+            static_features = None
 
         self.mlf = MLForecast(
             models=MODEL,
@@ -39,11 +43,19 @@ class TrendLandmarks(Landmarks):
             lags=list(range(1, LAGS_BY_FREQUENCY[self.tsd.dt.freq] + 1)),
         )
 
+        print(df_)
+        print('static_features')
+        print(static_features)
+
         cv_df = self.mlf.cross_validation(
-            df=df,
+            df=df_,
             h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq],
             n_windows=N_WINDOWS,
             refit=False,
+            static_features=static_features,
+            id_col=self.tsd.id_col,
+            time_col=self.tsd.time_col,
+            target_col=self.tsd.target_col,
         )
 
         return cv_df

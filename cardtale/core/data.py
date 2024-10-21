@@ -79,8 +79,6 @@ class TimeSeriesData:
         if period is not None:
             self.period = period
         else:
-            print(self.dt.formats)
-            print(self.dt.freq)
             self.period = self.dt.formats.loc[self.dt.freq, 'main_period_int']
 
         self.date_format = self.dt.formats['format_pretty'][self.dt.freq]
@@ -142,6 +140,6 @@ class TimeSeriesData:
 
     @staticmethod
     def get_target_series(df, target_col, time_col):
-        s = pd.Series(data=df[target_col], index=df[time_col], name=target_col)
+        s = pd.Series(data=df[target_col].values, index=df[time_col], name=target_col)
 
         return s

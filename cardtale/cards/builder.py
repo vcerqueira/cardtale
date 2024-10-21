@@ -25,7 +25,7 @@ class CardsBuilder:
                  target_col: str = 'y',
                  period: Period = None):
 
-        self.tsd = TimeSeriesData(df=df,
+        self.tsd = TimeSeriesData(df=df.copy(),
                                   freq=freq,
                                   id_col=id_col,
                                   time_col=time_col,
@@ -48,7 +48,6 @@ class CardsBuilder:
         self.secs_included = []
 
     def build_cards(self, doc_name: str, create_doc):
-        print('Running tests...')
 
         self.tests.run()
 
