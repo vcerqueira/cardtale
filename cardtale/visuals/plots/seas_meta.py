@@ -30,7 +30,7 @@ class SeasonalMetaPlots:
                                                     name='yearly_sseries',
                                                     named_seasonality='Yearly',
                                                     x_axis_col='Month',
-                                                    y_axis_col='Series',
+                                                    y_axis_col=self.tsd.target_col,
                                                     tests_were_analysed=True),
             'yearly_summary': SeasonalSummaryPlots(tsd=self.tsd,
                                                    tests=self.tests,
@@ -58,7 +58,6 @@ class SeasonalMetaPlots:
     def make_all(self):
 
         for k in self.plots:
-            print(k)
             self.plots[k].analyse()
 
         self.plots = {k: self.plots[k] for k in self.plots

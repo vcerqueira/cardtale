@@ -1,6 +1,7 @@
 import pandas as pd
 from mlforecast import MLForecast
 from datasetsforecast.losses import smape
+from utilsforecast.evaluation import evaluate
 from datasetsforecast.evaluation import accuracy
 
 from cardtale.core.data import TimeSeriesData
@@ -27,7 +28,9 @@ class Landmarks:
     def run(self):
         for conf in EXPERIMENT_MODES[self.test_name]:
             cv_df = self.run_mlf_cv(conf)
-            self.results[conf] = self.score_cv(cv_df)
+            error = self.score_cv(cv_df)
+
+            self.results[conf] = error
 
     def run_mlf_cv(self, config_name: str):
 
@@ -52,7 +55,10 @@ class Landmarks:
 
     def score_cv(self, cv_df: pd.DataFrame):
 
-        evaluation_df = accuracy(cv_df, [smape], agg_by=[self.tsd.id_col])
+        evaluation_df = accuracy(cv_df.drop(columns=['cutoff']),
+                                 metrics=[smape],
+                                 id_col=self.tsd.id_col,
+                                 agg_by=[self.tsd.id_col])
 
         score = evaluation_df.drop(columns=['metric', self.tsd.id_col]).mean()[[*MODEL][0]]
 

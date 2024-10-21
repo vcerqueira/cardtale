@@ -26,7 +26,7 @@ class SeriesLinePlot(Plot):
     def analyse(self):
         range_analysis = \
             gettext('series_line_plot_analysis1').format(int(self.tsd.summary.stats['count']),
-                                                         self.tsd.dt.frequency_name,
+                                                         self.tsd.dt.freq_name,
                                                          self.tsd.summary.dt_range[0],
                                                          self.tsd.summary.dt_range[1])
 

@@ -22,7 +22,10 @@ class TrendLinePlot(Plot):
         self.tests = tests
 
     def build(self):
-        self.plot = LinePlot.univariate_w_support(data=self.tsd.df,
+        df_ = self.tsd.df.copy()
+        df_['Trend'] = self.tsd.stl_df['Trend']
+
+        self.plot = LinePlot.univariate_w_support(data=df_,
                                                   x_axis_col=self.tsd.time_col,
                                                   y_axis_col_main='Trend',
                                                   y_axis_col_supp=self.tsd.target_col)

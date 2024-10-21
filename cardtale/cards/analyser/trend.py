@@ -14,9 +14,6 @@ class TrendAnalysis(ReportAnalyser):
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
         super().__init__(tsd, tests)
 
-        # todo do i need this assignment? surely not
-        self.tsd.df['Trend'] = self.tsd.stl_df['Trend']
-
         self.plots = {
             'trend_line': TrendLinePlot(tsd=self.tsd, tests=self.tests, name='series_trend'),
             'trend_dist': TrendDistPlots(tsd=self.tsd,

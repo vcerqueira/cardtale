@@ -73,7 +73,7 @@ class UnivariateTrendTesting(UnivariateTester):
 
         perf = self.performance
 
-        t_improves = perf['base'] > perf['T_feature']
+        t_improves = perf['base'] > perf['trend_feature']
 
         if t_improves:
             analysis_text = gettext('trend_line_analysis_t_good')
@@ -86,7 +86,7 @@ class UnivariateTrendTesting(UnivariateTester):
 
         perf = self.performance
 
-        diff_improves = perf['base'] > perf['diff_1']
+        diff_improves = perf['base'] > perf['first_differences']
 
         if diff_improves:
             analysis_text = gettext('trend_line_analysis_diff_good')
@@ -126,8 +126,8 @@ class TrendShowTests:
         is_trend_st = tests.prob_trend > 0
         is_level_st = tests.prob_level > 0
 
-        diff_improves = tests.performance['base'] > tests.performance['diff_1']
-        t_improves = tests.performance['base'] > tests.performance['T_feature']
+        diff_improves = tests.performance['base'] > tests.performance['first_differences']
+        t_improves = tests.performance['base'] > tests.performance['trend_feature']
         # both_improve = tests.performance['base'] > tests.performance['both']
 
         show_me = is_trend_st or is_level_st or diff_improves or t_improves
@@ -151,8 +151,8 @@ class TrendShowTests:
         is_trend_st = tests.prob_trend > 0
         is_level_st = tests.prob_level > 0
 
-        diff_improves = tests.performance['base'] > tests.performance['diff_1']
-        t_improves = tests.performance['base'] > tests.performance['T_feature']
+        diff_improves = tests.performance['base'] > tests.performance['first_differences']
+        t_improves = tests.performance['base'] > tests.performance['trend_feature']
         # both_improve = tests.performance['base'] > tests.performance['both']
 
         show_me = is_trend_st or is_level_st or diff_improves or t_improves

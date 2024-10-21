@@ -43,6 +43,10 @@ class SummaryStatPlot:
 
         """
 
+        print(data)
+        print('y_col')
+        print(y_col)
+
         group_stat, overall_stat = cls.summary_by_group(data=data,
                                                         y_col=y_col,
                                                         group_col=group_col,

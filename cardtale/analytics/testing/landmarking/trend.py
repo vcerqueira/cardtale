@@ -15,7 +15,6 @@ class TrendLandmarks(Landmarks):
         super().__init__(tsd=tsd, test_name=self.TEST_NAME)
 
     def run_mlf_cv(self, config_name: str):
-        print(config_name)
 
         conf = EXPERIMENT_MODES[self.test_name][config_name]
 
@@ -42,10 +41,6 @@ class TrendLandmarks(Landmarks):
             target_transforms=target_t,
             lags=list(range(1, LAGS_BY_FREQUENCY[self.tsd.dt.freq] + 1)),
         )
-
-        print(df_)
-        print('static_features')
-        print(static_features)
 
         cv_df = self.mlf.cross_validation(
             df=df_,

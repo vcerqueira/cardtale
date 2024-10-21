@@ -54,7 +54,7 @@ class TimeDF:
 
         self.sequence, self.recurrent = self.get_freq_set(idx)
 
-        s = pd.Series(data=df[target_col], index=df[time_col], name=target_col)
+        s = pd.Series(data=df[target_col].values, index=df[time_col], name=target_col)
         freq_avg = self.get_freq_averages(s)
 
         self.recurrent = pd.concat([self.recurrent, freq_avg], axis=1)
