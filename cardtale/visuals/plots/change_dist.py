@@ -5,7 +5,7 @@ from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.base.violin_partial import PartialViolinPlot
 from cardtale.visuals.base.density import PlotDensity
-from cardtale.analytics.tsa.distributions import KolmogorovSmirnov
+from cardtale.analytics.operations.tsa.distributions import KolmogorovSmirnov
 from cardtale.cards.strings import gettext
 from cardtale.core.utils.splits import DataSplit
 from cardtale.visuals.config import PLOT_NAMES

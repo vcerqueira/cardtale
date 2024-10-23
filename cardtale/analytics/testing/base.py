@@ -1,13 +1,12 @@
-from cardtale.analytics.testing.components.trend import UnivariateTrendTesting
-from cardtale.analytics.testing.components.seasonality import SeasonalityTestingMulti
-from cardtale.analytics.testing.components.variance import VarianceTesting
-from cardtale.analytics.testing.components.change import ChangeTesting
+from cardtale.analytics.testing.card.trend import UnivariateTrendTesting
+from cardtale.analytics.testing.card.seasonality import SeasonalityTestingMulti
+from cardtale.analytics.testing.card.variance import VarianceTesting
+from cardtale.analytics.testing.card.change import ChangeTesting
 from cardtale.core.data import TimeSeriesData
 
 
 class TestingComponents:
     """
-    todo docs
     This is an class which combines all the tests and experiments
 
     Attributes:

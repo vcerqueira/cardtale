@@ -4,12 +4,12 @@ from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
 from cardtale.core.data import TimeSeriesData
-from cardtale.cards.analyser.change import ChangeAnalysis
-from cardtale.cards.analyser.seasonality import SeasonalityAnalysis
-from cardtale.cards.analyser.structural import StructuralAnalysis
-from cardtale.cards.analyser.trend import TrendAnalysis
-from cardtale.cards.analyser.variance import VarianceAnalysis
-from cardtale.cards.analyser.base import ReportAnalyser
+from cardtale.cards.cardset.change import ChangePointCard
+from cardtale.cards.cardset.seasonality import SeasonalityCard
+from cardtale.cards.cardset.structural import StructuralCard
+from cardtale.cards.cardset.trend import TrendCard
+from cardtale.cards.cardset.variance import VarianceCard
+from cardtale.cards.cardset.base import Card
 from cardtale.cards.config import TEMPLATE_DIR, STRUCTURE_TEMPLATE
 from cardtale.core.config.typing import Period
 from cardtale.analytics.testing.base import TestingComponents
@@ -35,11 +35,11 @@ class CardsBuilder:
         self.tests = TestingComponents(self.tsd)
 
         self.sections = {
-            'structural': StructuralAnalysis(tsd=self.tsd, tests=self.tests),
-            'trend': TrendAnalysis(tsd=self.tsd, tests=self.tests),
-            'seasonality': SeasonalityAnalysis(tsd=self.tsd, tests=self.tests),
-            'variance': VarianceAnalysis(tsd=self.tsd, tests=self.tests),
-            'change': ChangeAnalysis(tsd=self.tsd, tests=self.tests),
+            'structural': StructuralCard(tsd=self.tsd, tests=self.tests),
+            'trend': TrendCard(tsd=self.tsd, tests=self.tests),
+            'seasonality': SeasonalityCard(tsd=self.tsd, tests=self.tests),
+            'variance': VarianceCard(tsd=self.tsd, tests=self.tests),
+            'change': ChangePointCard(tsd=self.tsd, tests=self.tests),
         }
 
         self.plot_id = -1
@@ -85,8 +85,7 @@ class CardsBuilder:
             content = self.sections[sec].content_html
 
             if sec == 'structural':
-                content += ReportAnalyser.get_organization_content(self.secs_included,
-                                                                   self.secs_to_omit)
+                content += Card.get_organization_content(self.secs_included, self.secs_to_omit)
 
             body_content += content
 

@@ -4,14 +4,13 @@ from typing import Tuple, Dict
 import numpy as np
 import pandas as pd
 
-from cardtale.analytics.tsa.ndiffs import RNDiffs, R_NSDIFF_TESTS
-from cardtale.analytics.tsa.group_moments import GroupMoments
-from cardtale.analytics.testing.landmarking.seasonality import SeasonalLandmarks
-from cardtale.analytics.testing.components.base import UnivariateTester
-from cardtale.analytics.testing.components.trend import UnivariateTrendTesting
+from cardtale.analytics.operations.tsa.ndiffs import RNDiffs, R_NSDIFF_TESTS
+from cardtale.analytics.operations.tsa.group_moments import GroupMoments
+from cardtale.analytics.operations.landmarking.seasonality import SeasonalLandmarks
+from cardtale.analytics.testing.card.base import UnivariateTester
+from cardtale.analytics.testing.card.trend import UnivariateTrendTesting
 from cardtale.cards.strings import join_l, gettext
 from cardtale.core.config.analysis import ALPHA
-from cardtale.core.utils.errors import AnalysisLogicalError, LOGICAL_ERROR_MSG
 from cardtale.core.data import TimeSeriesData
 
 MEANS = 'eq_means'

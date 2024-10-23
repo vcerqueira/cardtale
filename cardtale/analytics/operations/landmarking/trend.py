@@ -1,40 +1,38 @@
 from mlforecast import MLForecast
 from mlforecast.target_transforms import Differences
-from utilsforecast.feature_engineering import fourier
+from utilsforecast.feature_engineering import trend
 
 from cardtale.core.data import TimeSeriesData
-from cardtale.analytics.testing.landmarking.base import Landmarks
+from cardtale.analytics.operations.landmarking.base import Landmarks
 from cardtale.core.config.freq import HORIZON_BY_FREQUENCY, LAGS_BY_FREQUENCY
-from cardtale.analytics.testing.landmarking.config import EXPERIMENT_MODES, MODEL, N_WINDOWS, N_TERMS
+from cardtale.analytics.operations.landmarking.config import EXPERIMENT_MODES, MODEL, N_WINDOWS
 
 
-class SeasonalLandmarks(Landmarks):
-    TEST_NAME = 'seasonality'
+class TrendLandmarks(Landmarks):
+    TEST_NAME = 'trend'
 
     def __init__(self, tsd: TimeSeriesData):
-
         super().__init__(tsd=tsd, test_name=self.TEST_NAME)
 
     def run_mlf_cv(self, config_name: str):
 
         conf = EXPERIMENT_MODES[self.test_name][config_name]
 
-        if conf['seasonal_differences']:
-            target_t = [Differences([self.tsd.period])]
+        if conf['first_diff']:
+            target_t = [Differences([1])]
         else:
             target_t = None
 
         df_ = self.tsd.df.copy()
 
-        if conf['fourier']:
-            df, _ = fourier(df=df_,
-                            freq=self.tsd.dt.freq,
-                            season_length=self.tsd.period,
-                            k=N_TERMS,
-                            h=0)
+        if conf['trend_feature']:
+            df_, _ = trend(df=df_,
+                          freq=self.tsd.dt.freq,
+                          h=0,
+                          id_col=self.tsd.id_col,
+                          time_col=self.tsd.time_col)
             static_features = []
         else:
-            df = df_.copy()
             static_features = None
 
         self.mlf = MLForecast(
@@ -45,11 +43,14 @@ class SeasonalLandmarks(Landmarks):
         )
 
         cv_df = self.mlf.cross_validation(
-            df=df,
+            df=df_,
             h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq],
             n_windows=N_WINDOWS,
             refit=False,
-            static_features=static_features
+            static_features=static_features,
+            id_col=self.tsd.id_col,
+            time_col=self.tsd.time_col,
+            target_col=self.tsd.target_col,
         )
 
         return cv_df

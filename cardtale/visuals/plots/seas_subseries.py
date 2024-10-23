@@ -1,7 +1,7 @@
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import gettext
-from cardtale.analytics.testing.components.seasonality import SeasonalityTesting
+from cardtale.analytics.testing.card.seasonality import SeasonalityTesting
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents

@@ -1,8 +1,8 @@
 import pandas as pd
 from scipy.stats import ks_2samp
 
-from cardtale.analytics.tsa.change import ChangeDetection
-from cardtale.analytics.testing.components.base import UnivariateTester
+from cardtale.analytics.operations.tsa.change import ChangeDetection
+from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.core.config.analysis import CHANGE_METHOD, ALPHA
 from cardtale.core.data import TimeSeriesData
 

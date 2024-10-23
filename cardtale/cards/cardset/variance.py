@@ -1,10 +1,10 @@
 from cardtale.visuals.plots.var_dist import VarianceDistPlots
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
-from cardtale.cards.analyser.base import ReportAnalyser
+from cardtale.cards.cardset.base import Card
 
 
-class VarianceAnalysis(ReportAnalyser):
+class VarianceCard(Card):
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
         super().__init__(tsd, tests)

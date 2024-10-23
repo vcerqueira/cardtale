@@ -3,9 +3,9 @@ from mlforecast import MLForecast
 from mlforecast.target_transforms import GlobalSklearnTransformer
 
 from cardtale.core.data import TimeSeriesData
-from cardtale.analytics.testing.landmarking.base import Landmarks
-from cardtale.analytics.testing.landmarking.config import EXPERIMENT_MODES, MODEL, N_WINDOWS
-from cardtale.analytics.tsa.log import LogTransformation
+from cardtale.analytics.operations.landmarking.base import Landmarks
+from cardtale.analytics.operations.landmarking.config import EXPERIMENT_MODES, MODEL, N_WINDOWS
+from cardtale.analytics.operations.tsa.log import LogTransformation
 from cardtale.core.config.freq import HORIZON_BY_FREQUENCY, LAGS_BY_FREQUENCY
 
 

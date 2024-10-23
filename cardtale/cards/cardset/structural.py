@@ -3,12 +3,12 @@ from cardtale.visuals.plots.struc_dist import SeriesDistPlots
 from cardtale.visuals.plots.struc_components import SeriesComponentsPlot
 from cardtale.visuals.plots.struc_acf import SeriesACFPlot
 from cardtale.visuals.plots.struc_pacf import SeriesPACFPlot
-from cardtale.cards.analyser.base import ReportAnalyser
+from cardtale.cards.cardset.base import Card
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 
 
-class StructuralAnalysis(ReportAnalyser):
+class StructuralCard(Card):
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
         super().__init__(tsd, tests)

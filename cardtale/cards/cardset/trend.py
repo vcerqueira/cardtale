@@ -1,6 +1,6 @@
 import pandas as pd
 
-from cardtale.cards.analyser.base import ReportAnalyser
+from cardtale.cards.cardset.base import Card
 from cardtale.visuals.plots.trend_line import TrendLinePlot
 from cardtale.visuals.plots.trend_dist import TrendDistPlots
 from cardtale.core.data import TimeSeriesData
@@ -9,7 +9,7 @@ from cardtale.analytics.testing.base import TestingComponents
 pd.options.mode.chained_assignment = None
 
 
-class TrendAnalysis(ReportAnalyser):
+class TrendCard(Card):
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
         super().__init__(tsd, tests)

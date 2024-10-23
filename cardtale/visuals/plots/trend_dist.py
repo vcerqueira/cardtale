@@ -7,8 +7,8 @@ from cardtale.visuals.base.histogram import PlotHistogram
 from cardtale.visuals.base.scatterplot import Scatterplot
 
 from cardtale.cards.strings import join_l, gettext
-from cardtale.analytics.tsa.tde import TimeDelayEmbedding
-from cardtale.analytics.testing.components.trend import TrendShowTests
+from cardtale.analytics.operations.tsa.tde import TimeDelayEmbedding
+from cardtale.analytics.testing.card.trend import TrendShowTests
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents

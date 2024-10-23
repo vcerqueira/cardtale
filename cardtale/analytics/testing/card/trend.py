@@ -2,10 +2,10 @@ from typing import Tuple, Dict
 
 import pandas as pd
 
-from cardtale.analytics.testing.landmarking.trend import TrendLandmarks
-from cardtale.analytics.testing.components.base import UnivariateTester
-from cardtale.analytics.tsa.ndiffs import R_NDIFF_TESTS, RNDiffs
-from cardtale.analytics.tsa.time_model import TimeLinearModel
+from cardtale.analytics.operations.landmarking.trend import TrendLandmarks
+from cardtale.analytics.testing.card.base import UnivariateTester
+from cardtale.analytics.operations.tsa.ndiffs import R_NDIFF_TESTS, RNDiffs
+from cardtale.analytics.operations.tsa.time_model import TimeLinearModel
 from cardtale.cards.strings import gettext
 from cardtale.core.data import TimeSeriesData
 

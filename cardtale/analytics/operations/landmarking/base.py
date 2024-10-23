@@ -1,12 +1,11 @@
 import pandas as pd
 from mlforecast import MLForecast
 from datasetsforecast.losses import smape
-from utilsforecast.evaluation import evaluate
 from datasetsforecast.evaluation import accuracy
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.core.config.freq import HORIZON_BY_FREQUENCY, LAGS_BY_FREQUENCY
-from cardtale.analytics.testing.landmarking.config import EXPERIMENT_MODES, MODEL, N_WINDOWS
+from cardtale.analytics.operations.landmarking.config import EXPERIMENT_MODES, MODEL, N_WINDOWS
 
 UNKNOWN_TEST_ERROR = 'Unknown experiment type'
 

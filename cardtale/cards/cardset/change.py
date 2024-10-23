@@ -1,11 +1,11 @@
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
-from cardtale.cards.analyser.base import ReportAnalyser
+from cardtale.cards.cardset.base import Card
 from cardtale.visuals.plots.change_marking import ChangesMarksPlot
 from cardtale.visuals.plots.change_dist import ChangeDistPlots
 
 
-class ChangeAnalysis(ReportAnalyser):
+class ChangePointCard(Card):
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
         super().__init__(tsd=tsd, tests=tests)

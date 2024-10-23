@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from cardtale.core.time import TimeDF
-from cardtale.analytics.tsa.decomposition import get_stl_components
+from cardtale.analytics.operations.tsa.decomposition import get_stl_components
 from cardtale.core.config.freq import AVAILABLE_FREQ
 from cardtale.core.config.typing import Period
 from cardtale.core.profile import SeriesProfile

@@ -1,10 +1,10 @@
-from cardtale.cards.analyser.base import ReportAnalyser
+from cardtale.cards.cardset.base import Card
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.plots.seas_meta import SeasonalMetaPlots
 
 
-class SeasonalityAnalysis(ReportAnalyser):
+class SeasonalityCard(Card):
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
         super().__init__(tsd, tests)

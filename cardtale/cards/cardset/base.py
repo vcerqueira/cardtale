@@ -14,19 +14,12 @@ from cardtale.cards.config import (TEMPLATE_DIR,
                                    INCLUDED_SECTIONS_TEXT)
 
 
-class ReportAnalyser:
+class Card:
     """
     This is an abstract class for analysing a component of a time series
 
     ReportAnalyser wraps several Plots together
 
-    Attributes:
-        data (UVTimeSeries): Univariate time series
-        plots (dict): A set of Plot objects
-        metadata (dict): Meta-data
-        show_content (bool): Whether component should be shown in final report
-        content_html (str): HTML str content before building report
-        content_pdf (str): PDF str content before building report
     """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):

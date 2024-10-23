@@ -2,11 +2,11 @@ from typing import Dict, Tuple
 
 import pandas as pd
 
-from cardtale.analytics.testing.landmarking.variance import VarianceLandmarks
-from cardtale.analytics.testing.components.base import UnivariateTester
-from cardtale.analytics.tsa.log import LogTransformation
-from cardtale.analytics.tsa.distributions import KolmogorovSmirnov
-from cardtale.analytics.tsa.heteroskedasticity import het_tests, HETEROSKEDASTICITY_TESTS
+from cardtale.analytics.operations.landmarking.variance import VarianceLandmarks
+from cardtale.analytics.testing.card.base import UnivariateTester
+from cardtale.analytics.operations.tsa.log import LogTransformation
+from cardtale.analytics.operations.tsa.distributions import KolmogorovSmirnov
+from cardtale.analytics.operations.tsa.heteroskedasticity import het_tests, HETEROSKEDASTICITY_TESTS
 from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
 from cardtale.cards.strings import join_l, gettext
