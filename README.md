@@ -14,9 +14,6 @@ The goal of Cardtale is to generate a set of analyses, visualizations, and inter
 
 ```python
 from cardtale import ModelCard
-
-
-
 ```
 
 ## Installation

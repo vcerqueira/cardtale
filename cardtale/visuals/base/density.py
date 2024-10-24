@@ -14,8 +14,9 @@ class PlotDensity:
                 x_lab: str = '',
                 y_lab: str = '',
                 title: str = ''):
-        COLORS = [THEME_PALETTE[THEME['hard']],
-                  THEME_PALETTE[THEME['hard_alt']]]
+
+        COLORS = [THEME_PALETTE[THEME]['hard'],
+                  THEME_PALETTE[THEME]['hard_alt']]
 
         data_grp = data.groupby(group_col).mean().reset_index()
         data_grp.set_index(group_col, inplace=True)

@@ -1,5 +1,6 @@
 from typing import List, Optional, Dict
 
+import numpy as np
 import pandas as pd
 import plotnine as p9
 from plotnine.geoms.geom_hline import geom_hline
@@ -72,6 +73,8 @@ class LinePlot:
                           y_lab: str = '',
                           title: str = ''):
 
+        cp_idx_0 = np.where(data[x_axis_col] == change_points[0])[0][0]
+
         aes_ = {'x': x_axis_col, 'y': y_axis_col, 'group': 1}
 
         plot = \
@@ -85,7 +88,6 @@ class LinePlot:
             p9.geom_line(color=THEME_PALETTE[THEME]['hard'], size=1)
 
         for cp_ in change_points:
-            print(cp_)
             plot += p9.geom_vline(xintercept=cp_,
                                   linetype='dashed',
                                   color=THEME_PALETTE[THEME]['black'],
@@ -93,13 +95,12 @@ class LinePlot:
 
         plot += p9.ylim(data[y_axis_col].min(), data[y_axis_col].max() * 1.1)
 
-        # todo seems correct, but sometimes label appears in the middle of y-axis
         plot = plot + \
                p9.geom_label(label='Change Point',
                              # y=int(data['Series'].max() * .95),
                              y=data[y_axis_col].max(),
                              fill=THEME_PALETTE[THEME]['fill'],
-                             x=change_points[0],
+                             x=cp_idx_0,
                              size=11) + \
                p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
                p9.xlab(x_lab) + \

@@ -26,14 +26,19 @@ class ChangeDistPlots(Plot):
         if self.show_me:
             cp, cp_idx = self.tests.change.get_change_points()
 
-            data_parts = DataSplit.change_partition(self.tsd.df, cp_idx[0])
+            data_parts = DataSplit.change_partition(data=self.tsd.df,
+                                                    cp_index=cp[0],
+                                                    time_col=self.tsd.time_col,
+                                                    target_col=self.tsd.target_col)
 
             parts_dist = PartialViolinPlot.partial_violin(data=data_parts,
                                                           x_axis_col='Part',
                                                           y_axis_col=self.tsd.target_col,
-                                                          group_col='Id')
+                                                          group_col=self.tsd.time_col)
 
-            parts_dens = PlotDensity.by_pair(data_parts, x_axis_col=self.tsd.target_col, group_col='Part')
+            parts_dens = PlotDensity.by_pair(data_parts,
+                                             x_axis_col=self.tsd.target_col,
+                                             group_col='Part')
 
             self.plot = {'lhs': parts_dist, 'rhs': parts_dens}
 

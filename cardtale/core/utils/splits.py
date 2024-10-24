@@ -36,14 +36,12 @@ class DataSplit:
                          data: pd.DataFrame,
                          cp_index: int,
                          partition_names: List[str] = CHANGE_DEFAULT_NAMES,
+                         target_col: str = 'y',
+                         time_col: str = 'ds',
                          return_series: bool = False):
         """
 
-        :param return_series:
-        :param data: Data from UVTimeseries
-        :param cp_index: first change point index from katsing
-        :param partition_names:
-        :return:
+
         """
 
         Before, After = train_test_split(data, train_size=cp_index, shuffle=False)
@@ -53,15 +51,16 @@ class DataSplit:
 
         n_bf, n_af = Before.shape[0], After.shape[0]
 
-        p1_df = pd.DataFrame({'Series': Before['Series'], 'Id': range(n_bf)})
+        p1_df = pd.DataFrame({target_col: Before[target_col], time_col: range(n_bf)})
         p1_df['Part'] = partition_names[0]
 
-        p2_df = pd.DataFrame({'Series': After['Series'], 'Id': range(n_af)})
+        p2_df = pd.DataFrame({target_col: After[target_col], time_col: range(n_af)})
         p2_df['Part'] = partition_names[1]
 
         df = pd.concat([p1_df, p2_df])
 
         df['Part'] = cls.df_var_to_categorical(df, 'Part')
+        print(df)
 
         return df
 
