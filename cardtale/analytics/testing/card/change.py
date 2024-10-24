@@ -1,7 +1,7 @@
 import pandas as pd
 from scipy.stats import ks_2samp
 
-from cardtale.analytics.operations.tsa.change import ChangePointDetection
+from cardtale.analytics.operations.tsa.change_points import ChangePointDetection
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData

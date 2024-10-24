@@ -2,14 +2,10 @@ import pandas as pd
 from statsmodels.tsa.seasonal import STL
 
 
-def get_stl_components(series: pd.Series, period: int, add_residuals: bool = False) -> pd.DataFrame:
-    """
+def get_stl_components(series: pd.Series,
+                       period: int,
+                       add_residuals: bool = False) -> pd.DataFrame:
 
-    :param series:
-    :param period:
-    :param add_residuals:
-    :return:
-    """
     ts_decomp = STL(series, period=period).fit()
 
     components = {

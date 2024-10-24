@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 
 from cardtale.analytics.operations.tsa.ndiffs import RNDiffs, R_NSDIFF_TESTS
-from cardtale.analytics.operations.tsa.group_moments import GroupMoments
+from cardtale.analytics.operations.tsa.group_tests import GroupMoments
 from cardtale.analytics.operations.landmarking.seasonality import SeasonalLandmarks
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.analytics.testing.card.trend import UnivariateTrendTesting

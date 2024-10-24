@@ -6,7 +6,7 @@ from cardtale.analytics.operations.landmarking.variance import VarianceLandmarks
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.analytics.operations.tsa.log import LogTransformation
 from cardtale.analytics.operations.tsa.distributions import KolmogorovSmirnov
-from cardtale.analytics.operations.tsa.heteroskedasticity import het_tests, HETEROSKEDASTICITY_TESTS
+from cardtale.analytics.operations.tsa.heteroskedasticity import Heteroskedasticity
 from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
 from cardtale.cards.strings import join_l, gettext
@@ -22,12 +22,8 @@ class VarianceTesting(UnivariateTester):
         self.residuals = None
 
     def run_statistical_tests(self):
-        for k in HETEROSKEDASTICITY_TESTS:
-            try:
-                self.tests[HETEROSKEDASTICITY_TESTS[k]], self.residuals = \
-                    het_tests(self.series, k, return_residuals=True)
-            except ValueError:
-                continue
+        self.tests = Heteroskedasticity.run_all_tests(self.series)
+        self.residuals = Heteroskedasticity.get_ols_residuals(self.series)
 
         self.tests = pd.Series(self.tests)
         self.tests = (self.tests < ALPHA).astype(int)

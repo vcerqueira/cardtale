@@ -1,49 +1,58 @@
 import pandas as pd
 import statsmodels.stats.api as sms
 from statsmodels.formula.api import ols
-from statsmodels.tsa.stattools import breakvar_heteroskedasticity_test
-
-from patsy import dmatrices
-
-HETEROSKEDASTICITY_TESTS = {
-    'white': 'White',
-    'breuschpagan': 'Breusch-Pagan',
-    'breakvar': 'Goldfeld-Quandt',
-}
 
 
-def het_tests(series: pd.Series,
-              test: str,
-              return_residuals: bool = False) -> float:
-    """
-    Testing for heteroskedasticity using the White or Breusch-Pagan test.
-    If the p-value is high, we accept the null hypothesis that there is no heteroscedastisticity
+class Heteroskedasticity:
+    TESTS = {
+        'white': 'White',
+        'breuschpagan': 'Breusch-Pagan',
+        'breakvar': 'Goldfeld-Quandt',
+    }
 
-    :param return_residuals:
-    :param series: Univariate time series as pd.Series
-    :param test: String denoting the test. One of 'white' or 'breuschpagan'
+    TEST_NAMES = [*TESTS.values()]
+    FORMULA = 'value ~ time'
 
-    :return: p-value as a float.
-    """
-    formula = 'value ~ time'
-    assert test in [*HETEROSKEDASTICITY_TESTS], 'Unknown test'
+    @classmethod
+    def het_tests(cls, series: pd.Series, test: str):
+        """
+        Testing for heteroskedasticity
+        :param series: Univariate time series as pd.Series
+        :param test: String denoting the test. One of 'white','goldfeldquandt', or 'breuschpagan'
+        :return: p-value as a float.
 
-    series = series.reset_index(drop=True).reset_index()
-    series.columns = ['time', 'value']
-    series['time'] += 1
+        If the p-value is high, we accept the null hypothesis that the data is homoskedastic
+        """
+        assert test in cls.TEST_NAMES, 'Unknown test'
 
-    olsr = ols(formula, series).fit()
+        mod = cls.get_ols_model(series)
 
-    y, X = dmatrices(formula, series, return_type='dataframe')
+        if test == 'White':
+            _, p_value, _, _ = sms.het_white(mod.resid, mod.model.exog)
+        elif test == 'Goldfeld-Quandt':
+            _, p_value, _ = sms.het_goldfeldquandt(mod.resid, mod.model.exog, alternative='two-sided')
+        else:
+            _, p_value, _, _ = sms.het_breuschpagan(mod.resid, mod.model.exog)
 
-    if test == 'white':
-        _, p_value, _, _ = sms.het_white(olsr.resid, X)
-    elif test == 'breakvar':
-        _, p_value = breakvar_heteroskedasticity_test(olsr.resid)
-    else:
-        _, p_value, _, _ = sms.het_breuschpagan(olsr.resid, X)
+        return p_value
 
-    if return_residuals:
-        return p_value, olsr.resid
+    @classmethod
+    def get_ols_residuals(cls, series: pd.Series):
+        return cls.get_ols_model(series).resid
 
-    return p_value
+    @classmethod
+    def get_ols_model(cls, series: pd.Series):
+        series = series.reset_index(drop=True).reset_index()
+        series.columns = ['time', 'value']
+        series['time'] += 1
+
+        olsr = ols(cls.FORMULA, series).fit()
+
+        return olsr
+
+    @classmethod
+    def run_all_tests(cls, series: pd.Series):
+
+        test_results = {k: cls.het_tests(series, k) for k in cls.TEST_NAMES}
+
+        return test_results

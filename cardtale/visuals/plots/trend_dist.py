@@ -1,13 +1,13 @@
 from typing import List
 
 import numpy as np
+from mlforecast import MLForecast
 
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.histogram import PlotHistogram
 from cardtale.visuals.base.scatterplot import Scatterplot
 
 from cardtale.cards.strings import join_l, gettext
-from cardtale.analytics.operations.tsa.tde import TimeDelayEmbedding
 from cardtale.analytics.testing.card.trend import TrendShowTests
 
 from cardtale.core.data import TimeSeriesData
@@ -31,14 +31,18 @@ class TrendDistPlots(Plot):
                                        time_col=self.tsd.time_col,
                                        target_col=self.tsd.target_col)
 
-        series_df = TimeDelayEmbedding.ts_as_supervised(s, horizon=0, n_lags=2)
+        mlf = MLForecast(models=[], freq=self.tsd.dt.freq, lags=[1])
 
-        trend_lagplot = Scatterplot.lagplot(data=series_df,
+        lagged_df = mlf.preprocess(df=self.tsd.df)
+        lagged_df = lagged_df[[self.tsd.target_col, 'lag1']]
+        lagged_df.columns = ['t', 't-1']
+
+        trend_lagplot = Scatterplot.lagplot(data=lagged_df,
                                             x_axis_col='t-1',
                                             y_axis_col='t',
                                             add_perfect_abline=True,
-                                            x_lab='Series at time t',
-                                            y_lab='Series at time t+1')
+                                            x_lab=f'{self.tsd.target_col} at time t',
+                                            y_lab=f'{self.tsd.target_col} at time t+1')
 
         diff_df = s.pct_change()[1:].reset_index()
 
