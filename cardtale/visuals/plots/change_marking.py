@@ -19,27 +19,33 @@ class ChangesMarksPlot(Plot):
     def build(self):
 
         if self.show_me:
-            cp, _ = self.tests.change.get_change_points()
+            cp, cp_idx = self.tests.change.get_change_points()
 
             self.plot = \
                 LinePlot.univariate_change(data=self.tsd.df,
                                            x_axis_col=self.tsd.time_col,
                                            y_axis_col=self.tsd.target_col,
-                                           change_points=cp)
+                                           change_points=cp_idx)
 
     def analyse(self):
-        cp, _ = self.tests.change.get_change_points()
+        cp, cp_idx = self.tests.change.get_change_points()
+
         n_cp = len(cp)
 
         if n_cp > 0:
             self.show_me = True
             first_cp = cp[0]
-            if first_cp.direction == 'increase':
+            # if first_cp.direction == 'increase':
+            #     cp_direction = 'increasing'
+            # else:
+            #     cp_direction = 'decreasing'
+
+            if self.tests.change.level_increased:
                 cp_direction = 'increasing'
             else:
                 cp_direction = 'decreasing'
 
-            cp_time = first_cp.start_time.strftime(self.tsd.date_format)
+            cp_time = cp_idx[0].strftime(self.tsd.date_format)
 
             if n_cp == 1:
                 n_anls = gettext('change_line_1point')

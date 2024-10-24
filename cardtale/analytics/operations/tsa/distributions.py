@@ -47,6 +47,9 @@ class KolmogorovSmirnov:
 
     @classmethod
     def best_dist_in_two_parts(cls, series1: pd.Series, series2: pd.Series):
+        print('series1')
+        print(series1)
+        print(series2)
 
         _, dist1 = cls.test_distributions(series1)
         _, dist2 = cls.test_distributions(series2)

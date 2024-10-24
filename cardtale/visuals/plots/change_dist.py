@@ -49,7 +49,7 @@ class ChangeDistPlots(Plot):
 
             change_in_dist = self.tests.change.change_significance(s)
 
-            before, after = DataSplit.change_partition(self.tsd.df, cp_idx[0], return_series=True)
+            before, after = DataSplit.change_partition(s, cp[0], return_series=True)
             dist_bf, dist_af = KolmogorovSmirnov.best_dist_in_two_parts(before, after)
 
             if change_in_dist:

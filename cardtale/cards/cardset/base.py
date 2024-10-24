@@ -53,6 +53,7 @@ class Card:
             assert len(self.plots) > 0, 'No plots to create'
 
             for k in self.plots:
+                print(k)
                 if self.plots[k].show_me:
                     self.plots[k].build()
                     self.plots[k].save()

@@ -1,5 +1,3 @@
-# PERIOD = 'period'
-# FREQ_NAME = 'name'
 
 PLOT_NAMES = {
     'trend_line': 'Trend Line Plot',

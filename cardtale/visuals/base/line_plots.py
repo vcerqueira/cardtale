@@ -84,9 +84,9 @@ class LinePlot:
                      legend_position=None) + \
             p9.geom_line(color=THEME_PALETTE[THEME]['hard'], size=1)
 
-        # from kats.consts import TimeSeriesChangePoint
         for cp_ in change_points:
-            plot += p9.geom_vline(xintercept=pd.Timestamp(cp_.start_time),
+            print(cp_)
+            plot += p9.geom_vline(xintercept=cp_,
                                   linetype='dashed',
                                   color=THEME_PALETTE[THEME]['black'],
                                   size=1.1)
@@ -99,7 +99,7 @@ class LinePlot:
                              # y=int(data['Series'].max() * .95),
                              y=data[y_axis_col].max(),
                              fill=THEME_PALETTE[THEME]['fill'],
-                             x=pd.Timestamp(change_points[0].start_time),
+                             x=change_points[0],
                              size=11) + \
                p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
                p9.xlab(x_lab) + \
