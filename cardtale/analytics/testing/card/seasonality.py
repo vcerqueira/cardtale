@@ -4,7 +4,7 @@ from typing import Tuple, Dict
 import numpy as np
 import pandas as pd
 
-from cardtale.analytics.operations.tsa.ndiffs import RNDiffs, R_NSDIFF_TESTS
+from cardtale.analytics.operations.tsa.ndiffs import DifferencingTests
 from cardtale.analytics.operations.tsa.group_tests import GroupMoments
 from cardtale.analytics.operations.landmarking.seasonality import SeasonalLandmarks
 from cardtale.analytics.testing.card.base import UnivariateTester
@@ -34,9 +34,12 @@ class SeasonalityTesting(UnivariateTester):
         self.freq_naming = freq_naming
 
     def run_statistical_tests(self):
-        for k, name in R_NSDIFF_TESTS.items():
+        for k, name in DifferencingTests.NSDIFF_TESTS.items():
             if self.period is not None:
-                self.tests[name] = RNDiffs.r_nsdiffs(self.series, self.period, k)
+                self.tests[name] = \
+                    DifferencingTests.nsdiffs(series=self.series,
+                                              period=self.period,
+                                              test=k)
             else:
                 self.tests[name] = np.nan
 

@@ -26,6 +26,7 @@ classifiers = [
 ]
 
 dependencies = [
+    "arch==7.1.0",
     "pandas==2.2.3",
     "lightgbm==4.5.0",
     "neuralforecast==1.7.5",
@@ -34,7 +35,8 @@ dependencies = [
     "numerize==0.12",
     "plotnine==0.13.6",
     "statsmodels==0.14.4",
-    "rpy2==3.5.16",
+    "jinja2==3.1.4",
+    "ruptures==1.1.9",
     "weasyprint==62.3"
 ]
 

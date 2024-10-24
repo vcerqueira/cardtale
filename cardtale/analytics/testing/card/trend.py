@@ -4,7 +4,7 @@ import pandas as pd
 
 from cardtale.analytics.operations.landmarking.trend import TrendLandmarks
 from cardtale.analytics.testing.card.base import UnivariateTester
-from cardtale.analytics.operations.tsa.ndiffs import R_NDIFF_TESTS, RNDiffs
+from cardtale.analytics.operations.tsa.ndiffs import DifferencingTests
 from cardtale.analytics.operations.tsa.time_model import TimeLinearModel
 from cardtale.cards.strings import gettext
 from cardtale.core.data import TimeSeriesData
@@ -31,10 +31,13 @@ class UnivariateTrendTesting(UnivariateTester):
         self.time_model = TimeLinearModel()
 
     def run_statistical_tests(self):
-        for k, name in R_NDIFF_TESTS.items():
+        for k, name in DifferencingTests.NDIFF_TESTS.items():
             try:
                 for test_type in [TREND_T, LEVEL_T]:
-                    self.tests[test_type][name] = RNDiffs.r_ndiffs(self.series, test=k, test_type=test_type)
+                    self.tests[test_type][name] = \
+                        DifferencingTests.ndiffs(series=self.series,
+                                                 test=k,
+                                                 test_type=test_type)
             except ValueError:
                 continue
 
@@ -100,10 +103,10 @@ class UnivariateTrendTesting(UnivariateTester):
         tests = {TREND_T: pd.Series(dtype=int),
                  LEVEL_T: pd.Series(dtype=int)}
 
-        for k, name in R_NDIFF_TESTS.items():
+        for k, name in DifferencingTests.NDIFF_TESTS.items():
             try:
                 for test_type in [TREND_T, LEVEL_T]:
-                    tests[test_type][name] = RNDiffs.r_ndiffs(series, test=k, test_type=test_type)
+                    tests[test_type][name] = DifferencingTests.ndiffs(series=series, test=k, test_type=test_type)
             except ValueError:
                 continue
 
