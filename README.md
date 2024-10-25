@@ -10,10 +10,22 @@ In the machine learning lifecycle, proper documentation of models and datasets i
 
 The goal of Cardtale is to generate a set of analyses, visualizations, and interpretations based on input model metrics and dataset characteristics. While it doesn't replace the expertise of data scientists or domain experts, Cardtale speeds up the creation of model and data cards, guiding analysts towards key insights and areas that may require further exploration.
 
-## Usage
+## Basic Example
 
 ```python
-from cardtale import ModelCard
+from datasetsforecast.m3 import M3
+
+from cardtale.cards.builder import CardsBuilder
+
+df, *_ = M3.load('./scripts', group='Monthly')
+
+series = df.query('unique_id=="M1"').set_index('ds')['y']
+series_df = df.query('unique_id=="M1"')
+
+tcard = CardsBuilder(series_df, 'ME')
+tcard.build_cards(render_html=True)
+tcard.get_pdf()
+
 ```
 
 ## Installation

@@ -108,7 +108,7 @@ class TimeSeriesData:
         # done... questions about self.target_col
         assert grouping_period in self.seas_df, UNKNOWN_PERIOD
 
-        data_groups = self.seas_df.groupby(self.seas_df[grouping_period])[self.target_col]
+        data_groups = self.seas_df.groupby(self.seas_df[grouping_period], observed=False)[self.target_col]
 
         data_groups = {k: x.values for k, x in data_groups}
 

@@ -31,6 +31,7 @@ class SeasonalSubSeriesPlot(Plot):
         :param tests_were_analysed: Whether statistical tests were already analysed in
         a previous plot. This happens if a seasonal line plot is shown before (for main period)
         """
+
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.tests_were_analysed = tests_were_analysed
@@ -58,6 +59,7 @@ class SeasonalSubSeriesPlot(Plot):
     def analyse(self):
         freq_named = f'{self.x_axis_col}ly'
 
+
         show_plots, failed_periods = self.tests.seasonality.get_show_analysis()
 
         """
@@ -77,6 +79,7 @@ class SeasonalSubSeriesPlot(Plot):
         
         """
 
+
         if show_plots[self.named_seasonality][self.plot_id]['show']:
             self.show_me = True
         else:
@@ -87,6 +90,7 @@ class SeasonalSubSeriesPlot(Plot):
             self.analysis.append(groups_comps)
 
         tests = self.tests.seasonality.tests[self.named_seasonality].tests
+
         named_level_st = self.tests.trend.prob_level_str
 
         if not self.tests_were_analysed:
@@ -94,6 +98,7 @@ class SeasonalSubSeriesPlot(Plot):
             self.analysis.append(seas_str_analysis)
 
         data_groups = self.tsd.get_period_groups(grouping_period=self.x_axis_col)
+
         within_groups_analysis = SeasonalityTesting.seasonal_subseries_st_parser(self.x_axis_col, data_groups,
                                                                                  named_level_st)
         self.analysis.append(within_groups_analysis)

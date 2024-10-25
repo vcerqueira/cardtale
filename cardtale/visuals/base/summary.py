@@ -20,7 +20,7 @@ class SummaryStatPlot:
             func: str):
         assert func in ['mean', 'median', 'std', 'var']
 
-        grouped_df = data.groupby(group_col)[y_col]
+        grouped_df = data.groupby(group_col, observed=False)[y_col]
         target_series = data[y_col]
 
         group_stat = getattr(grouped_df, func)()

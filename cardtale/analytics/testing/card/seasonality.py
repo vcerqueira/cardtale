@@ -56,7 +56,7 @@ class SeasonalityTesting(UnivariateTester):
     def run_misc(self):
         freq = re.sub('ly$', '', self.freq_naming)
 
-        data_group = self.tsd.seas_df.groupby(freq)[self.tsd.target_col]
+        data_group = self.tsd.seas_df.groupby(freq, observed=False)[self.tsd.target_col]
         data_group_list = [x.values for _, x in data_group]
 
         self.moments = GroupMoments.compare_groups(data_group_list)
@@ -137,10 +137,16 @@ class SeasonalityTesting(UnivariateTester):
             emphasis = ' also'
 
         within_group_analysis = {}
+        # print('subseries items')
         for k, sub_series in data_groups.items():
-            # print(k)
-            prob_trend, prob_level = UnivariateTrendTesting.run_tests_on_series(pd.Series(sub_series))
+            if len(sub_series) < 30:
+                prob_level = 0
+            else:
+                prob_trend, prob_level = UnivariateTrendTesting.run_tests_on_series(pd.Series(sub_series))
+
             within_group_analysis[k] = prob_level
+
+        print('finished seas')
 
         within_group_analysis_s = pd.Series(within_group_analysis)
         perc_within = 100 * (within_group_analysis_s > 0.6).mean()
@@ -212,7 +218,6 @@ class SeasonalityTestingMulti:
         # fixme can I discard this shit table?
         self.summary = pd.DataFrame(summary_df).T
         self.summary = self.summary.sort_values(['perf_delta', 'prob'], ascending=False)
-        print(self.summary)
 
     def get_show_analysis(self):
         if len(self.show_plots) > 0:

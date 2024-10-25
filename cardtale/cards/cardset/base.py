@@ -53,19 +53,17 @@ class Card:
             assert len(self.plots) > 0, 'No plots to create'
 
             for k in self.plots:
-                print(k)
                 if self.plots[k].show_me:
                     self.plots[k].build()
                     self.plots[k].save()
 
-    def build_report_section(self, output_to_path: bool = False):
+    def build_report_section(self):
         """
         Build report section
 
-        :param output_to_path: Whether to build report section (True for development mode)
         """
 
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR.absolute()))
+        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
 
         template_html = env.get_template(CARD_HTML)
 
@@ -73,7 +71,6 @@ class Card:
 
         header = gettext(self.metadata['section_header_str'])
         id_tag = ''.join(header.split(' ')).lower()
-        print(id_tag)
 
         self.content_html = template_html.render(
             show_content=self.show_content,
@@ -84,28 +81,28 @@ class Card:
         )
 
     @staticmethod
-    def get_organization_content(sections_to_include: List[str],
-                                 sections_to_omit: List[str]):
+    def get_organization_content(cards_to_include: List[str], cards_to_omit: List[str]):
 
-        failed_secs = {k: FAILED_SECTIONS_TEXT[k] for k in FAILED_SECTIONS_TEXT
-                       if k in sections_to_omit}
+        failed_cards = {k: FAILED_SECTIONS_TEXT[k]
+                        for k in FAILED_SECTIONS_TEXT
+                        if k in cards_to_omit}
 
-        included_secs = {k: INCLUDED_SECTIONS_TEXT[k] for k in INCLUDED_SECTIONS_TEXT
-                         if k in sections_to_include}
+        included_cards = {k: INCLUDED_SECTIONS_TEXT[k]
+                          for k in INCLUDED_SECTIONS_TEXT
+                          if k in cards_to_include}
 
-        if len(included_secs):
-            for i, k in enumerate(included_secs):
-                included_secs[k] = included_secs[k].format(i + 2)
+        if len(included_cards):
+            for i, k in enumerate(included_cards):
+                included_cards[k] = included_cards[k].format(i + 2)
 
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR.absolute()))
+        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
 
         template = env.get_template(TOC_HTML)
 
         content = template.render(subsection_name=OMITTED_SECTION_HEADER_NAME,
-                                  included_sections=[*included_secs.values()],
-                                  add_included_sections=len([*included_secs.values()]) > 0,
-                                  failed_sections=[*failed_secs.values()],
-                                  add_failed_sections=len([*failed_secs.values()]) > 0
-                                  )
+                                  included_sections=[*included_cards.values()],
+                                  add_included_sections=len([*included_cards.values()]) > 0,
+                                  failed_sections=[*failed_cards.values()],
+                                  add_failed_sections=len([*failed_cards.values()]) > 0)
 
         return content

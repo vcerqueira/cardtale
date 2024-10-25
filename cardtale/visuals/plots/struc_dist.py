@@ -47,7 +47,7 @@ class SeriesDistPlots(Plot):
         else:
             dist_anl_2 = gettext('series_dist_analysis2_many')
             dist_anl_2 = dist_anl_2.format(self.tsd.summary.n_reject_dist_nms[0],
-                                           np.round(self.tsd.summary.n_reject_dists[0], 2),
+                                           np.round(self.tsd.summary.n_reject_dists.iloc[0], 2),
                                            join_l(self.tsd.summary.n_reject_dist_nms[1:]))
 
         self.analysis.append(dist_anl_2)

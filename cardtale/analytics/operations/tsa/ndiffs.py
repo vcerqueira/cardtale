@@ -1,8 +1,12 @@
-import numpy as np
+import warnings
+
 import pandas as pd
 from statsmodels.tsa.stattools import kpss, adfuller
 from statsmodels.tsa.api import STL
 from arch.unitroot import PhillipsPerron
+from statsmodels.tools.sm_exceptions import InterpolationWarning
+
+warnings.simplefilter('ignore', InterpolationWarning)
 
 
 class DifferencingTests:
@@ -46,8 +50,6 @@ class DifferencingTests:
         --------
         int : Recommended number of seasonal differences
         """
-        print('series')
-        print(series)
 
         if test not in DifferencingTests.NSDIFF_TESTS:
             raise ValueError(f"Unknown test type. Must be one of {[*DifferencingTests.NSDIFF_TESTS]}")

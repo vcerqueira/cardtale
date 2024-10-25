@@ -73,7 +73,7 @@ class TrendDistPlots(Plot):
             analysis_dist2 = gettext('trend_diff_dist_analysis2')
             analysis_dist2 = \
                 analysis_dist2.format(diff_stats.n_reject_dist_nms[0],
-                                      np.round(diff_stats.n_reject_dists[0], 2),
+                                      np.round(diff_stats.n_reject_dists.iloc[0], 2),
                                       f'{join_l(diff_stats.n_reject_dist_nms[1:])}.')
         else:
             analysis_dist2 = gettext('trend_diff_dist_analysis2none')

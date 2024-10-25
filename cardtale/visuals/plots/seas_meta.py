@@ -1,8 +1,12 @@
+import logging
+
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.plots.seas_line import SeasonalLinePlot
 from cardtale.visuals.plots.seas_subseries import SeasonalSubSeriesPlot
 from cardtale.visuals.plots.seas_summary import SeasonalSummaryPlots
+
+logging.getLogger('matplotlib').setLevel(logging.ERROR)
 
 
 class SeasonalMetaPlots:
@@ -58,6 +62,7 @@ class SeasonalMetaPlots:
     def make_all(self):
 
         for k in self.plots:
+            # print(k)
             self.plots[k].analyse()
 
         self.plots = {k: self.plots[k] for k in self.plots

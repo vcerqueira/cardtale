@@ -1,3 +1,5 @@
+import logging
+
 import pandas as pd
 # from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
@@ -13,6 +15,8 @@ from cardtale.cards.cardset.base import Card
 from cardtale.cards.config import TEMPLATE_DIR, STRUCTURE_TEMPLATE
 from cardtale.core.config.typing import Period
 from cardtale.analytics.testing.base import TestingComponents
+
+logging.getLogger('fontTools').setLevel(logging.ERROR)
 
 
 class CardsBuilder:
@@ -48,6 +52,7 @@ class CardsBuilder:
 
         self.plot_id = -1
 
+        self.cards_raw_str = ''
         self.cards_raw_html = None
         self.cards_html = None
 
@@ -74,7 +79,7 @@ class CardsBuilder:
     def render_doc_html(self):
         self.plot_id = 1
 
-        deck_content = ''
+        self.cards_raw_str = ''
         for card_ in self.cards:
 
             self.cards[card_].build_plots()
@@ -89,9 +94,9 @@ class CardsBuilder:
             if card_ == 'structural':
                 card_content += Card.get_organization_content(self.cards_included, self.cards_to_omit)
 
-            deck_content += card_content
+            self.cards_raw_str += card_content
 
-        self._render_html_jinja(toc_content='', card_content=deck_content)
+        self._render_html_jinja(toc_content='', card_content=self.cards_raw_str)
 
         self.cards_html = HTML(string=self.cards_raw_html)  # .write_pdf("output.pdf")
 
