@@ -1,17 +1,9 @@
-from typing import List
-
 from jinja2 import Environment, FileSystemLoader
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.cards.strings import gettext
-
-from cardtale.cards.config import (TEMPLATE_DIR,
-                                   CARD_HTML,
-                                   TOC_HTML,
-                                   FAILED_SECTIONS_TEXT,
-                                   OMITTED_SECTION_HEADER_NAME,
-                                   INCLUDED_SECTIONS_TEXT)
+from cardtale.cards.config import TEMPLATE_DIR, CARD_HTML
 
 
 class Card:
@@ -94,30 +86,3 @@ class Card:
             analysis_introduction=gettext(self.metadata['section_intro_str']),
             img_data=img_data,
         )
-
-    @staticmethod
-    def get_organization_content(cards_to_include: List[str], cards_to_omit: List[str]):
-
-        failed_cards = {k: FAILED_SECTIONS_TEXT[k]
-                        for k in FAILED_SECTIONS_TEXT
-                        if k in cards_to_omit}
-
-        included_cards = {k: INCLUDED_SECTIONS_TEXT[k]
-                          for k in INCLUDED_SECTIONS_TEXT
-                          if k in cards_to_include}
-
-        if len(included_cards):
-            for i, k in enumerate(included_cards):
-                included_cards[k] = included_cards[k].format(i + 2)
-
-        env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))
-
-        template = env.get_template(TOC_HTML)
-
-        content = template.render(subsection_name=OMITTED_SECTION_HEADER_NAME,
-                                  included_sections=[*included_cards.values()],
-                                  add_included_sections=len([*included_cards.values()]) > 0,
-                                  failed_sections=[*failed_cards.values()],
-                                  add_failed_sections=len([*failed_cards.values()]) > 0)
-
-        return content

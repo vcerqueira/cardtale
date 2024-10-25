@@ -11,7 +11,6 @@ from cardtale.cards.cardset.seasonality import SeasonalityCard
 from cardtale.cards.cardset.structural import StructuralCard
 from cardtale.cards.cardset.trend import TrendCard
 from cardtale.cards.cardset.variance import VarianceCard
-from cardtale.cards.cardset.base import Card
 from cardtale.cards.config import TEMPLATE_DIR, STRUCTURE_TEMPLATE
 from cardtale.core.config.typing import Period
 from cardtale.analytics.testing.base import TestingComponents
@@ -90,9 +89,6 @@ class CardsBuilder:
             self.cards[card_].build_report_section()
 
             card_content = self.cards[card_].content_html
-
-            # if card_ == 'structural':
-            #    card_content += Card.get_organization_content(self.cards_included, self.cards_to_omit)
 
             self.cards_raw_str += card_content
 
