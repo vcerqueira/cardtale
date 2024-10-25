@@ -28,6 +28,8 @@ class Card:
 
         self.plots = {}
         self.metadata = {}
+        self.toc_content = {}
+
         self.show_content = True
         self.content_html = None
         self.content_pdf = None
@@ -43,6 +45,22 @@ class Card:
 
         if len(self.plots) < 1:
             self.show_content = False
+
+        self.set_toc_content()
+
+    def set_toc_content(self):
+        if self.show_content:
+            self.toc_content = {
+                'id': self.metadata['section_id'],
+                'title': gettext(self.metadata['section_header_str']),
+                'message': gettext(self.metadata['section_toc_success'])
+            }
+        else:
+            self.toc_content = {
+                'id': self.metadata['section_id'],
+                'title': gettext(self.metadata['section_header_str']),
+                'message': gettext(self.metadata['section_toc_failure'])
+            }
 
     def build_plots(self):
         """
@@ -69,13 +87,10 @@ class Card:
 
         img_data = [self.plots[k].img_data for k in self.plots]
 
-        header = gettext(self.metadata['section_header_str'])
-        id_tag = ''.join(header.split(' ')).lower()
-
         self.content_html = template_html.render(
             show_content=self.show_content,
             analysis_header=gettext(self.metadata['section_header_str']),
-            analysis_id=id_tag,
+            analysis_id=self.metadata['section_id'],
             analysis_introduction=gettext(self.metadata['section_intro_str']),
             img_data=img_data,
         )

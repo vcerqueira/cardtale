@@ -16,6 +16,9 @@ class VarianceCard(Card):
         }
 
         self.metadata = {
+            'section_id': 'variance',
             'section_header_str': 'variance_section_header',
             'section_intro_str': 'variance_section_intro',
+            'section_toc_success': 'variance_toc_success',
+            'section_toc_failure': 'variance_toc_failure',
         }

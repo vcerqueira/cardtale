@@ -5,6 +5,7 @@ STRUCTURE_TEMPLATE = 'structure.html'
 CARD_HTML = 'card.html'
 TOC_HTML = 'toc.html'
 
+# todo obsolete
 FAILED_SECTIONS_TEXT = {
     'trend': 'Several tests were carried out to analyse the trend component. Yet, no significant trend was found.'
              'Taking first differences or feature extraction for trend inclusion did not improve forecasting performance.',

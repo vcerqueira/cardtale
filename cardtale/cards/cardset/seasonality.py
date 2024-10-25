@@ -13,9 +13,14 @@ class SeasonalityCard(Card):
         self.meta_plot = None
 
         self.metadata = {
+            'section_id': 'seasonality',
             'section_header_str': 'seasonality_section_header',
             'section_intro_str': 'seasonality_section_intro',
+            'section_toc_success': 'seasonality_toc_success',
+            'section_toc_failure': 'seasonality_toc_failure',
         }
+
+        self.set_toc_content()
 
     def analyse(self):
         pass

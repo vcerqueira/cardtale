@@ -10,13 +10,22 @@
   "change_section_header": "Change Detection",
   "change_section_intro": "Change points denote significant shifts in the underlying distribution of time series. These structural changes can manifest as sudden shifts in level, trend, variance, or seasonal patterns. Detecting and understanding these points is crucial as they often indicate important events or regime changes that affect modeling decisions. This section identifies potential change points and assesses their impact on the overall analysis strategy.",
 
+  "structural_toc_success": "Time series fundamental characteristics and statistical properties",
+  "change_toc_success": "Change detection in the time series distribution",
+  "seasonality_toc_success": "Analysing recurring patterns in the time series. Assessing the impact of different seasonality modeling strategies",
+  "trend_toc_success": "Long-term time series growth and dynamics. Analysis of level stabilization methods.",
+  "variance_toc_success": "Exploring the variability of values over time. Assessing the impact of variance stabilization methods",
+
+  "change_toc_failure": "No change point was found according to offline change detection methods",
+  "seasonality_toc_failure": "The time series does not exhibit a strong seasonal component, as evidenced by hypothesis tests and preliminary forecasting validation tests",
+  "trend_toc_failure": "Hypothesis testing (KPSS, Augmented Dickey-Fuller) indicates that the time series does not exhibit a significant trend. Taking first differences or feature extraction for trend inclusion did not improve forecasting accuracy in preliminary tests.",
+  "variance_toc_failure": "Hypothesis testing suggests that the time series has constant variance (homoskedasticity). In preliminary tests, common transformations for variance stabilization did not improve forecasting accuracy",
+
   "series_line_plot_caption": "Figure {}: Time series line plot.",
   "series_line_plot_analysis1": "A total of {} {} observations which span from {} to {}.",
   "series_line_plot_analysis2": "The mean value of the series is {} (median equal to {}), with a standard deviation of {}. The data ranges from a minimum of {} to a maximum of {}.",
-
   "series_ns_zone_plot_caption": "Figure {}: Time series line plot with marked non-stationarities as horizontal arrows.",
   "series_ns_zone_analysis": "Statistical tests found evidence that the series is not stationary. The horizontal arrow(s) denote estimated periods of non-stationarity.",
-
   "series_dist_caption": "Figure {}: Distribution of the time series using an histogram (left) and a boxplot (right).",
   "series_dist_analysis1": "The Kolmogorov-Smirnov test rejects the hypothesis that the series is distributed according to the following distributions: {}",
   "series_dist_analysis2_many": "The distribution with largest p-value is {} (p-value equal to {}). But, we cannot reject the hypothesis that the data follows the following distributions (ordered decreasingly by p-value): {}.",
@@ -29,7 +38,6 @@
   "series_dist_analysis4_skew_asymmetric": "The skewness is equal to {}, indicates that the {} tail is long relative to the {} tail.",
   "series_dist_analysis5_kurtosis_normal": "The excess kurtosis is equal to {}. This value is similar to that found from data following a Gaussian distribution",
   "series_dist_analysis5_kurtosis_notnormal": "The excess kurtosis is equal to {}. This indicates that the data has a {} distribution.",
-
   "series_components_caption": "Figure {}: Seasonal and Trend components after decomposition using the {} method.",
   "series_components_analysis_trend_all0": "All hypothesis tests carried out ({}) indicate that the time series is stationary in trend/level.",
   "series_components_analysis_trend_all1": "All hypothesis tests carried out ({}) indicate that the time series is not stationary in trend/level.",
@@ -37,7 +45,6 @@
   "series_components_analysis_seas_all0": "All hypothesis tests carried out ({}) indicate that the time series is not stationary in seasonality for the specified period.",
   "series_components_analysis_seas_all1": "All hypothesis tests carried out ({}) indicate that the time series is not stationary in seasonality for the specified period.",
   "series_components_analysis_seas_mix": "The following tests indicate that the time series is non-stationary in seasonality for the specified period: {}. On the other hand, other tests ({}) fail to reject the hypothesis that the data is stationary",
-
   "series_acf_caption": "Figure {}: Auto-correlation plot up to {} lags.",
   "series_pacf_caption": "Figure {}: Partial Auto-correlation plot up to {} lags. At each lag, the partial auto-correlation takes into account the previous correlations.",
   "series_acf_analysis_wn": "There are no lags with significant correlation, which suggest that the series may be white noise.",
@@ -49,7 +56,6 @@
   "series_acf_analysis_seas_none": "None of the lags relative to the seasonal period ({}) show any significant autocorrelation.",
   "series_acf_analysis_seas_some": "Only the following lags relative to the seasonal period show a significant autocorrelation: {}",
   "series_acf_analysis_other_m": "Besides the specified seasonal period ({}), there is an indication that the period {} shows a regular pattern.",
-
   "trend_line_plot_caption": "Figure {}: Time series trend plot.",
   "trend_bp_plot_caption": "Figure {}: Boxplots showing the distribution of the series in {} consecutive quantiles.",
   "trend_lagplot_dhist_caption": "Figure {}: Distribution of percentage changes (left), and a Lag-plot (right). These plots help to understand how the data changes over consecutive observations. The histogram shown the distribution of these changes. The lag-plot depicts the randomness in the data. The time series shows greater randomness as the points deviate from the dotted line.",
@@ -70,36 +76,27 @@
   "trend_diff_dist_analysis4_skew_asymmetric": "The skewness of the differenced series  is equal to {}, indicates that the {} tail is long relative to the {} tail.",
   "trend_diff_dist_analysis5_kurtosis_normal": "The excess kurtosis of the differenced series is equal to {}. This value is similar to that found from data following a Gaussian distribution",
   "trend_diff_dist_analysis5_kurtosis_notnormal": "The excess kurtosis of the differenced series is equal to {}. This indicates that the data has a {} distribution.",
-
-
   "seasonality_line_month_year_caption": "Figure {}: Seasonal plot of {} values grouped by {}.",
   "seasonality_line_analysis_seas_all0": "All hypothesis tests carried out ({}) indicate that the time series is stationary in seasonality for a {} period.",
   "seasonality_line_analysis_seas_all1": "All hypothesis tests carried out ({}) indicate that the time series is not stationary in seasonality for a {} period.",
   "seasonality_line_analysis_seas_mix": "The following tests indicate that the time series is non-stationary in seasonality for a {} period: {}. On the other hand, other tests ({}) fail to reject the stationary null hypothesis.",
   "seasonality_line_analysis_other": "We also searched for {} seasonal patterns. But, all statistical tests confirmed stationarity in those periods. Besides, including information about these periods in the forecasting model decreased its performance.",
   "seasonality_line_self_perf": "**Forecasting experiments**: Including {} information in the predictive model {} forecasting performance. This information was included as Fourier terms and repeating basis function terms in the explanatory variables.",
-
   "seasonality_subseries_caption": "Figure {}: {} seasonal sub-series. This plot helps to understand how the data varies within and across {} groups.",
   "seasonality_subseries_opt1": "**Forecasting experiments**: Statistical tests show no evidence for a {} seasonal pattern. Yet, including information about this period in the forecasting model improved its performance.",
   "seasonality_subseries_opt2": "**Forecasting experiments**: There is evidence for a {} seasonal pattern from statistical tests. Yet, including information about this period in the forecasting model decreased its performance.",
   "seasonality_subseries_opt3": "**Forecasting experiments**: There is evidence for a {} seasonal pattern from statistical tests. Besides, including information about this period in the forecasting model improved its performance.",
-
   "seasonality_subseries_group1": "Overall, there is {} that the time series is not stationary around a constant level.",
   "seasonality_subseries_group2bothnone": "This is also the case within each {}.",
   "seasonality_subseries_group2none": "But, the data is constant around a level in each {}.",
   "seasonality_subseries_group2": "{} each group, there is{} indication that the data is not constant around a level in {} of the {}s.",
-
   "seasonality_summary_plot_caption": "Figure {}: Mean plot (left) and standard deviation plot (right) of {} values.",
   "seasonality_summary_plot_analysis": "The data shows significantly different {} when grouped by {}.",
   "seasonality_summary_fail": "Statistical tests were carried out to check for differences among means and variances across {}. No significant differences were found.",
-
   "seasonality_bp_month_year_caption": "Figure {}: Seasonal boxplot of {} distributions{}.",
   "seasonality_hm_month_year_caption": "Figure {}: Seasonal heatmap of {} values grouped by {}.",
   "seasonality_quarter_year_caption": "Figure {}: {} seasonal effects. Seasonal plot of {} values grouped by {} (left), and boxplot of {} distributions (right).",
-
-
   "variance_std_plot_caption": "Figure {}: Rolling standard deviation of the series with a period of {} values.",
-
   "variance_partition_caption": "Figure {}: Time series residuals analysis. Difference in the distribution of the residuals (left) and the series (right) in the first and last thirds of the series, following a Goldfeld-Quand partition.",
   "variance_partition_analysis_seas": "As shown in the analysis of seasonality, there are significant differences in the dispersion of {} groups of observations.",
   "variance_partition_analysis_seas_none": "In the analysis of seasonality we did not find significant differences in the dispersion among periodic groups of observations.",
@@ -109,14 +106,11 @@
   "variance_partition_analysis_perf_none": "**Forecasting experiments**: Transforming the series with either the logarithm or the Box-Cox method did not improve forecasting performance.",
   "variance_partition_analysis_perf_both": "**Forecasting experiments**: Transforming the series with either the logarithm or the Box-Cox method improved forecasting performance.",
   "variance_partition_analysis_perf_one": "**Forecasting experiments**: Transforming the series with the {} improved forecasting performance. But, the transformation with the {} did not.",
-
   "variance_dists_equal_and_none": "No appropriate distribution was found to fit the data, before or after a {} transformation.",
   "variance_dists_equal": "A {} transformation did not affect the most appropriate distribution to fit the data ({} distribution).",
   "variance_dists_diff_p1none": "In the original scale, no appropriate distribution was found to fit the data. But, after a {} transformation, the {} distribution might be a reasonable fit.",
   "variance_dists_diff_p2none": "In the original scale, the {} distribution is a reasonable fit to the data. But, after taking the {} transformation, no appropriate distribution was found.",
   "variance_dists_diff": "In the original scale, the {} distribution is a reasonable fit to the data. But, after taking the {} transformation, a {} distribution was found to be a better fit.",
-
-
   "change_line_plot_caption": "Figure {}: Time series plot with marked change points according to the {} method.",
   "change_line_npoints": "There are a total of {} change points over the time series",
   "change_line_1point": "A single change point was found in the time series.",
@@ -124,7 +118,6 @@
   "change_beforeafter_dists_p1none": "The time series does not follow a common distribution before the first change point occurs. After the change point, the data follows a {} distribution.",
   "change_beforeafter_dists_p2none": "Before the change point, the data follows a {} distribution. But, after the first change point occurs, no appropriate distribution was found.",
   "change_beforeafter_dists_p1p2": "Before the change point, the data follows a {} distribution. But, after the first change point, a {} distribution is a better fit.",
-
   "change_beforeafter_1st_caption": "Figure {}: Time series analysis before and after the first detected change point occurs. Paired distributions before and after change (left), and overlapped density plot (right).",
   "change_beforeafter_1st_analysis_diff": "The distribution before and after the first change point are significantly different.",
   "change_beforeafter_1st_analysis_nodiff": "Although a change point was detected, we found no difference between the distributions before and after the first change point."

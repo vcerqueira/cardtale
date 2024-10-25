@@ -22,6 +22,8 @@ class StructuralCard(Card):
         }
 
         self.metadata = {
+            'section_id': 'structural',
             'section_header_str': 'structural_section_header',
             'section_intro_str': 'structural_section_intro',
+            'section_toc_success': 'structural_toc_success',
         }

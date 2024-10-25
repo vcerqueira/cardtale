@@ -1,7 +1,7 @@
 import logging
+from datetime import datetime
 
 import pandas as pd
-# from bs4 import BeautifulSoup
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
@@ -67,9 +67,9 @@ class CardsBuilder:
                 self.cards[card_].analyse()
 
                 if not self.cards[card_].show_content:
-                    self.cards_to_omit.append(card_)
+                    self.cards_to_omit.append(self.cards[card_].toc_content)
                 else:
-                    self.cards_included.append(card_)
+                    self.cards_included.append(self.cards[card_].toc_content)
 
             self.cards_were_analysed = True
 
@@ -91,62 +91,29 @@ class CardsBuilder:
 
             card_content = self.cards[card_].content_html
 
-            if card_ == 'structural':
-                card_content += Card.get_organization_content(self.cards_included, self.cards_to_omit)
+            # if card_ == 'structural':
+            #    card_content += Card.get_organization_content(self.cards_included, self.cards_to_omit)
 
             self.cards_raw_str += card_content
 
-        self._render_html_jinja(toc_content='', card_content=self.cards_raw_str)
+        self._render_html_jinja()
 
-        self.cards_html = HTML(string=self.cards_raw_html)  # .write_pdf("output.pdf")
+        self.cards_html = HTML(string=self.cards_raw_html)
 
         return self.cards_html
 
     def get_pdf(self, path: str = 'EXAMPLE_OUTPUT.pdf'):
         self.cards_html.write_pdf(path)
 
-    def _render_html_jinja(self, toc_content, card_content):
+    def _render_html_jinja(self):
         env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
 
         template = env.get_template(STRUCTURE_TEMPLATE)
 
-        self.cards_raw_html = template.render(toc_content=toc_content,
-                                              card_content=card_content)
+        current_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    # @staticmethod
-    # def generate_toc(html_content: str):
-    #     """
-    #
-    #     :param html_content:
-    #     :return:
-    #     """
-    #
-    #     soup = BeautifulSoup(html_content, 'html.parser')
-    #     # headings = soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
-    #     headings = soup.find_all(['h2'])
-    #
-    #     toc = ['<h2>Contents</h2>', '<ul class="toc">']
-    #     current_level = 0
-    #
-    #     for heading in headings:
-    #         level = int(heading.name[1])
-    #
-    #         if level > current_level:
-    #             toc.append('<ul>' * (level - current_level))
-    #         elif level < current_level:
-    #             toc.append('</ul>' * (current_level - level))
-    #
-    #         heading_id = heading.get('id', '')
-    #         if not heading_id:
-    #             heading_id = re.sub(r'\W+', '-', heading.text.lower())
-    #             heading['id'] = heading_id
-    #
-    #         toc.append(f'<li><a href="#{heading_id}">{heading.text}</a></li>')
-    #         current_level = level
-    #
-    #     toc.append('</ul>' * current_level)
-    #     toc.append('</ul>')
-    #
-    #     toc_html = '\n'.join(toc)
-    #
-    #     return toc_html
+        self.cards_raw_html = template.render(toc_included=self.cards_included,
+                                              toc_omitted=self.cards_to_omit,
+                                              card_content=self.cards_raw_str,
+                                              generation_date=current_time,
+                                              series_name=self.tsd.name)

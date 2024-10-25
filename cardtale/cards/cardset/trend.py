@@ -22,6 +22,9 @@ class TrendCard(Card):
         }
 
         self.metadata = {
+            'section_id': 'trend',
             'section_header_str': 'trend_section_header',
             'section_intro_str': 'trend_section_intro',
+            'section_toc_success': 'trend_toc_success',
+            'section_toc_failure': 'trend_toc_failure',
         }

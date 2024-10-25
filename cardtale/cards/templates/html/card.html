@@ -1,9 +1,13 @@
 {% if show_content %}
 
+<div>
+    <hr class="break-hspace"/>
+</div>
+
 <h2 id="{{analysis_id}}"> {{analysis_header}} </h2>
 
 <p>
-{{analysis_introduction}}
+    {{analysis_introduction}}
 </p>
 
 {% for img in img_data %}
@@ -19,7 +23,7 @@
 
 {% else %}
 
-<img src="data:image/png;base64,{{ img.src }}" class="plot" alt="Sample Plot" style="width:100%;padding:0px">
+<img src="data:image/png;base64,{{ img.src }}" class="plot" alt="plot" style="width:100%;padding:0px">
 <figcaption>{{img.caption}}</figcaption>
 
 

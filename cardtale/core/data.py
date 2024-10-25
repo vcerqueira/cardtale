@@ -75,6 +75,7 @@ class TimeSeriesData:
         self.dt.setup(self.df, self.time_col, self.target_col)
         self.seas_df = None
         self.stl_df = None
+        self.name = ''
 
         if period is not None:
             self.period = period
@@ -103,6 +104,11 @@ class TimeSeriesData:
 
         self.seas_df = pd.concat([self.df, self.dt.recurrent], axis=1)
         self.stl_df = get_stl_components(series=s, period=self.period)
+
+        self.set_tsd_name()
+
+    def set_tsd_name(self):
+        self.name = self.df[self.id_col].values[0]
 
     def get_period_groups(self, grouping_period: str):
         # done... questions about self.target_col

@@ -19,6 +19,9 @@ class ChangePointCard(Card):
         self.dist_changes = None
 
         self.metadata = {
+            'section_id': 'change_detection',
             'section_header_str': 'change_section_header',
             'section_intro_str': 'change_section_intro',
+            'section_toc_success': 'change_toc_success',
+            'section_toc_failure': 'change_toc_failure',
         }
