@@ -1,6 +1,14 @@
 {
-  "structural_section_header": "Basic Attributes",
-  "structural_section_intro": "",
+  "structural_section_header": "Data Overview",
+  "structural_section_intro": "This section examines the core characteristics and statistical properties of the time series. Understanding these attributes is important for assessing data quality and gaining a preliminary context. We explore the temporal structure, summary statistics, and distribution patterns to create a baseline understanding of your data.",
+  "trend_section_header": "Trend",
+  "trend_section_intro": "Trend refers to the long-term change in the mean level of a time series. It reflects systematic and gradual changes in the data over time. Understanding the trend is important for identifying long-term growth or decline, structural changes, and making informed modeling decisions. This section examines the characteristics of the trend of the time series.",
+  "seasonality_section_header": "Seasonality",
+  "seasonality_section_intro": "Seasonality represents recurring patterns or cycles that appear at regular intervals in time series data. These are predictable fluctuations that reflect periodic influences such as monthly, quarterly, or yearly cycles. Understanding seasonal patterns is crucial for forecasting, trend analysis, and identifying anomalies. This section examines the presence, strength, and characteristics of seasonal components in the input time series.",
+  "variance_section_header": "Variance",
+  "variance_section_intro": "Variance measures how data points spread around the average value in your time series. This section examines whether the variability remains stable (homoskedastic) or changes (heteroskedastic) over time. Understanding variance patterns is crucial for selecting appropriate modeling techniques, which can have a significant impact on forecasting accuracy.",
+  "change_section_header": "Change Detection",
+  "change_section_intro": "Change points denote significant shifts in the underlying distribution of time series. These structural changes can manifest as sudden shifts in level, trend, variance, or seasonal patterns. Detecting and understanding these points is crucial as they often indicate important events or regime changes that affect modeling decisions. This section identifies potential change points and assesses their impact on the overall analysis strategy.",
 
   "series_line_plot_caption": "Figure {}: Time series line plot.",
   "series_line_plot_analysis1": "A total of {} {} observations which span from {} to {}.",
@@ -42,8 +50,6 @@
   "series_acf_analysis_seas_some": "Only the following lags relative to the seasonal period show a significant autocorrelation: {}",
   "series_acf_analysis_other_m": "Besides the specified seasonal period ({}), there is an indication that the period {} shows a regular pattern.",
 
-  "trend_section_header": "Trend",
-  "trend_section_intro": "The trend component refers to the long-term change in the mean level of the series.",
   "trend_line_plot_caption": "Figure {}: Time series trend plot.",
   "trend_bp_plot_caption": "Figure {}: Boxplots showing the distribution of the series in {} consecutive quantiles.",
   "trend_lagplot_dhist_caption": "Figure {}: Distribution of percentage changes (left), and a Lag-plot (right). These plots help to understand how the data changes over consecutive observations. The histogram shown the distribution of these changes. The lag-plot depicts the randomness in the data. The time series shows greater randomness as the points deviate from the dotted line.",
@@ -65,8 +71,6 @@
   "trend_diff_dist_analysis5_kurtosis_normal": "The excess kurtosis of the differenced series is equal to {}. This value is similar to that found from data following a Gaussian distribution",
   "trend_diff_dist_analysis5_kurtosis_notnormal": "The excess kurtosis of the differenced series is equal to {}. This indicates that the data has a {} distribution.",
 
-  "seasonality_section_header": "Seasonality",
-  "seasonality_section_intro": "Seasonality represents regular and predictable patterns which recur in a fixed period (e.g. every month).",
 
   "seasonality_line_month_year_caption": "Figure {}: Seasonal plot of {} values grouped by {}.",
   "seasonality_line_analysis_seas_all0": "All hypothesis tests carried out ({}) indicate that the time series is stationary in seasonality for a {} period.",
@@ -93,8 +97,6 @@
   "seasonality_hm_month_year_caption": "Figure {}: Seasonal heatmap of {} values grouped by {}.",
   "seasonality_quarter_year_caption": "Figure {}: {} seasonal effects. Seasonal plot of {} values grouped by {} (left), and boxplot of {} distributions (right).",
 
-  "variance_section_header": "Variance",
-  "variance_section_intro": "Variance quantifies the dispersion of the time series. The data set is heteroskedastic if the variance changes over time, or homoskedastic otherwise.",
 
   "variance_std_plot_caption": "Figure {}: Rolling standard deviation of the series with a period of {} values.",
 
@@ -114,8 +116,6 @@
   "variance_dists_diff_p2none": "In the original scale, the {} distribution is a reasonable fit to the data. But, after taking the {} transformation, no appropriate distribution was found.",
   "variance_dists_diff": "In the original scale, the {} distribution is a reasonable fit to the data. But, after taking the {} transformation, a {} distribution was found to be a better fit.",
 
-  "change_section_header": "Change Detection",
-  "change_section_intro": "Change points occur when the time series distribution changes. These points complicate the application a consistent methodology for time series analysis.",
 
   "change_line_plot_caption": "Figure {}: Time series plot with marked change points according to the {} method.",
   "change_line_npoints": "There are a total of {} change points over the time series",
