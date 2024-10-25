@@ -34,7 +34,7 @@ class CardsBuilder:
 
         self.tests = TestingComponents(self.tsd)
 
-        self.sections = {
+        self.cards = {
             'structural': StructuralCard(tsd=self.tsd, tests=self.tests),
             'trend': TrendCard(tsd=self.tsd, tests=self.tests),
             'seasonality': SeasonalityCard(tsd=self.tsd, tests=self.tests),
@@ -42,65 +42,71 @@ class CardsBuilder:
             'change': ChangePointCard(tsd=self.tsd, tests=self.tests),
         }
 
-        self.plot_id = -1
-        self.sections_analysed = False
-        self.secs_to_omit = []
-        self.secs_included = []
+        self.cards_were_analysed = False
+        self.cards_to_omit = []
+        self.cards_included = []
 
-    def build_cards(self, doc_name: str, create_doc):
+        self.plot_id = -1
+
+        self.cards_raw_html = None
+        self.cards_html = None
+
+    def build_cards(self, render_html: bool = True):
 
         self.tests.run()
 
         print('Tests finished. \n Analysing results...')
 
-        self.secs_included, self.secs_to_omit = [], []
-        if not self.sections_analysed:
-            for sec in self.sections:
-                self.sections[sec].analyse()
+        if not self.cards_were_analysed:
+            for card_ in self.cards:
+                self.cards[card_].analyse()
 
-                if not self.sections[sec].show_content:
-                    self.secs_to_omit.append(sec)
+                if not self.cards[card_].show_content:
+                    self.cards_to_omit.append(card_)
                 else:
-                    self.secs_included.append(sec)
+                    self.cards_included.append(card_)
 
-            self.sections_analysed = True
+            self.cards_were_analysed = True
 
-        if create_doc:
-            self.build_doc()
+        if render_html:
+            self.render_doc_html()
 
-    def build_doc(self):
+    def render_doc_html(self):
         self.plot_id = 1
 
-        body_content = ''
-        for sec in self.sections:
-            # sec = 'structural'
+        deck_content = ''
+        for card_ in self.cards:
 
-            self.sections[sec].build_plots()
-            for plt in self.sections[sec].plots:
-                self.sections[sec].plots[plt].format_caption(self.plot_id)
+            self.cards[card_].build_plots()
+            for plt in self.cards[card_].plots:
+                self.cards[card_].plots[plt].format_caption(self.plot_id)
                 self.plot_id += 1
 
-            self.sections[sec].build_report_section()
+            self.cards[card_].build_report_section()
 
-            content = self.sections[sec].content_html
+            card_content = self.cards[card_].content_html
 
-            if sec == 'structural':
-                content += Card.get_organization_content(self.secs_included, self.secs_to_omit)
+            if card_ == 'structural':
+                card_content += Card.get_organization_content(self.cards_included, self.cards_to_omit)
 
-            body_content += content
+            deck_content += card_content
 
+        self._render_html_jinja(toc_content='', card_content=deck_content)
+
+        self.cards_html = HTML(string=self.cards_raw_html)  # .write_pdf("output.pdf")
+
+        return self.cards_html
+
+    def get_pdf(self, path: str = 'EXAMPLE_OUTPUT.pdf'):
+        self.cards_html.write_pdf(path)
+
+    def _render_html_jinja(self, toc_content, card_content):
         env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
 
         template = env.get_template(STRUCTURE_TEMPLATE)
 
-        # toc = generate_toc(body_content)
-        # print(toc)
-
-        html_rendered = template.render(toc_content='', card_content=body_content)
-
-        HTML(string=html_rendered).write_pdf("output.pdf")
-
-        return html_rendered
+        self.cards_raw_html = template.render(toc_content=toc_content,
+                                              card_content=card_content)
 
     # @staticmethod
     # def generate_toc(html_content: str):

@@ -60,7 +60,6 @@ class DataSplit:
         df = pd.concat([p1_df, p2_df])
 
         df['Part'] = cls.df_var_to_categorical(df, 'Part')
-        print(df)
 
         return df
 

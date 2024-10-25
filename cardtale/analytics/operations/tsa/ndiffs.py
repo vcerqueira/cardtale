@@ -17,7 +17,7 @@ class DifferencingTests:
     NSDIFF_TESTS = {
         'seas': 'Wang-Smith-Hyndman',
         'ocsb': 'OCSB',
-        'ch': 'Canova-Hansen'
+        # 'ch': 'Canova-Hansen'
     }
 
     NDIFF_TESTS = {
@@ -46,6 +46,9 @@ class DifferencingTests:
         --------
         int : Recommended number of seasonal differences
         """
+        print('series')
+        print(series)
+
         if test not in DifferencingTests.NSDIFF_TESTS:
             raise ValueError(f"Unknown test type. Must be one of {[*DifferencingTests.NSDIFF_TESTS]}")
 
@@ -144,27 +147,3 @@ class DifferencingTests:
         ndiffs = 1 if p_value < 0.05 else 0
 
         return ndiffs
-
-    @staticmethod
-    def _canova_hansen_test(series: pd.Series, frequency: int) -> int:
-        """
-        Simplified Canova-Hansen test
-
-        """
-        # de-trend
-        detrended = series - pd.Series(np.polynomial.polynomial.polyfit(
-            np.arange(len(series)), series, deg=1)).values
-
-        # seasonal dummy variables
-        seasonal_dummies = pd.get_dummies(np.arange(len(series)) % frequency)
-
-        # Calculate test statistic
-        test_stat = np.sum(np.square(
-            seasonal_dummies.T.dot(detrended))) / (len(series) * frequency)
-
-        # Critical value (approximate)
-        critical_value = 0.461  # 5% significance level
-
-        n_diffs = 1 if test_stat > critical_value else 0
-
-        return n_diffs
