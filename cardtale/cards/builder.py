@@ -48,15 +48,13 @@ class CardsBuilder:
         self.cards_were_analysed = False
         self.cards_to_omit = []
         self.cards_included = []
-
-        self.plot_id = -1
-
         self.cards_raw_str = ''
         self.cards_raw_html = None
         self.cards_html = None
 
-    def build_cards(self, render_html: bool = True):
+        self.plot_id = -1
 
+    def build_cards(self, render_html: bool = True):
         self.tests.run()
 
         print('Tests finished. \n Analysing results...')

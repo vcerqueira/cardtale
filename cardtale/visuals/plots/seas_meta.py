@@ -71,3 +71,38 @@ class SeasonalMetaPlots:
         for k in self.plots:
             self.plots[k].build()
             self.plots[k].save()
+
+    def _frequency_plots(self):
+
+        plots = {
+            'half_hourly': {
+
+            },
+
+            'hourly': {
+
+            },
+
+            'daily': {
+
+            },
+
+            'weekly': {
+
+            },
+
+            'monthly': {
+
+            },
+
+            'quarterly': {
+
+            },
+
+            'yearly': {
+
+            },
+
+        }
+
+        return plots

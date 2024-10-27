@@ -19,15 +19,15 @@ SDEVS = 'eq_std'
 
 class SeasonalityTesting(UnivariateTester):
     """
-    todo add estimated cycle to list of plausible cycles
-    todo add effect of seasonal differencing -- need to implement inv season diff
+    todo o periodo deveria ser parametrizado
+
+
     """
 
     def __init__(self, tsd: TimeSeriesData, freq_naming: str):
         super().__init__(tsd)
 
         self.period = tsd.period if tsd.period != 1 else None
-        self.est_period = -1
         self.prob_seasonality = -1
         self.moments = {}
         self.moments_bool = {}
@@ -48,6 +48,7 @@ class SeasonalityTesting(UnivariateTester):
         self.prob_seasonality = self.tests.mean()
 
     def run_landmarks(self):
+        # adicionar info do period
         seasonal_lm = SeasonalLandmarks(tsd=self.tsd)
         seasonal_lm.run()
 
@@ -182,17 +183,22 @@ class SeasonalityTestingMulti:
         self.summary = None
         self.group_var = []
         # todo to dict for other granularities
-        self.analysed_periods = ['Monthly', 'Quarterly']
+        self.seasonal_periods = ['Monthly', 'Quarterly']
+
+        # from pprint import pprint
+        # pprint(tcard.tests.seasonality.tests)
+        # pd.set_option('display.max_columns', None)
+        # tcard.tsd.dt.formats
 
         self.show_plots = {}
         self.failed_periods = {}
 
     def run_tests(self):
         self.period_tests = SeasonalityTesting(tsd=self.tsd, freq_naming='')
-
         self.period_tests.run_statistical_tests()
 
         freq_df = self.tsd.dt.formats
+        freq_df = freq_df[~freq_df['name'].duplicated(), :]
 
         for _, freq in freq_df.iterrows():
             freq_tests = SeasonalityTesting(tsd=self.tsd, freq_naming=freq['name'])
@@ -202,22 +208,22 @@ class SeasonalityTestingMulti:
             freq_tests.run_misc()
 
             if freq_tests.moments_bool['eq_std']:
-                if freq['name'] in self.analysed_periods:
+                if freq['name'] in self.seasonal_periods:
                     self.group_var.append(freq['name'])
 
             self.tests[freq['name']] = freq_tests
 
-        summary_df = {}
-        for freq in self.tests:
-            perf = self.tests[freq].performance
-            summary_df[freq] = {
-                'perf_delta': perf['base'] - perf['both'],
-                'prob': self.tests[freq].prob_seasonality,
-            }
-
-        # fixme can I discard this shit table?
-        self.summary = pd.DataFrame(summary_df).T
-        self.summary = self.summary.sort_values(['perf_delta', 'prob'], ascending=False)
+        # summary_df = {}
+        # for freq in self.tests:
+        #     perf = self.tests[freq].performance
+        #     summary_df[freq] = {
+        #         'perf_delta': perf['base'] - perf['both'],
+        #         'prob': self.tests[freq].prob_seasonality,
+        #     }
+        #
+        # # fixme can I discard this shit table?
+        # self.summary = pd.DataFrame(summary_df).T
+        # self.summary = self.summary.sort_values(['perf_delta', 'prob'], ascending=False)
 
     def get_show_analysis(self):
         if len(self.show_plots) > 0:

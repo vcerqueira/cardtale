@@ -8,6 +8,7 @@ AVAILABLE_FREQ = {
     'ME': 'Monthly',
     'MS': 'Monthly',
     'Q': 'Quarterly',
+    'QE': 'Quarterly',
     'QS': 'Quarterly',
     'Y': 'Yearly',
 }
@@ -20,6 +21,7 @@ HORIZON_BY_FREQUENCY = {
     'ME': 12,
     'MS': 12,
     'Q': 6,
+    'QE': 6,
     'QS': 6,
     'Y': 3,
 }
@@ -91,6 +93,13 @@ FREQUENCY_TABLE = {
            'main_period': ['YS'],
            'main_period_int': 4,
            'main_period_name': ['Yearly'], },
+    'QE': {'format': '%Y-%U',
+           'format_pretty': '%Y-%U',
+           'name': 'Quarterly',
+           'index': '.quarter',
+           'main_period': ['YS'],
+           'main_period_int': 4,
+           'main_period_name': ['Yearly'], },
     'YS': {'format': '%Y',
            'format_pretty': '%Y',
            'name': 'Yearly',
@@ -143,6 +152,7 @@ FREQUENCY_INT_DICT = {
     'MS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 4, 'YS': 12},
     'ME': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 4, 'YS': 12},
     'QS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 0, 'YS': 4},
+    'QE': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 0, 'YS': 4},
     'YS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 0, 'YS': 0},
 }
 
