@@ -1,3 +1,5 @@
+from typing import Optional
+
 from mlforecast import MLForecast
 from mlforecast.target_transforms import Differences
 from utilsforecast.feature_engineering import fourier
@@ -11,7 +13,12 @@ from cardtale.analytics.operations.landmarking.config import EXPERIMENT_MODES, M
 class SeasonalLandmarks(Landmarks):
     TEST_NAME = 'seasonality'
 
-    def __init__(self, tsd: TimeSeriesData):
+    def __init__(self, tsd: TimeSeriesData, target_period: Optional[int] = None):
+
+        if target_period is not None:
+            self.target_period = target_period
+        else:
+            self.target_period = self.tsd.period
 
         super().__init__(tsd=tsd, test_name=self.TEST_NAME)
 
@@ -20,7 +27,7 @@ class SeasonalLandmarks(Landmarks):
         conf = EXPERIMENT_MODES[self.test_name][config_name]
 
         if conf['seasonal_differences']:
-            target_t = [Differences([self.tsd.period])]
+            target_t = [Differences([self.target_period])]
         else:
             target_t = None
 
@@ -29,7 +36,7 @@ class SeasonalLandmarks(Landmarks):
         if conf['fourier']:
             df, _ = fourier(df=df_,
                             freq=self.tsd.dt.freq,
-                            season_length=self.tsd.period,
+                            season_length=self.target_period,
                             k=N_TERMS,
                             h=0)
             static_features = []

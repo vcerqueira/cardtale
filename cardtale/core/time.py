@@ -4,7 +4,11 @@ from typing import Tuple
 import numpy as np
 import pandas as pd
 
-from cardtale.core.config.freq import FREQ_TAB, FREQUENCIES, FREQ_INT_DF, SEASONS
+from cardtale.core.config.freq import (FREQ_TAB,
+                                       FREQUENCIES,
+                                       FREQ_INT_DF,
+                                       SEASONS,
+                                       FREQUENCY_TABLE_UNITS)
 from cardtale.core.utils.splits import DataSplit
 
 DFTuple = Tuple[pd.DataFrame, pd.DataFrame]
@@ -33,6 +37,7 @@ class TimeDF:
         self.sequence = None
         self.recurrent = None
         self.freq_name = ''
+        self.seasonal_period_units = FREQUENCY_TABLE_UNITS[self.freq]
 
     def setup(self, df: pd.DataFrame, time_col: str, target_col: str):
         """

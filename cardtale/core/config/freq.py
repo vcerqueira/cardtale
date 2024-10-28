@@ -104,9 +104,9 @@ FREQUENCY_TABLE = {
            'format_pretty': '%Y',
            'name': 'Yearly',
            'index': '.year',
-           'main_period': ['???'],
+           'main_period': ['N/A'],
            'main_period_int': 1,
-           'main_period_name': ['???'], },
+           'main_period_name': ['N/A'], },
 }
 
 SEASONS = {
@@ -114,6 +114,23 @@ SEASONS = {
     2: 'Spring',
     3: 'Summer',
     4: 'Autumn',
+}
+
+# units that appear in plots
+# e.g. monthly time series have
+### monthly (month-by-month),
+### and quarterly (quarter-by-quarter) units
+FREQUENCY_TABLE_UNITS = {
+    'H': ['Hourly', 'Daily', 'Weekly', 'Monthly'],
+    'D': ['Daily', 'Weekly', 'Monthly'],
+    'W': ['Weekly', 'Monthly', 'Quarterly'],
+    'M': ['Monthly', 'Quarterly'],
+    'ME': ['Monthly', 'Quarterly'],
+    'MS': ['Monthly', 'Quarterly'],
+    'Q': ['Quarterly'],
+    'QE': ['Quarterly'],
+    'QS': ['Quarterly'],
+    'Y': ['N/A'],
 }
 
 FREQUENCIES = [*FREQUENCY_TABLE]
@@ -126,34 +143,42 @@ FREQUENCY_INT_DICT = {
             'D': 60 * 24,
             'W': 60 * 24 * 7,
             'MS': 0,
+            'ME': 0,
             'QS': 0,
+            'QE': 0,
             'YS': 0},
     'H': {'min': 0,
           'H': 0,
           'D': 24,
           'W': 24 * 7,
           'MS': 24 * 7 * 30.5,
+          'ME': 24 * 7 * 30.5,
           'QS': 24 * 7 * 30.5 * 3,
+          'QE': 24 * 7 * 30.5 * 3,
           'YS': 24 * 7 * 30.5 * 3 * 4},
     'D': {'min': 0,
           'H': 0,
           'D': 0,
           'W': 7,
           'MS': 30.5,
+          'ME': 30.5,
           'QS': 365.25 / 4,
+          'QE': 365.25 / 4,
           'YS': 365.25},
     'W': {'min': 0,
           'H': 0,
           'D': 0,
           'W': 0,
           'MS': 4.35,
+          'ME': 4.35,
           'QS': 4.35 * 4,
+          'QE': 4.35 * 4,
           'YS': 52.2},
-    'MS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 4, 'YS': 12},
-    'ME': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 4, 'YS': 12},
-    'QS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 0, 'YS': 4},
-    'QE': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 0, 'YS': 4},
-    'YS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'QS': 0, 'YS': 0},
+    'MS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'ME': 0, 'QS': 4, 'QE': 4, 'YS': 12},
+    'ME': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'ME': 0, 'QS': 4, 'QE': 4, 'YS': 12},
+    'QS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'ME': 0, 'QS': 0, 'QE': 0, 'YS': 4},
+    'QE': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'ME': 0, 'QS': 0, 'QE': 0, 'YS': 4},
+    'YS': {'min': 0, 'H': 0, 'D': 0, 'W': 0, 'MS': 0, 'ME': 0, 'QS': 0, 'QE': 0, 'YS': 0},
 }
 
 FREQ_INT_DF = pd.DataFrame(FREQUENCY_INT_DICT)

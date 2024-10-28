@@ -62,7 +62,7 @@ class SeasonalMetaPlots:
     def make_all(self):
 
         for k in self.plots:
-            # print(k)
+            print(k)
             self.plots[k].analyse()
 
         self.plots = {k: self.plots[k] for k in self.plots
