@@ -46,7 +46,9 @@ class SeasonalLinePlot(Plot):
         """
         self.show_me = True
 
-        tests = self.tests.seasonality.tests[self.named_seasonality].tests
+        # tests = self.tests.seasonality.tests[self.named_seasonality].tests
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
+
         main_freq = self.caption_expr[0]
 
         # print(tests)

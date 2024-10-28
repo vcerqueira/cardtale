@@ -61,9 +61,9 @@ class VarianceDistPlots(Plot):
         if not self.show_me:
             return
 
-        if len(self.tests.variance.group_var) > 0:
+        if len(self.tests.variance.groups_with_diff_var) > 0:
             gd_from_seas = gettext('variance_partition_analysis_seas')
-            gd_from_seas = gd_from_seas.format(join_l(self.tests.variance.group_var))
+            gd_from_seas = gd_from_seas.format(join_l(self.tests.variance.groups_with_diff_var))
         else:
             gd_from_seas = gettext('variance_partition_analysis_seas_none')
 

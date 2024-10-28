@@ -26,7 +26,7 @@ class SeriesComponentsPlot(Plot):
 
     def analyse(self):
 
-        seas_t = self.tests.seasonality.period_tests.tests
+        seas_t = self.tests.seasonality.seas_tests_on_main
         # todo level not used
         trend, no_trend, level, no_level = self.tests.trend.results_in_list()
 

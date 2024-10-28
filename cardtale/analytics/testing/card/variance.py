@@ -18,7 +18,7 @@ class VarianceTesting(UnivariateTester):
         super().__init__(tsd)
 
         self.prob_heteroskedastic: float = -1
-        self.group_var = []
+        self.groups_with_diff_var = []
         self.residuals = None
 
     def run_statistical_tests(self):
@@ -151,7 +151,7 @@ class VarianceShowTests:
         is_heteroskedastic = tests.prob_heteroskedastic > 0
         log_improves = tests.performance['base'] > tests.performance['log']
         boxcox_improves = tests.performance['base'] > tests.performance['boxcox']
-        exists_groupdiff = len(tests.group_var) > 0
+        exists_groupdiff = len(tests.groups_with_diff_var) > 0
 
         show_me = is_heteroskedastic or log_improves or boxcox_improves or exists_groupdiff
 

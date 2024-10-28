@@ -4,7 +4,7 @@ from scipy.stats import f_oneway, kruskal
 from scipy.stats import levene, bartlett
 
 
-class GroupMoments:
+class GroupBasedTesting:
 
     @staticmethod
     def anova_test(group_list: List[Union[float, int]]):
@@ -35,7 +35,7 @@ class GroupMoments:
         return p_value
 
     @classmethod
-    def compare_groups(cls, group_list: List):
+    def run_tests(cls, group_list: List):
         comparisons = {
             'eq_means': cls.anova_test(group_list),
             'eq_medians': cls.kruskal_test(group_list),

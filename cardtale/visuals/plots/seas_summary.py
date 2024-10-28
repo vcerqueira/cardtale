@@ -9,8 +9,6 @@ from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.config import PLOT_NAMES
 
-MEANS = 'eq_means'
-SDEVS = 'eq_std'
 MEAN_AND_STD = 'mean and standard deviation'
 MEAN_ONLY = 'mean'
 STD_ONLY = 'standard deviation'
@@ -64,12 +62,11 @@ class SeasonalSummaryPlots(Plot):
         else:
             return
 
-        tests = self.tests.seasonality.tests[self.named_seasonality]
+        # tests = self.tests.seasonality.tests[self.named_seasonality]
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
 
-        group_comparisions = tests.moments_bool
-
-        rej_mean = group_comparisions[MEANS]
-        rej_std = group_comparisions[SDEVS]
+        group_tests = tests.group_tests_b
+        rej_mean, rej_std = group_tests['eq_means'], group_tests['eq_std']
 
         if rej_mean and rej_std:
             summary_an = gettext('seasonality_summary_plot_analysis')

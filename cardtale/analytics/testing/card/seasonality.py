@@ -1,11 +1,10 @@
-import re
-from typing import Tuple, Dict, Optional
+from typing import Tuple, Dict
 
 import numpy as np
 import pandas as pd
 
 from cardtale.analytics.operations.tsa.ndiffs import DifferencingTests
-from cardtale.analytics.operations.tsa.group_tests import GroupMoments
+from cardtale.analytics.operations.tsa.group_tests import GroupBasedTesting
 from cardtale.analytics.operations.landmarking.seasonality import SeasonalLandmarks
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.analytics.testing.card.trend import UnivariateTrendTesting
@@ -20,29 +19,21 @@ class SeasonalityTesting(UnivariateTester):
 
     def __init__(self,
                  tsd: TimeSeriesData,
-                 freq_naming: str,
-                 target_period: Optional[int] = None):
+                 period_data: Dict):
+
         super().__init__(tsd)
 
-        if target_period is not None:
-            self.target_period = target_period
-        else:
-            self.target_period = tsd.period
-
-        if self.target_period == 1:
-            self.target_period = None
-
+        self.period_data = period_data
         self.prob_seasonality = -1
-        self.moments = {}
-        self.moments_bool = {}
-        self.freq_naming = freq_naming
+        self.group_tests = {}
+        self.group_tests_b = {}
 
     def run_statistical_tests(self):
         for k, name in DifferencingTests.NSDIFF_TESTS.items():
-            if self.target_period is not None:
+            if self.period_data['period'] is not None:
                 self.tests[name] = \
                     DifferencingTests.nsdiffs(series=self.series,
-                                              period=self.target_period,
+                                              period=self.period_data['period'],
                                               test=k)
             else:
                 self.tests[name] = np.nan
@@ -52,23 +43,23 @@ class SeasonalityTesting(UnivariateTester):
         self.prob_seasonality = self.tests.mean()
 
     def run_landmarks(self):
-        if self.target_period is None:
+        if self.period_data['period'] is None:
             self.performance = {'base': 0, 'both': 0}
             return
 
-        seasonal_lm = SeasonalLandmarks(tsd=self.tsd, target_period=self.target_period)
+        seasonal_lm = SeasonalLandmarks(tsd=self.tsd, target_period=self.period_data['period'])
         seasonal_lm.run()
 
         self.performance = seasonal_lm.results
 
     def run_misc(self):
-        freq = re.sub('ly$', '', self.freq_naming)
+        freq = self.period_data['base']
 
         data_group = self.tsd.seas_df.groupby(freq, observed=False)[self.tsd.target_col]
         data_group_list = [x.values for _, x in data_group]
 
-        self.moments = GroupMoments.compare_groups(data_group_list)
-        self.moments_bool = {k: self.moments[k] < ALPHA for k in self.moments}
+        self.group_tests = GroupBasedTesting.run_tests(data_group_list)
+        self.group_tests_b = {k: self.group_tests[k] < ALPHA for k in self.group_tests}
 
     @staticmethod
     def seasonal_tests_parser(tests_results: pd.Series, named_frequency: str):
@@ -185,58 +176,64 @@ class SeasonalityTestingMulti:
     def __init__(self, tsd: TimeSeriesData):
 
         self.tsd = tsd
-        self.tests = {}
-        self.period_tests = None
-        # self.summary = None
-        self.group_var = []
-        # todo to dict for other granularities
-        # self.seasonal_periods = ['Monthly', 'Quarterly']
-        self.seasonal_periods = self.tsd.dt.seasonal_period_units
 
-        # from pprint import pprint
-        # pprint(tcard.tests.seasonality.tests)
-        # pd.set_option('display.max_columns', None)
-        # tcard.tsd.dt.formats
+        self.period_data_l = [{'base': 'Month', 'name': 'Yearly', 'main': True, 'period': 12, 'group_tests': False},
+                              {'base': 'Quarter', 'name': 'Quarterly', 'main': False, 'period': 4, 'group_tests': True},
+                              {'base': 'Month', 'name': 'Monthly', 'main': False, 'period': None, 'group_tests': True}]
+
+        self.tests = []
+        self.seas_tests_on_main = None
+        self.groups_with_diff_var = []
 
         self.show_plots = {}
         self.failed_periods = {}
 
     def run_tests(self):
-        self.period_tests = SeasonalityTesting(tsd=self.tsd, freq_naming='')
-        self.period_tests.run_statistical_tests()
+        for period_ in self.period_data_l:
+            print(period_)
 
-        freq_df = self.tsd.dt.formats
-        # pd.set_option('display.max_columns', None)
-        # print(freq_df)
-        freq_df = freq_df.loc[~freq_df['name'].duplicated(), :]
+            seas_tests = SeasonalityTesting(tsd=self.tsd, period_data=period_)
+            seas_tests.run_statistical_tests()
+            seas_tests.run_landmarks()
+            seas_tests.run_misc()
 
-        for _, freq in freq_df.iterrows():
-            # print(freq)
+            if period_['main']:
+                self.seas_tests_on_main = seas_tests.tests
 
-            freq_tests = SeasonalityTesting(tsd=self.tsd,
-                                            target_period=freq['period'],
-                                            freq_naming=freq['name'])
+            if seas_tests.group_tests_b['eq_std']:
+                if period_['group_tests']:
+                    # this info will be used in the variance card
+                    self.groups_with_diff_var.append(period_['name'])
 
-            freq_tests.run_statistical_tests()
-            freq_tests.run_landmarks()
-            freq_tests.run_misc()
+            self.tests.append(seas_tests)
 
-            if freq_tests.moments_bool['eq_std']:
-                if freq['name'] in self.seasonal_periods:
-                    self.group_var.append(freq['name'])
+    def get_tests_by_named_seasonality(self, named_seasonality: str):
+        """
+        Get SeasonalityTesting object by named seasonality
 
-            self.tests[freq['name']] = freq_tests
+        Args:
+            named_seasonality:  the name of the seasonal patterns, e.g.
+            yaerly seasonality for monthly data when the period is 12
+
+        Returns:
+
+        """
+        for t in self.tests:
+            if t.period_data['name'] == named_seasonality:
+                return t
+
+        return None
 
     def get_show_analysis(self):
         if len(self.show_plots) > 0:
             # analysis was already done
             return self.show_plots, self.failed_periods
 
-        for k in self.tests:
-            show_ss, ss_partial_outcomes = SeasonalityShowTests.show_subseries(self.tests[k])
-            show_summary = SeasonalityShowTests.show_summary_plot(self.tests[k])
+        for period_tests in self.tests:
+            show_ss, ss_partial_outcomes = SeasonalityShowTests.show_subseries(period_tests)
+            show_summary = SeasonalityShowTests.show_summary_plot(period_tests)
 
-            self.show_plots[k] = {
+            self.show_plots[period_tests.period_data['name']] = {
                 'seas_subseries': {
                     'show': show_ss,
                     'which': ss_partial_outcomes,
@@ -260,14 +257,11 @@ class SeasonalityShowTests:
 
     @staticmethod
     def show_summary_plot(tests: SeasonalityTesting) -> bool:
-        group_comps = tests.moments_bool
+        grp_tests = tests.group_tests_b
 
-        rej_mean = group_comps['eq_means']
-        rej_std = group_comps['eq_std']
+        show_plots_if = grp_tests['eq_means'] or grp_tests['eq_std']
 
-        show_me = rej_mean or rej_std
-
-        return show_me
+        return show_plots_if
 
     @staticmethod
     def show_subseries(tests: SeasonalityTesting) -> Tuple[bool, Dict]:

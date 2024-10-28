@@ -89,7 +89,8 @@ class SeasonalSubSeriesPlot(Plot):
             groups_comps = gettext('seasonality_summary_fail').format(f'{self.x_axis_col.lower()}s')
             self.analysis.append(groups_comps)
 
-        tests = self.tests.seasonality.tests[self.named_seasonality].tests
+        #tests = self.tests.seasonality.tests[self.named_seasonality].tests
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
 
         named_level_st = self.tests.trend.prob_level_str
 

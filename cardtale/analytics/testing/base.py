@@ -36,7 +36,7 @@ class TestingComponents:
         self.variance.run_statistical_tests()
         self.variance.run_landmarks()
         self.variance.run_misc()
-        self.variance.group_var = self.seasonality.group_var
+        self.variance.groups_with_diff_var = self.seasonality.groups_with_diff_var
 
         self.change.run_statistical_tests()
         self.change.run_landmarks()

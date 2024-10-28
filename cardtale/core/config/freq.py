@@ -120,18 +120,18 @@ SEASONS = {
 # e.g. monthly time series have
 ### monthly (month-by-month),
 ### and quarterly (quarter-by-quarter) units
-FREQUENCY_TABLE_UNITS = {
-    'H': ['Hourly', 'Daily', 'Weekly', 'Monthly'],
-    'D': ['Daily', 'Weekly', 'Monthly'],
-    'W': ['Weekly', 'Monthly', 'Quarterly'],
-    'M': ['Monthly', 'Quarterly'],
-    'ME': ['Monthly', 'Quarterly'],
-    'MS': ['Monthly', 'Quarterly'],
-    'Q': ['Quarterly'],
-    'QE': ['Quarterly'],
-    'QS': ['Quarterly'],
-    'Y': ['N/A'],
-}
+# FREQUENCY_TABLE_UNITS = {
+#     'H': ['Hourly', 'Daily', 'Weekly', 'Monthly'],
+#     'D': ['Daily', 'Weekly', 'Monthly'],
+#     'W': ['Weekly', 'Monthly', 'Quarterly'],
+#     'M': ['Monthly', 'Quarterly'],
+#     'ME': ['Monthly', 'Quarterly'],
+#     'MS': ['Monthly', 'Quarterly'],
+#     'Q': ['Quarterly'],
+#     'QE': ['Quarterly'],
+#     'QS': ['Quarterly'],
+#     'Y': ['N/A'],
+# }
 
 FREQUENCIES = [*FREQUENCY_TABLE]
 
