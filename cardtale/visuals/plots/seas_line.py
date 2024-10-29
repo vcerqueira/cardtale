@@ -13,6 +13,7 @@ class SeasonalLinePlot(Plot):
                  tsd: TimeSeriesData,
                  tests: TestingComponents,
                  name: str,
+                 add_labels: bool,
                  named_seasonality: str,
                  x_axis_col: str,
                  group_col: str):
@@ -22,6 +23,7 @@ class SeasonalLinePlot(Plot):
         self.caption = gettext('seasonality_line_month_year_caption')
         self.x_axis_col = x_axis_col
         self.group_col = group_col
+        self.add_labels = add_labels
 
         self.caption_expr = f'{self.x_axis_col}ly', self.group_col
 
@@ -35,6 +37,7 @@ class SeasonalLinePlot(Plot):
                                        x_axis_col=self.x_axis_col,
                                        y_axis_col=self.tsd.target_col,
                                        group_col=self.group_col,
+                                       add_labels=self.add_labels,
                                        add_smooth=True)
 
     def analyse(self):

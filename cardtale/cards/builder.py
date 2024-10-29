@@ -78,6 +78,7 @@ class CardsBuilder:
 
         self.cards_raw_str = ''
         for card_ in self.cards:
+            print(card_)
 
             self.cards[card_].build_plots()
             for plt in self.cards[card_].plots:

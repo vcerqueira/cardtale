@@ -67,9 +67,16 @@ class Plot:
     def save(self):
 
         if not self.multi_plot:
-            img_code = self.get_encode(self.plot,
-                                       height=self.height,
-                                       width=self.width)
+            print('here')
+
+            try:
+                img_code = self.get_encode(self.plot,
+                                           height=self.height,
+                                           width=self.width)
+            except IndexError as e:
+                print(self.plot)
+                print(e)
+                raise IndexError('---')
 
             self.img_data = {
                 'src': img_code,

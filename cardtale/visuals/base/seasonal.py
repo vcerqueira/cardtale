@@ -18,10 +18,10 @@ class SeasonalPlot:
               x_axis_col: str,
               y_axis_col: str,
               group_col: str,
+              add_labels: bool,
               x_lab: str = '',
               y_lab: str = '',
               title: str = '',
-              add_labels: bool = True,
               add_smooth: bool = False):
 
         aes_ = {'x': x_axis_col, 'y': y_axis_col, 'group': group_col, 'color': group_col}

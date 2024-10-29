@@ -133,6 +133,29 @@ SEASONS = {
 #     'Y': ['N/A'],
 # }
 
+PLOTTING_SEAS_CONFIGS = {
+    'hourly': [{'base': 'Hour', 'name': 'Daily', 'main': True, 'period': 24, 'group_tests': True},
+               {'base': 'Week', 'name': 'Weekly', 'main': False, 'period': 52 * 24, 'group_tests': True},
+               {'base': 'Hour', 'name': 'Hourly', 'main': False, 'period': None, 'group_tests': True}],
+
+    'daily': [{'base': 'Day', 'name': 'Weekly', 'main': True, 'period': 7, 'group_tests': True},
+              {'base': 'Month', 'name': 'Monthly', 'main': False, 'period': 30, 'group_tests': True},
+              {'base': 'Day', 'name': 'Daily', 'main': False, 'period': None, 'group_tests': True}],
+
+    'weekly': [{'base': 'Week', 'name': 'Yearly', 'main': True, 'period': 52, 'group_tests': False},
+               {'base': 'Month', 'name': 'Monthly', 'main': False, 'period': 4, 'group_tests': True},
+               {'base': 'Week', 'name': 'Weekly', 'main': False, 'period': None, 'group_tests': True}],
+
+    'monthly': [{'base': 'Month', 'name': 'Yearly', 'main': True, 'period': 12, 'group_tests': False},
+                {'base': 'Quarter', 'name': 'Quarterly', 'main': False, 'period': 4, 'group_tests': True},
+                {'base': 'Month', 'name': 'Monthly', 'main': False, 'period': None, 'group_tests': True}],
+
+    'quarterly': [{'base': 'Quarter', 'name': 'Yearly', 'main': True, 'period': 4, 'group_tests': True},
+                  {'base': 'Quarter', 'name': 'Quarterly', 'main': False, 'period': None, 'group_tests': True}],
+    'yearly': None,
+
+}
+
 FREQUENCIES = [*FREQUENCY_TABLE]
 
 FREQ_TAB = pd.DataFrame(FREQUENCY_TABLE).T

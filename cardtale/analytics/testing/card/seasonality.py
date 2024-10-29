@@ -13,6 +13,7 @@ from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
 
 from cardtale.core.utils.errors import AnalysisLogicalError
+from cardtale.core.config.freq import PLOTTING_SEAS_CONFIGS
 
 
 class SeasonalityTesting(UnivariateTester):
@@ -110,8 +111,9 @@ class SeasonalityTesting(UnivariateTester):
         elif by_st and by_perf:
             effect_analysis = gettext('seasonality_subseries_opt3')
         else:
-            # return None
-            raise AnalysisLogicalError('AnalysisLogicalError---')
+            return None
+            # todo check this
+            # raise AnalysisLogicalError('AnalysisLogicalError---')
 
         effect_analysis = effect_analysis.format(st_freq.lower())
 
@@ -177,9 +179,7 @@ class SeasonalityTestingMulti:
 
         self.tsd = tsd
 
-        self.period_data_l = [{'base': 'Month', 'name': 'Yearly', 'main': True, 'period': 12, 'group_tests': False},
-                              {'base': 'Quarter', 'name': 'Quarterly', 'main': False, 'period': 4, 'group_tests': True},
-                              {'base': 'Month', 'name': 'Monthly', 'main': False, 'period': None, 'group_tests': True}]
+        self.period_data_l = PLOTTING_SEAS_CONFIGS[self.tsd.dt.freq_name.lower()]
 
         self.tests = []
         self.seas_tests_on_main = None
