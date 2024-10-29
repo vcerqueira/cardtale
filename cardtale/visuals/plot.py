@@ -14,21 +14,27 @@ warnings.filterwarnings('ignore', category=PlotnineWarning)
 
 class Plot:
     """
-    This is a class for plotting the series
-
-    A plot class for analysing a specific aspect of the series.
-    This class handle the plot and the respective analysis
+    Base class for all plots in the system
 
     Attributes:
-        data (UVTimeSeries): Univariate time series
-        plot (dict): A dict with graphics
-        multi_plot (bool): Whether the plot include a single graphic or two
-        analysis (list): List of textual analysis
-        file_path (str): Path where the plot is saved
-        caption (str): Plot caption
-        show_me (bool): Whether the plot should be included in the report
-        img_data (dict): Plot meta-data
-        plot_name (dict): Plot name identifier
+        HEIGHT (float): Default height for plots.
+        HEIGHT_SMALL (float): Default height for small plots.
+        WIDTH (float): Default width for plots.
+        WIDTH_SMALL (float): Default width for small plots.
+        tsd (TimeSeriesData): Time series data for the plot.
+        plot (Any): The plot object.
+        name (NameOptList): Name(s) of the plot.
+        multi_plot (bool): Flag indicating if the plot is a multi-plot.
+        analysis (List[str]): List of analysis results.
+        caption (str): Caption for the plot.
+        show_me (bool): Flag indicating if the plot should be shown.
+        img_data (dict): Dictionary containing image data.
+        plot_name (str): Name of the plot.
+        width (float): Width of the plot.
+        height (float): Height of the plot.
+        width_s (float): Width of the small plot.
+        height_s (float): Height of the small plot.
+
     """
 
     HEIGHT = 4.5
@@ -37,12 +43,21 @@ class Plot:
     WIDTH_SMALL = 6
 
     def __init__(self, tsd: TimeSeriesData, name: NameOptList, multi_plot: bool):
+        """
+        Initializes the Plot class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            name (NameOptList): Name(s) of the plot.
+            multi_plot (bool): Flag indicating if the plot is a multi-plot.
+
+        """
+
         self.tsd = tsd
         self.plot = None
         self.name = name
         self.multi_plot = multi_plot
         self.analysis = []
-        self.file_path = ''
         self.caption = ''
         self.show_me = False
         self.img_data = {}
@@ -54,29 +69,33 @@ class Plot:
 
     def build(self, **kwargs):
         """
-        Creating the actual plot
+        Creates the plot.
+
+        Args:
+            **kwargs: Additional keyword arguments.
+
         """
         pass
 
     def analyse(self, **kwargs):
         """
-        Analysing the data to be plotted
+        Analyzes the data to be plotted.
+
+        Args:
+            **kwargs: Additional keyword arguments.
         """
         pass
 
     def save(self):
+        """
+        Saves the plot as an image and encodes it in base64.
+        """
 
         if not self.multi_plot:
-            print('here')
 
-            try:
-                img_code = self.get_encode(self.plot,
-                                           height=self.height,
-                                           width=self.width)
-            except IndexError as e:
-                print(self.plot)
-                print(e)
-                raise IndexError('---')
+            img_code = self.get_encode(self.plot,
+                                       height=self.height,
+                                       width=self.width)
 
             self.img_data = {
                 'src': img_code,
@@ -105,14 +124,27 @@ class Plot:
 
     def format_caption(self, plot_id: int):
         """
-        Formatting the caption with the respective number
+        Formats the caption with the respective number.
 
-        :param plot_id: Plot id
+        Args:
+            plot_id (int): Plot id.
         """
         self.img_data['caption'] = self.img_data['caption'].format(plot_id)
 
     @staticmethod
     def get_encode(plot, height, width):
+        """
+        Encodes the plot as a base64 string.
+
+        Args:
+            plot (Any): The plot object.
+            height (float): Height of the plot.
+            width (float): Width of the plot.
+
+        Returns:
+            str: Base64 encoded string of the plot image.
+        """
+
         img_buffer = io.BytesIO()
 
         plot.save(img_buffer, height=height, width=width, format='png')

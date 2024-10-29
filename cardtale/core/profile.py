@@ -38,11 +38,11 @@ class SeriesProfile:
 
     def __init__(self, n_lags: int, alpha: float = ALPHA):
         """
-        Class constructor
+        Class constructor.
 
-        Parameters:
-        n_lags (int): Number of lags for auto-correlation
-        alpha (int): Significance level
+        Args:
+            n_lags (int): Number of lags for auto-correlation.
+            alpha (float): Significance level.
         """
 
         self.n = -1
@@ -71,20 +71,29 @@ class SeriesProfile:
         self.ns_zones = None
 
     def run(self, series: pd.Series, period: int, dt_format: str, ):
+        """
+        Runs the summary and distribution fitting for the series.
+
+        Args:
+            series (pd.Series): A univariate time series.
+            period (int): Time series seasonal period.
+            dt_format (str): Date format for display.
+        """
+
         self.summarise(series, period, dt_format)
         self.fit_distributions(series)
 
     def summarise(self, series: pd.Series, period: int, dt_format: str):
         """
-        Summarising a time series
+        Summarises a time series.
 
-        Parameters:
-        series (pd.Series): A univariate time series
-        period (int): Time series seasonal period
-        dt_format (str): Date format for display
+        Args:
+            series (pd.Series): A univariate time series.
+            period (int): Time series seasonal period.
+            dt_format (str): Date format for display.
 
         Returns:
-        self: Summarised time series
+            self: Summarised time series.
         """
 
         self.n = len(series)
@@ -125,15 +134,13 @@ class SeriesProfile:
 
     def fit_distributions(self, series: pd.Series):
         """
-        Applying Kolmogorov-Smirnov
+        Applies Kolmogorov-Smirnov test to the series.
 
-        Testing several distributions to the data
-
-        Parameters:
-        series (pd.Series): A univariate time series
+        Args:
+            series (pd.Series): A univariate time series.
 
         Returns:
-        self: A lists of rejected and non-rejected distributions
+            self: A list of rejected and non-rejected distributions.
         """
 
         self.reject_dists, self.n_reject_dists = KolmogorovSmirnov.test_distributions(series)

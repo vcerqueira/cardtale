@@ -12,8 +12,26 @@ from cardtale.visuals.config import PLOT_NAMES
 
 
 class ChangeDistPlots(Plot):
+    """
+    Class for creating and analyzing change distribution plots.
+    Using a partial violin plot and a density plot.
+
+    Attributes:
+        caption (str): Caption for the plot.
+        plot_name (str): Name of the plot.
+        tests (TestingComponents): Testing components for change detection.
+    """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: List[str]):
+        """
+        Initializes the ChangeDistPlots class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            tests (TestingComponents): Testing components for change detection.
+            name (List[str]): Name(s) of the plot.
+        """
+
         super().__init__(tsd=tsd, multi_plot=True, name=name)
 
         self.caption = gettext('change_beforeafter_1st_caption')
@@ -22,6 +40,9 @@ class ChangeDistPlots(Plot):
         self.tests = tests
 
     def build(self):
+        """
+        Creates the change distribution plot.
+        """
 
         if self.show_me:
             cp, cp_idx = self.tests.change.get_change_points()
@@ -43,6 +64,12 @@ class ChangeDistPlots(Plot):
             self.plot = {'lhs': parts_dist, 'rhs': parts_dens}
 
     def analyse(self):
+        """
+        Analyzes the change in distribution.
+
+        The analysis includes checking for significant changes and identifying the best distributions before and after the change point.
+        """
+
         cp, cp_idx = self.tests.change.get_change_points()
 
         if len(cp) > 0:

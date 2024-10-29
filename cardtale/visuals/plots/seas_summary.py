@@ -15,6 +15,18 @@ STD_ONLY = 'standard deviation'
 
 
 class SeasonalSummaryPlots(Plot):
+    """
+    Class for creating and analyzing seasonal summary plots.
+
+    Attributes:
+        plot_id (str): Identifier for the plot.
+        named_seasonality (str): Named seasonality for the plot.
+        caption (str): Caption for the plot.
+        x_axis_col (str): Column name for the x-axis.
+        caption_expr (str): Expression for the caption.
+        plot_name (str): Name of the plot.
+        tests (TestingComponents): Testing components for seasonality.
+    """
 
     def __init__(self,
                  tsd: TimeSeriesData,
@@ -22,6 +34,17 @@ class SeasonalSummaryPlots(Plot):
                  name: List[str],
                  named_seasonality: str,
                  x_axis_col: str):
+        """
+        Initializes the SeasonalSummaryPlots class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            tests (TestingComponents): Testing components for seasonality.
+            name (List[str]): Name(s) of the plot.
+            named_seasonality (str): Named seasonality for the plot.
+            x_axis_col (str): Column name for the x-axis.
+        """
+
         super().__init__(tsd=tsd, multi_plot=True, name=name)
 
         self.plot_id = 'seas_summary'
@@ -39,6 +62,9 @@ class SeasonalSummaryPlots(Plot):
         self.tests = tests
 
     def build(self):
+        """
+        Creates the seasonal summary plot.
+        """
 
         mean_plot = SummaryStatPlot.SummaryPlot(data=self.tsd.seas_df,
                                                 group_col=self.x_axis_col,
@@ -55,6 +81,12 @@ class SeasonalSummaryPlots(Plot):
         self.plot = {'lhs': mean_plot, 'rhs': std_plot}
 
     def analyse(self):
+        """
+        Analyzes the seasonal summary plot.
+
+        The analysis includes checking for significant differences in means and standard deviations.
+        """
+
         show_plots, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
 
         if show_plots[self.named_seasonality][self.plot_id]['show']:
@@ -82,5 +114,12 @@ class SeasonalSummaryPlots(Plot):
         self.analysis.append(summary_an)
 
     def format_caption(self, plot_id: int):
+        """
+        Formats the caption with the respective number and method.
+
+        Args:
+            plot_id (int): Plot id.
+        """
+
         self.img_data['caption'] = \
             self.img_data['caption'].format(plot_id, self.caption_expr.lower())

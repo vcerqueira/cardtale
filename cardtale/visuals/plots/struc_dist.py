@@ -11,8 +11,24 @@ from cardtale.cards.strings import join_l, gettext
 
 
 class SeriesDistPlots(Plot):
+    """
+    Class for creating and analyzing time series distribution plots.
+
+    Attributes:
+        caption (str): Caption for the plot.
+        show_me (bool): Flag indicating if the plot should be shown.
+        plot_name (str): Name of the plot.
+    """
 
     def __init__(self, tsd: TimeSeriesData, name: List[str]):
+        """
+        Initializes the SeriesDistPlots class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            name (List[str]): Name(s) of the plot.
+        """
+
         super().__init__(tsd=tsd, multi_plot=True, name=name)
 
         self.caption = gettext('series_dist_caption')
@@ -20,6 +36,10 @@ class SeriesDistPlots(Plot):
         self.plot_name = PLOT_NAMES['struc_dist']
 
     def build(self):
+        """
+        Creates the time series distribution plots.
+        """
+
         # Time series distribution w/ histogram
         series_hist = PlotHistogram.univariate(data=self.tsd.df,
                                                x_axis_col=self.tsd.target_col,
@@ -32,6 +52,11 @@ class SeriesDistPlots(Plot):
         self.plot = {'lhs': series_hist, 'rhs': series_boxplot}
 
     def analyse(self):
+        """
+        Analyzes the time series distribution.
+
+        The analysis includes checking for rejected distributions, outliers, skewness, and kurtosis.
+        """
 
         if len(self.tsd.summary.reject_dists) > 0:
             dist_anl_1 = gettext('series_dist_analysis1').format(join_l(self.tsd.summary.reject_dist_nms))

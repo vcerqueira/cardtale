@@ -23,6 +23,24 @@ class SeasonalPlot:
               y_lab: str = '',
               title: str = '',
               add_smooth: bool = False):
+        """
+        Creates a line plot for seasonal data.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            y_axis_col (str): Column name for the y-axis.
+            group_col (str): Column name for grouping.
+            add_labels (bool): Flag indicating if labels should be added.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+            add_smooth (bool, optional): Flag to add smoothing. Defaults to False.
+
+        Returns:
+            plotnine.ggplot: The generated line plot.
+        """
+
 
         aes_ = {'x': x_axis_col, 'y': y_axis_col, 'group': group_col, 'color': group_col}
         aes_t = {'label': group_col}
@@ -66,6 +84,22 @@ class SeasonalPlot:
                    x_lab: str = '',
                    y_lab: str = '',
                    title: str = ''):
+        """
+        Creates a sub-series plot for seasonal data.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            y_axis_col (str): Column name for the y-axis.
+            group_col (str): Column name for grouping.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+
+        Returns:
+            plotnine.ggplot: The generated sub-series plot.
+        """
+
 
         stat_by_group, _ = SummaryStatPlot.summary_by_group(data, y_axis_col, group_col, 'mean')
         stat_by_group = stat_by_group.reset_index()

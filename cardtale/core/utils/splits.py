@@ -9,11 +9,34 @@ CHANGE_DEFAULT_NAMES = ['Before Change', 'After Change']
 
 
 class DataSplit:
+    """
+    Class for splitting data into partitions.
+
+    Methods:
+        goldfeldquant_partition(residuals, partition_size, partition_names):
+            Splits residuals into partitions for Goldfeld-Quandt test.
+        change_partition(data, cp_index, partition_names, target_col, time_col, return_series):
+            Splits data into partitions based on a change point index.
+        df_var_to_categorical(df, variable):
+            Converts a DataFrame variable to categorical type.
+    """
 
     @staticmethod
     def goldfeldquant_partition(residuals: pd.Series,
                                 partition_size: float,
                                 partition_names: List[str] = GQ_DEFAULT_NAMES):
+        """
+        Splits residuals into partitions for Goldfeld-Quandt test.
+
+        Args:
+            residuals (pd.Series): Residuals to be partitioned.
+            partition_size (float): Size of each partition as a fraction of the total.
+            partition_names (List[str], optional): Names of the partitions. Defaults to GQ_DEFAULT_NAMES.
+
+        Returns:
+            pd.DataFrame: DataFrame with partitioned residuals.
+        """
+
         assert partition_size < MAX_PARTITION_SIZE
 
         n = residuals.shape[0]
@@ -40,8 +63,18 @@ class DataSplit:
                          time_col: str = 'ds',
                          return_series: bool = False):
         """
+        Splits data into partitions based on a change point index.
 
+        Args:
+            data (pd.DataFrame): Data to be partitioned.
+            cp_index (int): Index of the change point.
+            partition_names (List[str], optional): Names of the partitions. Defaults to CHANGE_DEFAULT_NAMES.
+            target_col (str, optional): Column name for the target variable. Defaults to 'y'.
+            time_col (str, optional): Column name for the time variable. Defaults to 'ds'.
+            return_series (bool, optional): Flag to return partitions as series. Defaults to False.
 
+        Returns:
+            pd.DataFrame or tuple: DataFrame with partitioned data or tuple of series if return_series is True.
         """
 
         Before, After = train_test_split(data, train_size=cp_index, shuffle=False)
@@ -65,6 +98,17 @@ class DataSplit:
 
     @staticmethod
     def df_var_to_categorical(df: pd.DataFrame, variable: str):
+        """
+        Converts a DataFrame variable to categorical type.
+
+        Args:
+            df (pd.DataFrame): Input DataFrame.
+            variable (str): Column name to be converted to categorical.
+
+        Returns:
+            pd.Categorical: Categorical variable.
+        """
+
         assert variable in df.columns, 'Unknown column'
 
         unq_values = df[variable].unique()

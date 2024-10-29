@@ -6,8 +6,24 @@ from cardtale.visuals.config import PLOT_NAMES
 
 
 class SeriesACFPlot(Plot):
+    """
+    Class for creating and analyzing autocorrelation function (ACF) plots.
+
+    Attributes:
+        caption (str): Caption for the plot.
+        show_me (bool): Flag indicating if the plot should be shown.
+        plot_name (str): Name of the plot.
+    """
 
     def __init__(self, tsd: TimeSeriesData, name: str):
+        """
+        Initializes the SeriesACFPlot class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            name (str): Name of the plot.
+        """
+
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('series_acf_caption')
@@ -16,6 +32,9 @@ class SeriesACFPlot(Plot):
         self.plot_name = PLOT_NAMES['struc_acf']
 
     def build(self):
+        """
+        Creates the ACF plot.
+        """
 
         self.plot = Lollipop.with_point(data=self.tsd.summary.acf.acf_df,
                                         x_axis_col='Lag',
@@ -23,6 +42,11 @@ class SeriesACFPlot(Plot):
                                         h_threshold=self.tsd.summary.acf.significance_thr)
 
     def analyse(self):
+        """
+        Analyzes the ACF plot.
+
+        The analysis includes identifying significant lags and seasonal lags.
+        """
 
         acf_ = self.tsd.summary.acf.acf_analysis
 
@@ -63,5 +87,12 @@ class SeriesACFPlot(Plot):
         self.analysis.append(seasonal_lag_analysis)
 
     def format_caption(self, plot_id: int):
+        """
+        Formats the caption with the respective number and method.
+
+        Args:
+            plot_id (int): Plot id.
+        """
+
         self.img_data['caption'] = self.img_data['caption'].format(plot_id,
                                                                    self.tsd.summary.acf.n_lags)

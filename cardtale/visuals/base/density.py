@@ -6,6 +6,13 @@ from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class PlotDensity:
+    """
+    Class for creating density plots.
+
+    Methods:
+        by_pair(data, x_axis_col, group_col, x_lab, y_lab, title):
+            Creates a density plot by pair.
+    """
 
     @staticmethod
     def by_pair(data: pd.DataFrame,
@@ -14,6 +21,20 @@ class PlotDensity:
                 x_lab: str = '',
                 y_lab: str = '',
                 title: str = ''):
+        """
+        Creates a density plot by pair.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            group_col (str): Column name for grouping.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+
+        Returns:
+            plotnine.ggplot: The generated density plot.
+        """
 
         COLORS = [THEME_PALETTE[THEME]['hard'],
                   THEME_PALETTE[THEME]['hard_alt']]

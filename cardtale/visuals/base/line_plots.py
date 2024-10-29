@@ -12,6 +12,19 @@ OptHLines = Optional[List[geom_hline]]
 
 
 class LinePlot:
+    """
+    Class for creating various types of line plots.
+
+    Methods:
+        univariate(data, x_axis_col, y_axis_col, line_color, hline_color, x_lab, y_lab, title, hlines, add_smooth, ribbons):
+            Creates a univariate line plot with optional smoothing and ribbons.
+        univariate_change(data, x_axis_col, y_axis_col, change_points, x_lab, y_lab, title):
+            Creates a univariate line plot with change points.
+        univariate_w_support(data, x_axis_col, y_axis_col_main, y_axis_col_supp, x_lab, y_lab, title):
+            Creates a univariate line plot with a support line.
+        multivariate_grid(data, x_axis_col, scales, x_lab, y_lab, title):
+            Creates a multivariate grid line plot.
+    """
 
     @staticmethod
     def univariate(data: pd.DataFrame,
@@ -25,6 +38,25 @@ class LinePlot:
                    hlines: OptHLines = None,
                    add_smooth: bool = False,
                    ribbons: Optional[Dict[str, str]] = None):
+        """
+        Creates a univariate line plot with optional smoothing and ribbons.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            y_axis_col (str): Column name for the y-axis.
+            line_color (str, optional): Color for the line. Defaults to THEME_PALETTE[THEME]['hard'].
+            hline_color (str, optional): Color for the horizontal lines. Defaults to THEME_PALETTE[THEME]['mid'].
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+            hlines (OptHLines, optional): List of horizontal lines. Defaults to None.
+            add_smooth (bool, optional): Flag to add smoothing. Defaults to False.
+            ribbons (Optional[Dict[str, str]], optional): Dictionary for ribbons. Defaults to None.
+
+        Returns:
+            plotnine.ggplot: The generated line plot.
+        """
 
         aes_ = {'x': x_axis_col, 'y': y_axis_col, 'group': 1}
 
@@ -72,6 +104,21 @@ class LinePlot:
                           x_lab: str = '',
                           y_lab: str = '',
                           title: str = ''):
+        """
+        Creates a univariate line plot with change points.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            y_axis_col (str): Column name for the y-axis.
+            change_points (List): List of change points.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+
+        Returns:
+            plotnine.ggplot: The generated line plot.
+        """
 
         cp_idx_0 = np.where(data[x_axis_col] == change_points[0])[0][0]
 
@@ -117,6 +164,21 @@ class LinePlot:
                              x_lab: str = '',
                              y_lab: str = '',
                              title: str = ''):
+        """
+        Creates a univariate line plot with a support line.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            y_axis_col_main (str): Column name for the main y-axis.
+            y_axis_col_supp (str): Column name for the support y-axis.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+
+        Returns:
+            plotnine.ggplot: The generated line plot.
+        """
 
         aes1_ = {'x': x_axis_col, 'y': y_axis_col_main}
         aes2_ = {'x': x_axis_col, 'y': y_axis_col_supp}
@@ -149,6 +211,20 @@ class LinePlot:
                           x_lab: str = '',
                           y_lab: str = '',
                           title: str = ''):
+        """
+        Creates a multivariate grid line plot.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            scales (str): Scales for the facets.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+
+        Returns:
+            plotnine.ggplot: The generated grid line plot.
+        """
 
         melted_data = pd.melt(data, x_axis_col)
 

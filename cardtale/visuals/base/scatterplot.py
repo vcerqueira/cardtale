@@ -8,6 +8,13 @@ from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class Scatterplot:
+    """
+    Class for creating scatter plots.
+
+    Methods:
+        lagplot(data, x_axis_col, y_axis_col, x_lab, y_lab, title, add_perfect_abline, add_slope_abline):
+            Creates a scatter plot with optional perfect and slope ablines.
+    """
 
     @staticmethod
     def lagplot(data: pd.DataFrame,
@@ -18,6 +25,23 @@ class Scatterplot:
                 title: str = '',
                 add_perfect_abline: bool = False,
                 add_slope_abline: bool = False):
+        """
+        Creates a scatter plot with optional perfect and slope ablines.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            y_axis_col (str): Column name for the y-axis.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+            add_perfect_abline (bool, optional): Flag to add a perfect abline. Defaults to False.
+            add_slope_abline (bool, optional): Flag to add a slope abline. Defaults to False.
+
+        Returns:
+            plotnine.ggplot: The generated scatter plot.
+        """
+
 
         aes_ = {'x': x_axis_col, 'y': y_axis_col}
 

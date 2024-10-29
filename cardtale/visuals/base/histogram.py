@@ -6,6 +6,13 @@ from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class PlotHistogram:
+    """
+    Class for creating histogram plots.
+
+    Methods:
+        univariate(data, x_axis_col, n_bins, x_lab, y_lab, title):
+            Creates a univariate histogram plot.
+    """
 
     @staticmethod
     def univariate(data: pd.DataFrame,
@@ -14,6 +21,21 @@ class PlotHistogram:
                    x_lab: str = '',
                    y_lab: str = '',
                    title: str = ''):
+        """
+        Creates a univariate histogram plot.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            n_bins (int): Number of bins for the histogram.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+
+        Returns:
+            plotnine.ggplot: The generated histogram plot.
+        """
+
         aes_ = {'x': x_axis_col}
 
         plot = p9.ggplot(data) + \

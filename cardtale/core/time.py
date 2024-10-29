@@ -18,18 +18,29 @@ CATEGORICAL_COLUMNS = ['Month', 'Weekday', 'Quarter']
 
 
 class TimeDF:
-    """ TimeDF
-
-    Time features dataset
+    """
+    TimeDF
 
     todo check greykit features: https://github.com/linkedin/greykite/blob/master/greykite/common/features/timeseries_features.py
     todo check gluonts features: https://ts.gluon.ai/stable/api/gluonts/gluonts.time_feature.html
+
+
+    Time features dataset.
+
+    Attributes:
+        freq (str): Sampling frequency of the time series.
+        formats (pd.DataFrame): Frequency formats.
+        sequence (pd.DataFrame): Sequential time features.
+        recurrent (pd.DataFrame): Recurrent time features.
+        freq_name (str): Name of the frequency.
     """
 
     def __init__(self, freq: str):
         """
-        :param freq: Sampling frequency of the time series
-        :type freq: str, pandas compatible
+        Initializes the TimeDF class.
+
+        Args:
+            freq (str): Sampling frequency of the time series, pandas compatible.
         """
         self.freq = freq
         self.formats = None
@@ -40,17 +51,12 @@ class TimeDF:
 
     def setup(self, df: pd.DataFrame, time_col: str, target_col: str):
         """
+        Sets up the time features dataset.
 
-        Setup the time features dataset
-
-        :param df: Time series dataset
-        :type df: pd.DataFrame
-
-        :param time_col: Column name denoting the temporal variable:
-        :type time_col: str, for a column of pd.Timestamp-like type
-
-        :param target_col: Column name denoting the numeric target variable
-        :type target_col: str
+        Args:
+            df (pd.DataFrame): Time series dataset.
+            time_col (str): Column name denoting the temporal variable.
+            target_col (str): Column name denoting the numeric target variable.
         """
         self.set_formats()
 
@@ -65,7 +71,7 @@ class TimeDF:
 
     def set_formats(self):
         """
-        Preparing frequency table
+        Prepares the frequency table.
         """
         valid_periods = self.get_valid_int_freqs(self.freq)
 
@@ -77,12 +83,13 @@ class TimeDF:
 
     def get_freq_averages(self, series: pd.Series):
         """
+        Computes the average for each sequential period (e.g., Quarter averages).
 
-        Computing the average for each sequential period
-        e.g. Quarter averages
+        Args:
+            series (pd.Series): Univariate time series with a pd.DateTimeIndex index.
 
-        :param series: Univariate time series as pd.Series with a pd.DateTimeIndex index
-        :type series: pd.Series with a pd.DateTimeIndex index
+        Returns:
+            pd.DataFrame: DataFrame with frequency averages.
         """
         freqs = self.formats['name'].values[1:].tolist()
         freqs = [re.sub('ly$', '', x) for x in freqs]
@@ -102,7 +109,13 @@ class TimeDF:
     @classmethod
     def get_freq_set(cls, index: pd.DatetimeIndex) -> DFTuple:
         """
-        todo I can subset this info by frequency, but I don't think it help in any major way
+        Gets the forward and recurrent frequency sets.
+
+        Args:
+            index (pd.DatetimeIndex): Datetime index.
+
+        Returns:
+            DFTuple: Tuple containing forward and recurrent DataFrames.
         """
 
         assert isinstance(index, pd.DatetimeIndex)
@@ -143,9 +156,13 @@ class TimeDF:
     @staticmethod
     def get_freqs(frequency: str):
         """
-        :param frequency: Data sampling frequency (pandas compatible)
+        Gets all frequencies "above" the input frequency.
 
-        :return All frequencies "above" the input frequency
+        Args:
+            frequency (str): Data sampling frequency (pandas compatible).
+
+        Returns:
+            pd.DataFrame: DataFrame with valid frequencies.
         """
 
         idx = np.argwhere([x == frequency for x in FREQUENCIES])[0][0]
@@ -156,13 +173,16 @@ class TimeDF:
 
     @staticmethod
     def get_valid_int_freqs(freq: str):
-        """ get_valid_freqs
-
-        Get valid periods for the respective frequency. For example, monthly data can have 4 (quarter), or 12 (year)
-
-        :param freq: Sampling frequency
-        :type freq: str
         """
+        Gets valid periods for the respective frequency.
+
+        Args:
+            freq (str): Sampling frequency.
+
+        Returns:
+            pd.Series: Series with valid periods.
+        """
+
         all_periods = FREQ_INT_DF[freq]
         valid_periods = all_periods[all_periods > 0]
         valid_periods.name = 'period'
@@ -171,6 +191,16 @@ class TimeDF:
 
     @staticmethod
     def get_seasons(index: pd.DatetimeIndex):
+        """
+        Gets the seasons based on the index.
+
+        Args:
+            index (pd.DatetimeIndex): Datetime index.
+
+        Returns:
+            pd.Series: Series with season information.
+        """
+
         season_ = index.month % N_MONTHS // SEASON_LEN + 1
         season_.name = 'season'
 

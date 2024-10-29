@@ -6,6 +6,13 @@ from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class Lollipop:
+    """
+    Class for creating lollipop plots.
+
+    Methods:
+        with_point(data, x_axis_col, y_axis_col, h_threshold, x_lab, y_lab, title):
+            Creates a lollipop plot with optional horizontal threshold.
+    """
 
     @staticmethod
     def with_point(data: pd.DataFrame,
@@ -15,6 +22,22 @@ class Lollipop:
                    x_lab: str = '',
                    y_lab: str = '',
                    title: str = ''):
+        """
+        Creates a lollipop plot with optional horizontal threshold.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            y_axis_col (str): Column name for the y-axis.
+            h_threshold (float, optional): Horizontal threshold. Defaults to 0.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+
+        Returns:
+            plotnine.ggplot: The generated lollipop plot.
+        """
+
         aes_ = {'x': x_axis_col, 'y': y_axis_col}
         aes_s = {'x': x_axis_col, 'xend': x_axis_col, 'y': 0, 'yend': y_axis_col}
 

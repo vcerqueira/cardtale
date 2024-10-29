@@ -7,8 +7,25 @@ from cardtale.visuals.config import PLOT_NAMES
 
 
 class ChangesMarksPlot(Plot):
+    """
+    Class for creating and analyzing change marking plots.
+
+    Attributes:
+        caption (str): Caption for the plot.
+        plot_name (str): Name of the plot.
+        tests (TestingComponents): Testing components for change detection.
+    """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: str):
+        """
+        Initializes the ChangesMarksPlot class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            tests (TestingComponents): Testing components for change detection.
+            name (str): Name of the plot.
+        """
+
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('change_line_plot_caption')
@@ -17,6 +34,9 @@ class ChangesMarksPlot(Plot):
         self.tests = tests
 
     def build(self):
+        """
+        Creates the change marking plot.
+        """
 
         if self.show_me:
             cp, cp_idx = self.tests.change.get_change_points()
@@ -28,6 +48,12 @@ class ChangesMarksPlot(Plot):
                                            change_points=cp_idx)
 
     def analyse(self):
+        """
+        Analyzes the change marking.
+
+        The analysis includes identifying the number of change points and their characteristics.
+        """
+
         cp, cp_idx = self.tests.change.get_change_points()
 
         n_cp = len(cp)
@@ -61,5 +87,12 @@ class ChangesMarksPlot(Plot):
             self.analysis.append(marked_analysis_first)
 
     def format_caption(self, plot_id: int):
+        """
+        Formats the caption with the respective number and method.
+
+        Args:
+            plot_id (int): Plot id.
+        """
+
         self.img_data['caption'] = \
             self.img_data['caption'].format(plot_id, self.tests.change.method)

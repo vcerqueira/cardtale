@@ -8,6 +8,19 @@ from cardtale.visuals.config import PLOT_NAMES
 
 
 class SeasonalLinePlot(Plot):
+    """
+    Class for creating and analyzing seasonal line plots.
+
+    Attributes:
+        named_seasonality (str): Named seasonality for the plot.
+        caption (str): Caption for the plot.
+        x_axis_col (str): Column name for the x-axis.
+        group_col (str): Column name for grouping.
+        add_labels (bool): Flag indicating if labels should be added.
+        caption_expr (tuple): Expression for the caption.
+        plot_name (str): Name of the plot.
+        tests (TestingComponents): Testing components for seasonality.
+    """
 
     def __init__(self,
                  tsd: TimeSeriesData,
@@ -17,6 +30,20 @@ class SeasonalLinePlot(Plot):
                  named_seasonality: str,
                  x_axis_col: str,
                  group_col: str):
+        """
+        Initializes the SeasonalLinePlot class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            tests (TestingComponents): Testing components for seasonality.
+            name (str): Name of the plot.
+            add_labels (bool): Flag indicating if labels should be added.
+            named_seasonality (str): Named seasonality for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            group_col (str): Column name for grouping.
+        """
+
+
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.named_seasonality = named_seasonality
@@ -36,6 +63,10 @@ class SeasonalLinePlot(Plot):
         self.tests = tests
 
     def build(self):
+        """
+        Creates the seasonal line plot.
+        """
+
         self.plot = SeasonalPlot.lines(data=self.tsd.seas_df,
                                        x_axis_col=self.x_axis_col,
                                        y_axis_col=self.tsd.target_col,
@@ -45,10 +76,10 @@ class SeasonalLinePlot(Plot):
 
     def analyse(self):
         """
-        SeasonalLinePlot is always shown because it refers to the main period
+        Analyzes the seasonal line plot.
 
-        It also serves as the place to summarise the results for other periods
-        (if no seasonality is found in those periods)
+        The analysis includes summarizing the results for the main
+        period and other periods if no seasonality is found.
         """
         self.show_me = True
 
@@ -62,14 +93,9 @@ class SeasonalLinePlot(Plot):
         period = f'{self.group_col}ly'.lower()
 
         seas_str_analysis = SeasonalityTestsParser.seasonal_tests_parser(tests, period)
-        # print('seas_str_analysis')
         self.analysis.append(seas_str_analysis)
 
         show_analysis, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
-        # print(show_analysis)
-        # import numpy as np
-        # show_analysis = {'Weekly': {'seas_subseries': {'show': True, 'which': {'by_st': True, 'by_perf': np.False_}}, 'seas_summary': {'show': np.False_}}, 'Monthly': {'seas_subseries': {'show': True, 'which': {'by_st': True, 'by_perf': np.False_}}, 'seas_summary': {'show': np.True_}}, 'Daily': {'seas_subseries': {'show': False, 'which': {'by_st': False, 'by_perf': False}}, 'seas_summary': {'show': np.False_}}}
-        # print(main_freq)
 
         self_perf = show_analysis[main_freq]['seas_subseries']['which']['by_perf']
         if self_perf:
@@ -102,6 +128,13 @@ class SeasonalLinePlot(Plot):
             self.analysis.append(groups_comps)
 
     def format_caption(self, plot_id: int):
+        """
+        Formats the caption with the respective number and method.
+
+        Args:
+            plot_id (int): Plot id.
+        """
+
         self.img_data['caption'] = \
             self.img_data['caption'].format(plot_id,
                                             self.caption_expr[0].lower(),

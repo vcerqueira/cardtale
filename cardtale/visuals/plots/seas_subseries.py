@@ -13,6 +13,20 @@ SDEVS = 'eq_std'
 
 
 class SeasonalSubSeriesPlot(Plot):
+    """
+    Class for creating and analyzing seasonal subseries plots.
+
+    Attributes:
+        tests_were_analysed (bool): Flag indicating if tests were already analyzed.
+        caption (str): Caption for the plot.
+        x_axis_col (str): Column name for the x-axis.
+        y_axis_col (str): Column name for the y-axis.
+        named_seasonality (str): Named seasonality for the plot.
+        caption_expr (str): Expression for the caption.
+        plot_id (str): Identifier for the plot.
+        plot_name (str): Name of the plot.
+        tests (TestingComponents): Testing components for seasonality.
+    """
 
     def __init__(self,
                  tsd: TimeSeriesData,
@@ -22,6 +36,19 @@ class SeasonalSubSeriesPlot(Plot):
                  x_axis_col: str,
                  y_axis_col: str,
                  tests_were_analysed: bool):
+        """
+        Initializes the SeasonalSubSeriesPlot class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            tests (TestingComponents): Testing components for seasonality.
+            name (str): Name of the plot.
+            named_seasonality (str): Named seasonality for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            y_axis_col (str): Column name for the y-axis.
+            tests_were_analysed (bool): Flag indicating if tests were already analyzed.
+        """
+
 
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
@@ -42,12 +69,22 @@ class SeasonalSubSeriesPlot(Plot):
         self.tests = tests
 
     def build(self):
+        """
+        Creates the seasonal subseries plot.
+        """
+
         self.plot = SeasonalPlot.sub_series(data=self.tsd.seas_df,
                                             group_col=self.x_axis_col,
                                             x_axis_col=self.tsd.time_col,
                                             y_axis_col=self.y_axis_col)
 
     def analyse(self):
+        """
+        Analyzes the seasonal subseries plot.
+
+        The analysis includes checking for seasonality and summarizing the results.
+        """
+
         if self.x_axis_col == 'Day':
             freq_named = 'Daily'
         else:
@@ -92,5 +129,12 @@ class SeasonalSubSeriesPlot(Plot):
             return
 
     def format_caption(self, plot_id: int):
+        """
+        Formats the caption with the respective number and method.
+
+        Args:
+            plot_id (int): Plot id.
+        """
+
         self.img_data['caption'] = self.img_data['caption'].format(plot_id, self.caption_expr.title(),
                                                                    self.caption_expr)

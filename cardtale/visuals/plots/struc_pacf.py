@@ -10,8 +10,24 @@ ACF_NAME, PACF_NAME = 'autocorrelation', 'partial autocorrelation'
 
 
 class SeriesPACFPlot(Plot):
+    """
+    Class for creating and analyzing partial autocorrelation function (PACF) plots.
+
+    Attributes:
+        caption (str): Caption for the plot.
+        show_me (bool): Flag indicating if the plot should be shown.
+        plot_name (str): Name of the plot.
+    """
 
     def __init__(self, tsd: TimeSeriesData, name: str):
+        """
+        Initializes the SeriesPACFPlot class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            name (str): Name of the plot.
+        """
+
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('series_pacf_caption')
@@ -20,6 +36,9 @@ class SeriesPACFPlot(Plot):
         self.plot_name = PLOT_NAMES['struc_pacf']
 
     def build(self):
+        """
+        Creates the PACF plot.
+        """
 
         self.plot = Lollipop.with_point(data=self.tsd.summary.pacf.acf_df,
                                         x_axis_col='Lag',
@@ -27,6 +46,11 @@ class SeriesPACFPlot(Plot):
                                         h_threshold=self.tsd.summary.pacf.significance_thr)
 
     def analyse(self):
+        """
+        Analyzes the PACF plot.
+
+        The analysis includes identifying significant lags and seasonal lags.
+        """
 
         acf_ = self.tsd.summary.pacf.acf_analysis
 
@@ -57,5 +81,12 @@ class SeriesPACFPlot(Plot):
         self.analysis.append(seasonal_lag_analysis)
 
     def format_caption(self, plot_id: int):
+        """
+        Formats the caption with the respective number and method.
+
+        Args:
+            plot_id (int): Plot id.
+        """
+
         self.img_data['caption'] = self.img_data['caption'].format(plot_id,
                                                                    self.tsd.summary.acf.n_lags)

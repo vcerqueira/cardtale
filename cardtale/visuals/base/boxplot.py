@@ -6,6 +6,13 @@ from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class Boxplot:
+    """
+    Class for creating boxplots.
+
+    Methods:
+        univariate_flipped(data, y_axis_col, x_lab, y_lab, title):
+            Creates a univariate boxplot with flipped coordinates.
+    """
 
     @staticmethod
     def univariate_flipped(data: pd.DataFrame,
@@ -13,6 +20,20 @@ class Boxplot:
                            x_lab: str = '',
                            y_lab: str = '',
                            title: str = ''):
+        """
+        Creates a univariate boxplot with flipped coordinates.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            y_axis_col (str): Column name for the y-axis.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+
+        Returns:
+            plotnine.ggplot: The generated boxplot.
+        """
+
         aes_ = {'x': 1, 'y': y_axis_col}
 
         plot = p9.ggplot(data, p9.aes(**aes_)) + \

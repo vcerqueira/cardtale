@@ -9,7 +9,13 @@ from cardtale.core.utils.splits import DataSplit
 
 class SummaryStatPlot:
     """
-    Mean plot & Std plot
+    Class for creating summary statistic plots.
+
+    Methods:
+        summary_by_group(data, y_col, group_col, func):
+            Computes summary statistics by group.
+        SummaryPlot(data, y_col, group_col, func, x_lab, y_lab, title):
+            Creates a summary plot for the specified statistic.
     """
 
     @staticmethod
@@ -18,6 +24,19 @@ class SummaryStatPlot:
             y_col: str,
             group_col: str,
             func: str):
+        """
+        Computes summary statistics by group.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            y_col (str): Column name for the y-axis.
+            group_col (str): Column name for grouping.
+            func (str): Summary statistic function ('mean', 'median', 'std', 'var').
+
+        Returns:
+            tuple: Grouped statistics and overall statistics.
+        """
+
         assert func in ['mean', 'median', 'std', 'var']
 
         grouped_df = data.groupby(group_col, observed=False)[y_col]
@@ -38,14 +57,22 @@ class SummaryStatPlot:
                     y_lab: str = '',
                     title: str = ''):
         """
+        Creates a summary plot for the specified statistic.
         todo Anova/kruskal post hoc comparison to check which groups differ
         todo Posso decidir mostrar a meanplot ou stdplot se uma moving average ajudar nas previsões?
 
-        """
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            y_col (str): Column name for the y-axis.
+            group_col (str): Column name for grouping.
+            func (str): Summary statistic function ('mean', 'median', 'std', 'var').
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
 
-        print(data)
-        print('y_col')
-        print(y_col)
+        Returns:
+            plotnine.ggplot: The generated summary plot.
+        """
 
         group_stat, overall_stat = cls.summary_by_group(data=data,
                                                         y_col=y_col,

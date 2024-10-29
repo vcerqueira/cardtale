@@ -12,8 +12,26 @@ from cardtale.visuals.config import PLOT_NAMES
 
 
 class VarianceDistPlots(Plot):
+    """
+    Class for creating and analyzing variance distribution plots.
+
+    Attributes:
+        caption (str): Caption for the plot.
+        plot_name (str): Name of the plot.
+        tests (TestingComponents): Testing components for variance analysis.
+        s (pd.Series): Target series data.
+    """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: List[str]):
+        """
+        Initializes the VarianceDistPlots class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            tests (TestingComponents): Testing components for variance analysis.
+            name (List[str]): Name(s) of the plot.
+        """
+
         super().__init__(tsd=tsd, multi_plot=True, name=name)
 
         self.caption = gettext('variance_partition_caption')
@@ -27,6 +45,9 @@ class VarianceDistPlots(Plot):
                                             target_col=self.tsd.target_col)
 
     def build(self):
+        """
+        Creates the variance distribution plots.
+        """
 
         gf_parts = DataSplit.goldfeldquant_partition(self.tests.variance.residuals,
                                                      GOLDFELD_Q_PARTITION,
@@ -55,6 +76,11 @@ class VarianceDistPlots(Plot):
         self.plot = {'lhs': plot_part_residuals, 'rhs': plot_part_series}
 
     def analyse(self):
+        """
+        Analyzes the variance distribution plots.
+
+        The analysis includes checking for significant differences in variance and summarizing the results.
+        """
 
         self.show_me, show_results = VarianceTestsParser.show_distribution_plot(self.tests.variance)
 

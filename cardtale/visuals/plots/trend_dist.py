@@ -16,8 +16,25 @@ from cardtale.visuals.config import PLOT_NAMES
 
 
 class TrendDistPlots(Plot):
+    """
+    Class for creating and analyzing trend distribution plots.
+
+    Attributes:
+        caption (str): Caption for the plot.
+        plot_name (str): Name of the plot.
+        tests (TestingComponents): Testing components for trend analysis.
+    """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: List[str]):
+        """
+        Initializes the TrendDistPlots class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            tests (TestingComponents): Testing components for trend analysis.
+            name (List[str]): Name(s) of the plot.
+        """
+
         super().__init__(tsd=tsd, multi_plot=True, name=name)
 
         self.caption = gettext('trend_lagplot_dhist_caption')
@@ -26,6 +43,9 @@ class TrendDistPlots(Plot):
         self.tests = tests
 
     def build(self):
+        """
+        Creates the trend distribution plots.
+        """
 
         s = self.tsd.get_target_series(df=self.tsd.df,
                                        time_col=self.tsd.time_col,
@@ -55,6 +75,11 @@ class TrendDistPlots(Plot):
         self.plot = {'lhs': trend_dhist, 'rhs': trend_lagplot}
 
     def analyse(self):
+        """
+        Analyzes the trend distribution plots.
+
+        The analysis includes checking for rejected distributions, outliers, skewness, and kurtosis.
+        """
 
         self.show_me, show_results = TrendTestsParser.show_trend_plots(self.tests.trend)
 

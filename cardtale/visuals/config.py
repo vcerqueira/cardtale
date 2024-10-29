@@ -1,4 +1,3 @@
-
 PLOT_NAMES = {
     'trend_line': 'Trend Line Plot',
     'trend_dist': 'Distribution of Differences',
@@ -17,7 +16,7 @@ PLOT_NAMES = {
 }
 
 THEME = 'pistachio'
-FONT_FAMILY='Palatino'
+FONT_FAMILY = 'Palatino'
 
 THEME_PALETTE = {
     'pistachio': {

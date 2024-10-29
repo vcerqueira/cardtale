@@ -10,14 +10,36 @@ logging.getLogger('matplotlib').setLevel(logging.ERROR)
 
 
 class SeasonalMetaPlots:
+    """
+    Class for creating and managing seasonal meta plots.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data for the plots.
+        tests (TestingComponents): Testing components for seasonality.
+        plots (dict): Dictionary to store the generated plots.
+    """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
+        """
+        Initializes the SeasonalMetaPlots class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plots.
+            tests (TestingComponents): Testing components for seasonality.
+        """
+
         self.tsd = tsd
         self.tests = tests
 
         self.plots = {}
 
     def make_plots(self):
+        """
+        Generates the seasonal plots based on the frequency of the time series data.
+
+        Returns:
+            dict: Dictionary containing the generated plots.
+        """
 
         self.plots = self._frequency_plots()[self.tsd.dt.freq_name.lower()]
 
@@ -26,6 +48,9 @@ class SeasonalMetaPlots:
         return self.plots
 
     def make_all(self):
+        """
+        Analyzes, builds, and saves all the generated plots.
+        """
 
         for k in self.plots:
             print(k)
@@ -39,6 +64,12 @@ class SeasonalMetaPlots:
             self.plots[k].save()
 
     def _frequency_plots(self):
+        """
+        Defines the plots to be generated based on the frequency of the time series data.
+
+        Returns:
+            dict: Dictionary containing the plot configurations for each frequency.
+        """
 
         plots = {
 

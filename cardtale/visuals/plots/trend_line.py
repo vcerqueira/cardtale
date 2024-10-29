@@ -13,8 +13,25 @@ from cardtale.core.config.analysis import TREND_STRENGTH_INTERVAL
 
 
 class TrendLinePlot(Plot):
+    """
+    Class for creating and analyzing trend line plots.
+
+    Attributes:
+        caption (str): Caption for the plot.
+        plot_name (str): Name of the plot.
+        tests (TestingComponents): Testing components for trend analysis.
+    """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: str):
+        """
+        Initializes the TrendLinePlot class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            tests (TestingComponents): Testing components for trend analysis.
+            name (str): Name of the plot.
+        """
+
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('trend_line_plot_caption')
@@ -22,6 +39,10 @@ class TrendLinePlot(Plot):
         self.tests = tests
 
     def build(self):
+        """
+        Creates the trend line plot.
+        """
+
         df_ = self.tsd.df.copy()
         df_['Trend'] = self.tsd.stl_df['Trend']
 
@@ -31,6 +52,11 @@ class TrendLinePlot(Plot):
                                                   y_axis_col_supp=self.tsd.target_col)
 
     def analyse(self):
+        """
+        Analyzes the trend line plot.
+
+        The analysis includes summarizing the trend strength and correlation.
+        """
 
         self.show_me, show_results = TrendTestsParser.show_trend_plots(self.tests.trend)
 

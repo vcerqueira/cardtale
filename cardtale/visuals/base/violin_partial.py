@@ -6,13 +6,31 @@ from cardtale.visuals.config import THEME, THEME_PALETTE, FONT_FAMILY
 
 
 class PartialViolinPlot:
+    """
+    Class for creating partial violin plots.
+
+    Attributes:
+        SHIFT (float): Shift value for the plot.
+        LSIZE (float): Line size for the plot.
+        FILL_ALHPA (float): Fill alpha for the plot.
+    """
+
     SHIFT = 0.15
     LSIZE = 0.8
     FILL_ALHPA = 0.7
 
     @staticmethod
     def alt_sign(x):
-        "Alternate +1/-1 if x is even/odd"
+        """
+        Alternate +1/-1 if x is even/odd.
+
+        Args:
+            x (int): Input integer.
+
+        Returns:
+            int: +1 if x is even, -1 if x is odd.
+        """
+
         return (-1) ** x
 
     @classmethod
@@ -24,6 +42,22 @@ class PartialViolinPlot:
                        x_lab: str = '',
                        y_lab: str = '',
                        title: str = ''):
+        """
+        Creates a partial violin plot.
+
+        Args:
+            data (pd.DataFrame): Data for the plot.
+            x_axis_col (str): Column name for the x-axis.
+            y_axis_col (str): Column name for the y-axis.
+            group_col (str): Column name for grouping.
+            x_lab (str, optional): Label for the x-axis. Defaults to ''.
+            y_lab (str, optional): Label for the y-axis. Defaults to ''.
+            title (str, optional): Title of the plot. Defaults to ''.
+
+        Returns:
+            plotnine.ggplot: The generated partial violin plot.
+        """
+
         x = p9.stage(x_axis_col, after_scale='x+cls.SHIFT*cls.alt_sign(x)')
 
         aes_ = {'x': x_axis_col, 'y': y_axis_col, 'fill': x_axis_col}

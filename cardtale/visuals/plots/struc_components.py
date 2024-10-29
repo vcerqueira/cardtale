@@ -9,8 +9,26 @@ from cardtale.visuals.config import PLOT_NAMES
 
 
 class SeriesComponentsPlot(Plot):
+    """
+    Class for creating and analyzing time series components plots.
+
+    Attributes:
+        caption (str): Caption for the plot.
+        show_me (bool): Flag indicating if the plot should be shown.
+        plot_name (str): Name of the plot.
+        tests (TestingComponents): Testing components for seasonality and trend analysis.
+    """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: str):
+        """
+        Initializes the SeriesComponentsPlot class.
+
+        Args:
+            tsd (TimeSeriesData): Time series data for the plot.
+            tests (TestingComponents): Testing components for seasonality and trend analysis.
+            name (str): Name of the plot.
+        """
+
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('series_components_caption')
@@ -20,11 +38,20 @@ class SeriesComponentsPlot(Plot):
         self.tests = tests
 
     def build(self):
+        """
+        Creates the components plot.
+        """
+
         self.plot = LinePlot.multivariate_grid(data=self.tsd.stl_df,
                                                x_axis_col=self.tsd.time_col,
                                                scales='free')
 
     def analyse(self):
+        """
+        Analyzes the components plot.
+
+        The analysis includes identifying significant trends and seasonal patterns.
+        """
 
         seas_t = self.tests.seasonality.seas_tests_on_main
         # todo level not used
@@ -55,4 +82,11 @@ class SeriesComponentsPlot(Plot):
         self.analysis.append(seas_str_anl)
 
     def format_caption(self, plot_id: int):
+        """
+        Formats the caption with the respective number and method.
+
+        Args:
+            plot_id (int): Plot id.
+        """
+
         self.img_data['caption'] = self.img_data['caption'].format(plot_id, DECOMPOSITION_METHOD)
