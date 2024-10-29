@@ -85,6 +85,8 @@ class SeasonalityTestsParser:
             preprend = 'Within'
             emphasis = ' also'
 
+        print('group_trend')
+        print(group_trend)
         perc_within = 100 * (group_trend > 0.6).mean()
         perc_within_str = f'{int(perc_within)}%'
         if perc_within_str == '100%':
@@ -123,7 +125,7 @@ class SeasonalityTestsParser:
 
         show_plots, failed_periods = {}, {}
 
-        for period_tests in tester.tests:
+        for period_tests in tests:
             show_ss, ss_partial_outcomes = cls.show_subseries(period_tests)
             show_summary = cls.show_summary_plot(period_tests)
 

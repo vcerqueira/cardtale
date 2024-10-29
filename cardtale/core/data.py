@@ -112,6 +112,11 @@ class TimeSeriesData:
 
     def get_period_groups(self, grouping_period: str):
         # done... questions about self.target_col
+
+        # remove ly from the period
+        if grouping_period[-2:] == 'ly':
+            grouping_period = grouping_period[:-2]
+
         assert grouping_period in self.seas_df, UNKNOWN_PERIOD
 
         data_groups = self.seas_df.groupby(self.seas_df[grouping_period], observed=False)[self.target_col]

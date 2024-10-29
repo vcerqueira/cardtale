@@ -50,7 +50,7 @@ class SeasonalLinePlot(Plot):
         self.show_me = True
 
         # tests = self.tests.seasonality.tests[self.named_seasonality].tests
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality)
 
         main_freq = self.caption_expr[0]
 
@@ -62,7 +62,7 @@ class SeasonalLinePlot(Plot):
         # print('seas_str_analysis')
         self.analysis.append(seas_str_analysis)
 
-        show_analysis, failed_periods = self.tests.seasonality.get_show_analysis()
+        show_analysis, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
         # print(show_analysis)
 
         self_perf = show_analysis[main_freq]['seas_subseries']['which']['by_perf']

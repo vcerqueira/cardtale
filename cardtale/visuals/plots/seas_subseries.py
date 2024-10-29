@@ -2,6 +2,7 @@ from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import gettext
 from cardtale.cards.parsers.seasonality import SeasonalityTestsParser
+from cardtale.cards.parsers.trend import TrendTestsParser
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
@@ -63,14 +64,17 @@ class SeasonalSubSeriesPlot(Plot):
         # tests = self.tests.seasonality.tests[self.named_seasonality].tests
         tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality)
 
-        named_level_st = self.tests.trend.prob_level_str
+        named_level_st = TrendTestsParser.parse_level_prob(self.tests.trend)
+        # named_level_st = self.tests.trend.prob_level_str
 
         if not self.tests_were_analysed:
             seas_str_analysis = SeasonalityTestsParser.seasonal_tests_parser(tests, freq_named.lower())
             self.analysis.append(seas_str_analysis)
 
+        g_trend = self.tests.seasonality.group_trends[f'{self.x_axis_col}ly']
+
         within_groups_analysis = SeasonalityTestsParser.subseries_tests_parser(self.x_axis_col,
-                                                                               self.tests.seasonality.group_trends,
+                                                                               g_trend,
                                                                                named_level_st)
         self.analysis.append(within_groups_analysis)
 

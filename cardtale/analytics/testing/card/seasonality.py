@@ -103,6 +103,7 @@ class SeasonalityTestingMulti:
 
     def get_period_groups_trend(self, period_name: str):
         # period trends
+
         data_groups = self.tsd.get_period_groups(grouping_period=period_name)
 
         within_group_analysis = {}
