@@ -133,6 +133,6 @@ class SeasonalityTestingMulti:
         """
         for t in self.tests:
             if t.period_data['name'] == named_seasonality:
-                return t.tests
+                return t
 
         return None

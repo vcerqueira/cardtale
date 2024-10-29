@@ -25,7 +25,10 @@ class SeasonalLinePlot(Plot):
         self.group_col = group_col
         self.add_labels = add_labels
 
-        self.caption_expr = f'{self.x_axis_col}ly', self.group_col
+        if self.x_axis_col == 'Day':
+            self.caption_expr = 'Daily', self.group_col
+        else:
+            self.caption_expr = f'{self.x_axis_col}ly', self.group_col
 
         self.plot_name = PLOT_NAMES['seas_line']
         self.plot_name += f' ({self.x_axis_col}ly)'
@@ -50,7 +53,7 @@ class SeasonalLinePlot(Plot):
         self.show_me = True
 
         # tests = self.tests.seasonality.tests[self.named_seasonality].tests
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality)
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
 
         main_freq = self.caption_expr[0]
 
@@ -64,6 +67,9 @@ class SeasonalLinePlot(Plot):
 
         show_analysis, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
         # print(show_analysis)
+        # import numpy as np
+        # show_analysis = {'Weekly': {'seas_subseries': {'show': True, 'which': {'by_st': True, 'by_perf': np.False_}}, 'seas_summary': {'show': np.False_}}, 'Monthly': {'seas_subseries': {'show': True, 'which': {'by_st': True, 'by_perf': np.False_}}, 'seas_summary': {'show': np.True_}}, 'Daily': {'seas_subseries': {'show': False, 'which': {'by_st': False, 'by_perf': False}}, 'seas_summary': {'show': np.False_}}}
+        # print(main_freq)
 
         self_perf = show_analysis[main_freq]['seas_subseries']['which']['by_perf']
         if self_perf:

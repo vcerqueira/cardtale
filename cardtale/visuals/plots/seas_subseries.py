@@ -48,7 +48,10 @@ class SeasonalSubSeriesPlot(Plot):
                                             y_axis_col=self.y_axis_col)
 
     def analyse(self):
-        freq_named = f'{self.x_axis_col}ly'
+        if self.x_axis_col == 'Day':
+            freq_named = 'Daily'
+        else:
+            freq_named = f'{self.x_axis_col}ly'
 
         show_plots, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
 
@@ -62,7 +65,7 @@ class SeasonalSubSeriesPlot(Plot):
             self.analysis.append(groups_comps)
 
         # tests = self.tests.seasonality.tests[self.named_seasonality].tests
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality)
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
 
         named_level_st = TrendTestsParser.parse_level_prob(self.tests.trend)
         # named_level_st = self.tests.trend.prob_level_str
@@ -71,12 +74,12 @@ class SeasonalSubSeriesPlot(Plot):
             seas_str_analysis = SeasonalityTestsParser.seasonal_tests_parser(tests, freq_named.lower())
             self.analysis.append(seas_str_analysis)
 
-        g_trend = self.tests.seasonality.group_trends[f'{self.x_axis_col}ly']
-
-        within_groups_analysis = SeasonalityTestsParser.subseries_tests_parser(self.x_axis_col,
-                                                                               g_trend,
-                                                                               named_level_st)
-        self.analysis.append(within_groups_analysis)
+        if freq_named in self.tests.seasonality.group_trends:
+            g_trend = self.tests.seasonality.group_trends[freq_named]
+            within_groups_analysis = SeasonalityTestsParser.subseries_tests_parser(self.x_axis_col,
+                                                                                   g_trend,
+                                                                                   named_level_st)
+            self.analysis.append(within_groups_analysis)
 
         effect_analysis = SeasonalityTestsParser.seasonal_subseries_parser(show_plots,
                                                                            st_freq=self.named_seasonality,
