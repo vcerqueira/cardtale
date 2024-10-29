@@ -40,8 +40,6 @@ class SeasonalMetaPlots:
 
     def _frequency_plots(self):
 
-
-
         plots = {
 
             'hourly': {

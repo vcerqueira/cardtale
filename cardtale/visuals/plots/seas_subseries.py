@@ -1,7 +1,7 @@
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import gettext
-from cardtale.analytics.testing.card.seasonality import SeasonalityTesting
+from cardtale.cards.parsers.seasonality import SeasonalityTestsParser
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
@@ -21,16 +21,6 @@ class SeasonalSubSeriesPlot(Plot):
                  x_axis_col: str,
                  y_axis_col: str,
                  tests_were_analysed: bool):
-        """
-
-        :param data:
-        :param name:
-        :param named_seasonality:
-        :param x_axis_col:
-        :param y_axis_col:
-        :param tests_were_analysed: Whether statistical tests were already analysed in
-        a previous plot. This happens if a seasonal line plot is shown before (for main period)
-        """
 
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
@@ -59,26 +49,7 @@ class SeasonalSubSeriesPlot(Plot):
     def analyse(self):
         freq_named = f'{self.x_axis_col}ly'
 
-
-        show_plots, failed_periods = self.tests.seasonality.get_show_analysis()
-
-        """
-        show_plots={'Monthly': {'seas_subseries': {'show': False,
-                                'which': {'by_perf': False, 'by_st': False}},
-             'seas_summary': {'show': False}},
-             'Quarterly': {'seas_subseries': {'show': True,
-                                              'which': {'by_perf': True, 'by_st': False}},
-                           'seas_summary': {'show': False}},
-             'Yearly': {'seas_subseries': {'show': True,
-                                           'which': {'by_perf': True, 'by_st': False}},
-                        'seas_summary': {'show': True}}}
-            
-            freq_named='Monthly'
-            freq_named='Monthly'
-            
-        
-        """
-
+        show_plots, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
 
         if show_plots[self.named_seasonality][self.plot_id]['show']:
             self.show_me = True
@@ -89,24 +60,23 @@ class SeasonalSubSeriesPlot(Plot):
             groups_comps = gettext('seasonality_summary_fail').format(f'{self.x_axis_col.lower()}s')
             self.analysis.append(groups_comps)
 
-        #tests = self.tests.seasonality.tests[self.named_seasonality].tests
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
+        # tests = self.tests.seasonality.tests[self.named_seasonality].tests
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality)
 
         named_level_st = self.tests.trend.prob_level_str
 
         if not self.tests_were_analysed:
-            seas_str_analysis = SeasonalityTesting.seasonal_tests_parser(tests, freq_named.lower())
+            seas_str_analysis = SeasonalityTestsParser.seasonal_tests_parser(tests, freq_named.lower())
             self.analysis.append(seas_str_analysis)
 
-        data_groups = self.tsd.get_period_groups(grouping_period=self.x_axis_col)
-
-        within_groups_analysis = SeasonalityTesting.seasonal_subseries_st_parser(self.x_axis_col, data_groups,
-                                                                                 named_level_st)
+        within_groups_analysis = SeasonalityTestsParser.subseries_tests_parser(self.x_axis_col,
+                                                                               self.tests.seasonality.group_trends,
+                                                                               named_level_st)
         self.analysis.append(within_groups_analysis)
 
-        effect_analysis = SeasonalityTesting.seasonal_subseries_parser(show_plots,
-                                                                       st_freq=self.named_seasonality,
-                                                                       lm_freq=freq_named)
+        effect_analysis = SeasonalityTestsParser.seasonal_subseries_parser(show_plots,
+                                                                           st_freq=self.named_seasonality,
+                                                                           lm_freq=freq_named)
 
         if effect_analysis is not None:
             self.analysis.append(effect_analysis)

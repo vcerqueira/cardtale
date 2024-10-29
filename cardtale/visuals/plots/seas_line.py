@@ -1,7 +1,7 @@
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import join_l, gettext
-from cardtale.analytics.testing.card.seasonality import SeasonalityTesting
+from cardtale.cards.parsers.seasonality import SeasonalityTestsParser
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.config import PLOT_NAMES
@@ -58,7 +58,7 @@ class SeasonalLinePlot(Plot):
 
         period = f'{self.group_col}ly'.lower()
 
-        seas_str_analysis = SeasonalityTesting.seasonal_tests_parser(tests, period)
+        seas_str_analysis = SeasonalityTestsParser.seasonal_tests_parser(tests, period)
         # print('seas_str_analysis')
         self.analysis.append(seas_str_analysis)
 

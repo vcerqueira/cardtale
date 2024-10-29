@@ -55,15 +55,14 @@ class SeasonalSummaryPlots(Plot):
         self.plot = {'lhs': mean_plot, 'rhs': std_plot}
 
     def analyse(self):
-        show_plots, failed_periods = self.tests.seasonality.get_show_analysis()
+        show_plots, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
 
         if show_plots[self.named_seasonality][self.plot_id]['show']:
             self.show_me = True
         else:
             return
 
-        # tests = self.tests.seasonality.tests[self.named_seasonality]
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality)
 
         group_tests = tests.group_tests_b
         rej_mean, rej_std = group_tests['eq_means'], group_tests['eq_std']

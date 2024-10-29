@@ -4,7 +4,7 @@ import pandas as pd
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.line_plots import LinePlot
 from cardtale.cards.strings import join_l, gettext
-from cardtale.analytics.testing.card.trend import TrendShowTests
+from cardtale.cards.parsers.trend import TrendTestsParser
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
@@ -32,7 +32,7 @@ class TrendLinePlot(Plot):
 
     def analyse(self):
 
-        self.show_me, show_results = TrendShowTests.show_distribution_plot(self.tests.trend)
+        self.show_me, show_results = TrendTestsParser.show_trend_plots(self.tests.trend)
 
         if not self.show_me:
             return
@@ -68,4 +68,6 @@ class TrendLinePlot(Plot):
 
         self.analysis.append(lvl_anls)
 
-        self.analysis.append(self.tests.trend.parse_t_performance())
+        perf_t = TrendTestsParser.parse_t_performance(self.tests.trend)
+
+        self.analysis.append(perf_t)

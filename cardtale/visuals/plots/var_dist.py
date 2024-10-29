@@ -3,7 +3,7 @@ from typing import List
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.violin_partial import PartialViolinPlot
 from cardtale.cards.strings import join_l, gettext
-from cardtale.analytics.testing.card.variance import VarianceShowTests, VarianceTesting
+from cardtale.cards.parsers.variance import VarianceTestsParser
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.core.utils.splits import DataSplit
@@ -56,7 +56,7 @@ class VarianceDistPlots(Plot):
 
     def analyse(self):
 
-        self.show_me, show_results = VarianceShowTests.show_distribution_plot(self.tests.variance)
+        self.show_me, show_results = VarianceTestsParser.show_distribution_plot(self.tests.variance)
 
         if not self.show_me:
             return
@@ -69,12 +69,13 @@ class VarianceDistPlots(Plot):
 
         self.analysis.append(gd_from_seas)
 
-        self.analysis.append(VarianceTesting.variance_st_tests_parser(self.tests.variance.tests))
+        self.analysis.append(VarianceTestsParser.tests_parser(self.tests.variance.tests))
 
-        self.analysis.append(VarianceTesting.variance_perf_parser(show_results))
+        self.analysis.append(VarianceTestsParser.performance_parser(show_results))
 
         transform_analysis = \
-            VarianceTesting.variance_dists_after_transformation_analysis(show_results, self.s)
+            VarianceTestsParser.distr_after_logt(distr_original=self.tests.variance.distr_original,
+                                                 distr_logt=self.tests.variance.distr_logt)
 
         if transform_analysis is not None:
             self.analysis.append(transform_analysis)

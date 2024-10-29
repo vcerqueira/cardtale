@@ -1,4 +1,4 @@
-from typing import Tuple, Dict
+from typing import Dict
 
 import numpy as np
 import pandas as pd
@@ -8,11 +8,10 @@ from cardtale.analytics.operations.tsa.group_tests import GroupBasedTesting
 from cardtale.analytics.operations.landmarking.seasonality import SeasonalLandmarks
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.analytics.testing.card.trend import UnivariateTrendTesting
-from cardtale.cards.strings import join_l, gettext
+from cardtale.cards.parsers.seasonality import SeasonalityTestsParser
 from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
 
-from cardtale.core.utils.errors import AnalysisLogicalError
 from cardtale.core.config.freq import PLOTTING_SEAS_CONFIGS
 
 
@@ -100,6 +99,8 @@ class SeasonalityTestingMulti:
 
             self.tests.append(seas_tests)
 
+        self.show_plots, self.failed_periods = SeasonalityTestsParser.get_show_analysis(tests=self.tests)
+
     def get_period_groups_trend(self, period_name: str):
         # period trends
         data_groups = self.tsd.get_period_groups(grouping_period=period_name)
@@ -131,7 +132,6 @@ class SeasonalityTestingMulti:
         """
         for t in self.tests:
             if t.period_data['name'] == named_seasonality:
-                return t
+                return t.tests
 
         return None
-

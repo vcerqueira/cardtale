@@ -8,7 +8,7 @@ from cardtale.visuals.base.histogram import PlotHistogram
 from cardtale.visuals.base.scatterplot import Scatterplot
 
 from cardtale.cards.strings import join_l, gettext
-from cardtale.analytics.testing.card.trend import TrendShowTests
+from cardtale.cards.parsers.trend import TrendTestsParser
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
@@ -56,7 +56,7 @@ class TrendDistPlots(Plot):
 
     def analyse(self):
 
-        self.show_me, show_results = TrendShowTests.show_distribution_plot(self.tests.trend)
+        self.show_me, show_results = TrendTestsParser.show_trend_plots(self.tests.trend)
 
         if not self.show_me:
             return
@@ -110,4 +110,6 @@ class TrendDistPlots(Plot):
         self.analysis.append(kurtosis_analysis)
         self.analysis.append(skewness_analysis)
 
-        self.analysis.append(self.tests.trend.parse_differencing_performance())
+        perf_diff = TrendTestsParser.parse_differencing_performance(self.tests.trend)
+
+        self.analysis.append(perf_diff)

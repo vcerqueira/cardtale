@@ -2,8 +2,6 @@ from typing import Tuple, Dict
 
 import pandas as pd
 
-from cardtale.analytics.testing.card.seasonality import SeasonalityTesting, SeasonalityTestingMulti
-from cardtale.analytics.testing.card.trend import UnivariateTrendTesting
 from cardtale.cards.strings import join_l, gettext
 
 
@@ -70,9 +68,9 @@ class SeasonalityTestsParser:
         return effect_analysis
 
     @staticmethod
-    def seasonal_subseries_st_parser(period_name: str,
-                                     group_trend: pd.Series,
-                                     overall_level_status: str):
+    def subseries_tests_parser(period_name: str,
+                               group_trend: pd.Series,
+                               overall_level_status: str):
         """
         :param period_name: Period name (e.g. month)
         :param group_trend: trend prob within groups
@@ -110,7 +108,15 @@ class SeasonalityTestsParser:
         return f'{part1} {part2}'
 
     @classmethod
-    def get_show_analysis(cls, tester: SeasonalityTestingMulti):
+    def get_show_analysis(cls, tests):
+        """
+
+        Args:
+            tests: SeasonalityTestingMulti.tests
+
+        Returns:
+
+        """
         # if len(self.show_plots) > 0:
         #     # analysis was already done
         #     return self.show_plots, self.failed_periods
@@ -141,7 +147,15 @@ class SeasonalityTestsParser:
         return show_plots, failed_periods
 
     @staticmethod
-    def show_summary_plot(tester: SeasonalityTesting) -> bool:
+    def show_summary_plot(tester) -> bool:
+        """
+
+        Args:
+            tester: SeasonalityTesting
+
+        Returns:
+
+        """
         grp_tests = tester.group_tests_b
 
         show_plots_if = grp_tests['eq_means'] or grp_tests['eq_std']
@@ -149,7 +163,7 @@ class SeasonalityTestsParser:
         return show_plots_if
 
     @staticmethod
-    def show_subseries(tester: SeasonalityTesting) -> Tuple[bool, Dict]:
+    def show_subseries(tester) -> Tuple[bool, Dict]:
         """
         Testing whether a subseries plot should be shown based on SeasonalityTesting results
         :param tester: SeasonalityTesting object
