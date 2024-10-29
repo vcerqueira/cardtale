@@ -134,13 +134,13 @@ SEASONS = {
 # }
 
 PLOTTING_SEAS_CONFIGS = {
-    'hourly': [{'base': 'Hour', 'name': 'Daily', 'main': True, 'period': 24, 'group_tests': True},
+    'hourly': [{'base': 'Hour', 'name': 'Daily', 'main': True, 'period': 24, 'group_tests': False},
                {'base': 'Week', 'name': 'Weekly', 'main': False, 'period': 52 * 24, 'group_tests': True},
                {'base': 'Hour', 'name': 'Hourly', 'main': False, 'period': None, 'group_tests': True}],
 
     'daily': [{'base': 'Day', 'name': 'Weekly', 'main': True, 'period': 7, 'group_tests': True},
               {'base': 'Month', 'name': 'Monthly', 'main': False, 'period': 30, 'group_tests': True},
-              {'base': 'Day', 'name': 'Daily', 'main': False, 'period': None, 'group_tests': True}],
+              {'base': 'Day', 'name': 'Daily', 'main': False, 'period': None, 'group_tests': False}],
 
     'weekly': [{'base': 'Week', 'name': 'Yearly', 'main': True, 'period': 52, 'group_tests': False},
                {'base': 'Month', 'name': 'Monthly', 'main': False, 'period': 4, 'group_tests': True},
@@ -150,7 +150,7 @@ PLOTTING_SEAS_CONFIGS = {
                 {'base': 'Quarter', 'name': 'Quarterly', 'main': False, 'period': 4, 'group_tests': True},
                 {'base': 'Month', 'name': 'Monthly', 'main': False, 'period': None, 'group_tests': True}],
 
-    'quarterly': [{'base': 'Quarter', 'name': 'Yearly', 'main': True, 'period': 4, 'group_tests': True},
+    'quarterly': [{'base': 'Quarter', 'name': 'Yearly', 'main': True, 'period': 4, 'group_tests': False},
                   {'base': 'Quarter', 'name': 'Quarterly', 'main': False, 'period': None, 'group_tests': True}],
     'yearly': None,
 
