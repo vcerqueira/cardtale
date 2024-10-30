@@ -54,7 +54,6 @@ class Plot:
         """
 
         self.tsd = tsd
-        self.plot = None
         self.name = name
         self.multi_plot = multi_plot
         self.analysis = []
@@ -67,7 +66,11 @@ class Plot:
         self.width_s = self.WIDTH_SMALL
         self.height_s = self.HEIGHT_SMALL
 
-    def build(self, **kwargs):
+        if self.multi_plot:
+            self.plot = {'lhs': None, 'rhs': None}
+        else:
+            self.plot = None
+    def build(self, *args, **kwargs):
         """
         Creates the plot.
 
@@ -75,16 +78,16 @@ class Plot:
             **kwargs: Additional keyword arguments.
 
         """
-        pass
+        raise NotImplementedError
 
-    def analyse(self, **kwargs):
+    def analyse(self,  *args, **kwargs):
         """
         Analyzes the data to be plotted.
 
         Args:
             **kwargs: Additional keyword arguments.
         """
-        pass
+        raise NotImplementedError
 
     def save(self):
         """

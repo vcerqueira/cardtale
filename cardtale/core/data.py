@@ -13,7 +13,8 @@ unq_freq_list = pd.Series([*AVAILABLE_FREQ.values()]).unique().tolist()
 UNAVAILABLE_FREQUENCY_ERROR = f'Unknown or unavailable frequency. ' \
                               f'Please resample your data to one of the following frequencies: ' \
                               f'{join_l([*AVAILABLE_FREQ], "or")}. ' \
-                              f'These refer to {join_l(unq_freq_list, "and")} sampling periods, respectively.'
+                              f'These refer to {join_l(unq_freq_list, "and")} ' \
+                              f'sampling periods, respectively.'
 
 ESTIMATED_PERIOD = 'Seasonal period was not provided. ' \
                    'This parameter was estimated to be: {}'
@@ -55,12 +56,19 @@ class TimeSeriesData:
         Args:
             df (pd.DataFrame): Time series dataset following a Nixtla-based structure.
             freq (str): Sampling frequency of the data. Needs to be compatible with pandas.
-            id_col (str, optional): Column name for the time series identifier. Defaults to 'unique_id'.
-            time_col (str, optional): Column name for the time variable. Defaults to 'ds'.
-            target_col (str, optional): Column name for the target variable. Defaults to 'y'.
-            period (Period, optional): Main period of the data (e.g. 12 for monthly data). Defaults to None.
-        """
 
+            id_col (str, optional): Column name for the time series identifier.
+            Defaults to 'unique_id'.
+
+            time_col (str, optional): Column name for the time variable.
+            Defaults to 'ds'.
+
+            target_col (str, optional): Column name for the target variable.
+            Defaults to 'y'.
+
+            period (Period, optional): Main period of the data (e.g. 12 for monthly data).
+            Defaults to None.
+        """
 
         self.id_col = id_col
         self.time_col = time_col
@@ -143,7 +151,7 @@ class TimeSeriesData:
         return data_groups
 
     def _assert_datatypes(self, df: pd.DataFrame, freq: str):
-        assert freq in AVAILABLE_FREQ.keys(), \
+        assert freq in AVAILABLE_FREQ, \
             UNAVAILABLE_FREQUENCY_ERROR
 
         assert pd.api.types.is_datetime64_any_dtype(df[self.time_col]), \

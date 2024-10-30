@@ -21,9 +21,6 @@ class TimeDF:
     """
     TimeDF
 
-    todo check greykit features: https://github.com/linkedin/greykite/blob/master/greykite/common/features/timeseries_features.py
-    todo check gluonts features: https://ts.gluon.ai/stable/api/gluonts/gluonts.time_feature.html
-
 
     Time features dataset.
 
@@ -100,7 +97,8 @@ class TimeDF:
         df[series.name] = series.values
 
         for freq_ in freqs:
-            avg_df[f'{freq_} Average'] = df.groupby([freq_])[series.name].transform(lambda x: x.mean()).values
+            df_grouped = df.groupby([freq_])[series.name]
+            avg_df[f'{freq_} Average'] = df_grouped.transform(lambda x: x.mean()).values
 
         avg_df.reset_index(drop=True, inplace=True)
 

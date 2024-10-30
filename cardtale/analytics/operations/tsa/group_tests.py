@@ -24,28 +24,28 @@ class GroupBasedTesting:
     @staticmethod
     def anova_test(group_list: List[Union[float, int]]):
         """Equal means"""
-        stat, p_value = f_oneway(*group_list)
+        _, p_value = f_oneway(*group_list)
 
         return p_value
 
     @staticmethod
     def kruskal_test(group_list: List[Union[float, int]]):
         """Equal medians, non-parametric"""
-        stat, p_value = kruskal(*group_list)
+        _, p_value = kruskal(*group_list)
 
         return p_value
 
     @staticmethod
     def levene_test(group_list: List[Union[float, int]]):
         """Equal vars -> Not Normal, more robust"""
-        stat, p_value = levene(*group_list)
+        _, p_value = levene(*group_list)
 
         return p_value
 
     @staticmethod
     def bartlett_test(group_list: List[Union[float, int]]):
         """Equal vars -> Normal"""
-        stat, p_value = bartlett(*group_list)
+        _, p_value = bartlett(*group_list)
 
         return p_value
 

@@ -34,7 +34,7 @@ class TimeLinearModel:
         """
 
         aux_df = pd.DataFrame({'Series': series,
-                               'Time': range(series.__len__())})
+                               'Time': range(len(series))})
 
         aux_df['Time'] += 1
 

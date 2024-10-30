@@ -1,0 +1,17 @@
+[DESIGN]
+max-attributes = 20
+max-args = 15
+max-locals = 20
+
+[MESSAGES CONTROL]
+disable = missing-module-docstring,
+          missing-class-docstring,
+          missing-function-docstring,
+          too-few-public-methods,
+          too-many-positional-arguments,
+          fixme,
+          global-statement,
+          too-many-branches
+
+[FORMAT]
+max-line-length = 130

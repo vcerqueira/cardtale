@@ -31,7 +31,7 @@ class SeriesACFPlot(Plot):
 
         self.plot_name = PLOT_NAMES['struc_acf']
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the ACF plot.
         """
@@ -41,7 +41,7 @@ class SeriesACFPlot(Plot):
                                         y_axis_col='ACF',
                                         h_threshold=self.tsd.summary.acf.significance_thr)
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the ACF plot.
 

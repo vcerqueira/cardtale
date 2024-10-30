@@ -101,7 +101,7 @@ class SeasonalPlot:
         """
 
 
-        stat_by_group, _ = SummaryStatPlot.summary_by_group(data, y_axis_col, group_col, 'mean')
+        stat_by_group, _ = SummaryStatPlot.calc_summary_by_group(data, y_axis_col, group_col, 'mean')
         stat_by_group = stat_by_group.reset_index()
 
         aes_ = {'x': x_axis_col, 'y': y_axis_col}

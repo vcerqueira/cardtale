@@ -20,19 +20,19 @@ class Tester:
         """
         Running statistical tests
         """
-        pass
+        raise NotImplementedError
 
     def run_landmarks(self):
         """
         Running landmark experiments
         """
-        pass
+        raise NotImplementedError
 
     def run_misc(self, **kwargs):
         """
         Running miscellaneous experiments
         """
-        pass
+        raise NotImplementedError
 
 
 class UnivariateTester(Tester):

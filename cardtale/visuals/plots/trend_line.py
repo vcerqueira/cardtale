@@ -38,7 +38,7 @@ class TrendLinePlot(Plot):
         self.plot_name = PLOT_NAMES['trend_line']
         self.tests = tests
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the trend line plot.
         """
@@ -51,14 +51,14 @@ class TrendLinePlot(Plot):
                                                   y_axis_col_main='Trend',
                                                   y_axis_col_supp=self.tsd.target_col)
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the trend line plot.
 
         The analysis includes summarizing the trend strength and correlation.
         """
 
-        self.show_me, show_results = TrendTestsParser.show_trend_plots(self.tests.trend)
+        self.show_me, _ = TrendTestsParser.show_trend_plots(self.tests.trend)
 
         if not self.show_me:
             return

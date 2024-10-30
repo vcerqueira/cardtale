@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union, Optional
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -6,6 +6,8 @@ from sklearn.model_selection import train_test_split
 MAX_PARTITION_SIZE = 0.5
 GQ_DEFAULT_NAMES = ['First', 'Last']
 CHANGE_DEFAULT_NAMES = ['Before Change', 'After Change']
+
+PandasObj = Union[pd.DataFrame, pd.Series]
 
 
 class DataSplit:
@@ -22,9 +24,9 @@ class DataSplit:
     """
 
     @staticmethod
-    def goldfeldquant_partition(residuals: pd.Series,
+    def goldfeldquant_partition(residuals: PandasObj,
                                 partition_size: float,
-                                partition_names: List[str] = GQ_DEFAULT_NAMES):
+                                partition_names: Optional[List[str]] = None):
         """
         Splits residuals into partitions for Goldfeld-Quandt test.
 
@@ -38,6 +40,9 @@ class DataSplit:
         """
 
         assert partition_size < MAX_PARTITION_SIZE
+
+        if partition_names is None:
+            partition_names = GQ_DEFAULT_NAMES
 
         n = residuals.shape[0]
 
@@ -56,9 +61,9 @@ class DataSplit:
 
     @classmethod
     def change_partition(cls,
-                         data: pd.DataFrame,
+                         data: PandasObj,
                          cp_index: int,
-                         partition_names: List[str] = CHANGE_DEFAULT_NAMES,
+                         partition_names: Optional[List[str]] = None,
                          target_col: str = 'y',
                          time_col: str = 'ds',
                          return_series: bool = False):
@@ -77,17 +82,20 @@ class DataSplit:
             pd.DataFrame or tuple: DataFrame with partitioned data or tuple of series if return_series is True.
         """
 
-        Before, After = train_test_split(data, train_size=cp_index, shuffle=False)
+        if partition_names is None:
+            partition_names = CHANGE_DEFAULT_NAMES
+
+        before, after = train_test_split(data, train_size=cp_index, shuffle=False)
 
         if return_series:
-            return Before, After
+            return before, after
 
-        n_bf, n_af = Before.shape[0], After.shape[0]
+        n_bf, n_af = before.shape[0], after.shape[0]
 
-        p1_df = pd.DataFrame({target_col: Before[target_col], time_col: range(n_bf)})
+        p1_df = pd.DataFrame({target_col: before[target_col], time_col: range(n_bf)})
         p1_df['Part'] = partition_names[0]
 
-        p2_df = pd.DataFrame({target_col: After[target_col], time_col: range(n_af)})
+        p2_df = pd.DataFrame({target_col: after[target_col], time_col: range(n_af)})
         p2_df['Part'] = partition_names[1]
 
         df = pd.concat([p1_df, p2_df])

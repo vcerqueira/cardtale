@@ -49,9 +49,6 @@ class SeasonalityCard(Card):
 
         if self.tsd.dt.freq_name == 'Yearly':
             self.show_content = False
-            return
-
-        pass
 
     def build_plots(self):
         """

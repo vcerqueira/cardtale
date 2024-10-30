@@ -36,7 +36,7 @@ class ChangeTesting(UnivariateTester):
         self.detection = ChangePointDetection(self.series)
         self.level_increased = False
 
-    def run_misc(self):
+    def run_misc(self, *args, **kwargs):
         """
         Detects change points in the time series data.
         """
@@ -73,7 +73,7 @@ class ChangeTesting(UnivariateTester):
             bool: Flag indicating if there is a significant change in distribution.
         """
 
-        cp, cp_timestep = self.get_change_points()
+        cp, _ = self.get_change_points()
 
         before = series.values[:cp[0]]
         after = series.values[cp[0]:]

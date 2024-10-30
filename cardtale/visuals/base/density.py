@@ -36,7 +36,7 @@ class PlotDensity:
             plotnine.ggplot: The generated density plot.
         """
 
-        COLORS = [THEME_PALETTE[THEME]['hard'],
+        colors = [THEME_PALETTE[THEME]['hard'],
                   THEME_PALETTE[THEME]['hard_alt']]
 
         data_grp = data.groupby(group_col).mean().reset_index()
@@ -56,7 +56,7 @@ class PlotDensity:
         for i, grp in enumerate(data_grp[x_axis_col]):
             plot += p9.geom_vline(xintercept=grp,
                                   linetype='dashed',
-                                  color=COLORS[i],
+                                  color=colors[i],
                                   size=1.1,
                                   alpha=0.7)
 
@@ -65,8 +65,8 @@ class PlotDensity:
                p9.xlab(x_lab) + \
                p9.ylab(y_lab) + \
                p9.ggtitle(title) + \
-               p9.scale_fill_manual(values=COLORS) + \
-               p9.scale_color_manual(values=COLORS) + \
+               p9.scale_fill_manual(values=colors) + \
+               p9.scale_color_manual(values=colors) + \
                p9.scale_x_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
                p9.scale_y_continuous(labels=lambda lst: [f'{x:.1e}' for x in lst])
 

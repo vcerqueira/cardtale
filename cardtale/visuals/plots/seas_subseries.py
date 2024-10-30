@@ -68,7 +68,7 @@ class SeasonalSubSeriesPlot(Plot):
 
         self.tests = tests
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the seasonal subseries plot.
         """
@@ -78,7 +78,7 @@ class SeasonalSubSeriesPlot(Plot):
                                             x_axis_col=self.tsd.time_col,
                                             y_axis_col=self.y_axis_col)
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the seasonal subseries plot.
 
@@ -90,7 +90,7 @@ class SeasonalSubSeriesPlot(Plot):
         else:
             freq_named = f'{self.x_axis_col}ly'
 
-        show_plots, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
+        show_plots, _ = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
 
         if show_plots[self.named_seasonality][self.plot_id]['show']:
             self.show_me = True

@@ -81,7 +81,7 @@ class SeasonalityTesting(UnivariateTester):
 
         self.performance = seasonal_lm.results
 
-    def run_misc(self):
+    def run_misc(self, *args, **kwargs):
         """
         Runs miscellaneous experiments for seasonality.
 
@@ -94,7 +94,8 @@ class SeasonalityTesting(UnivariateTester):
         data_group_list = [x.values for _, x in data_group]
 
         self.group_tests = GroupBasedTesting.run_tests(data_group_list)
-        self.group_tests_b = {k: self.group_tests[k] < ALPHA for k in self.group_tests}
+        self.group_tests_b = {k: v < ALPHA
+                              for k, v in self.group_tests.items()}
 
 
 class SeasonalityTestingMulti:
@@ -174,7 +175,7 @@ class SeasonalityTestingMulti:
             if len(sub_series) < 30:
                 prob_level = 0
             else:
-                prob_trend, prob_level = UnivariateTrendTesting.run_tests_on_series(pd.Series(sub_series))
+                _, prob_level = UnivariateTrendTesting.run_tests_on_series(pd.Series(sub_series))
 
             within_group_analysis[k] = prob_level
 

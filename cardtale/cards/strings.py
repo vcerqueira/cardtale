@@ -2,7 +2,7 @@ import json
 from typing import List
 from pathlib import Path
 
-default_locale = 'en-gb'
+DEFAULT_LOCALE = 'en-gb'
 cached_strings = {}
 
 STRINGS_DIR = Path(__file__).parent.parent / 'cards' / 'templates' / 'strings'
@@ -10,7 +10,7 @@ STRINGS_DIR = Path(__file__).parent.parent / 'cards' / 'templates' / 'strings'
 
 def refresh():
     global cached_strings
-    with open(f'{STRINGS_DIR}/{default_locale}.json') as f:
+    with open(f'{STRINGS_DIR}/{DEFAULT_LOCALE}.json', encoding='utf-8') as f:
         cached_strings = json.load(f)
 
 

@@ -33,13 +33,13 @@ class ChangesMarksPlot(Plot):
 
         self.tests = tests
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the change marking plot.
         """
 
         if self.show_me:
-            cp, cp_idx = self.tests.change.get_change_points()
+            _, cp_idx = self.tests.change.get_change_points()
 
             self.plot = \
                 LinePlot.univariate_change(data=self.tsd.df,
@@ -47,7 +47,7 @@ class ChangesMarksPlot(Plot):
                                            y_axis_col=self.tsd.target_col,
                                            change_points=cp_idx)
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the change marking.
 
@@ -60,7 +60,7 @@ class ChangesMarksPlot(Plot):
 
         if n_cp > 0:
             self.show_me = True
-            first_cp = cp[0]
+            # first_cp = cp[0]
             # if first_cp.direction == 'increase':
             #     cp_direction = 'increasing'
             # else:

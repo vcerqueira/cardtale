@@ -35,7 +35,7 @@ class SeriesPACFPlot(Plot):
 
         self.plot_name = PLOT_NAMES['struc_pacf']
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the PACF plot.
         """
@@ -45,7 +45,7 @@ class SeriesPACFPlot(Plot):
                                         y_axis_col='ACF',
                                         h_threshold=self.tsd.summary.pacf.significance_thr)
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the PACF plot.
 

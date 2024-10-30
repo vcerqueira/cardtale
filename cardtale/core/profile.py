@@ -22,8 +22,10 @@ class SeriesProfile:
         alpha (float): Significance level
         dt_range (List): Sampling period
         stats (pd.Series): Basic stats, incl. 3rd/4th moments
-        reject_normal_kurtosis (bool): If should reject the hypothesis that kurtosis is that of a Normal
-        reject_normal_skewness (bool): If should reject the hypothesis that skewness is that of a Normal
+        reject_normal_kurtosis (bool): If should reject the hypothesis
+        that kurtosis is that of a Normal
+        reject_normal_skewness (bool): If should reject the hypothesis
+        that skewness is that of a Normal
         n_outliers_upper (int): Number of upper outliers
         n_outliers_lower (int): Number of lower outliers
         n_outliers (int): Number of outliers

@@ -61,18 +61,18 @@ class SeasonalSummaryPlots(Plot):
 
         self.tests = tests
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the seasonal summary plot.
         """
 
-        mean_plot = SummaryStatPlot.SummaryPlot(data=self.tsd.seas_df,
+        mean_plot = SummaryStatPlot.summary_plot(data=self.tsd.seas_df,
                                                 group_col=self.x_axis_col,
                                                 y_col=self.tsd.target_col,
                                                 func='mean',
                                                 y_lab='Mean')
 
-        std_plot = SummaryStatPlot.SummaryPlot(data=self.tsd.seas_df,
+        std_plot = SummaryStatPlot.summary_plot(data=self.tsd.seas_df,
                                                group_col=self.x_axis_col,
                                                y_col=self.tsd.target_col,
                                                func='std',
@@ -80,14 +80,14 @@ class SeasonalSummaryPlots(Plot):
 
         self.plot = {'lhs': mean_plot, 'rhs': std_plot}
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the seasonal summary plot.
 
         The analysis includes checking for significant differences in means and standard deviations.
         """
 
-        show_plots, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
+        show_plots, _ = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
 
         if show_plots[self.named_seasonality][self.plot_id]['show']:
             self.show_me = True

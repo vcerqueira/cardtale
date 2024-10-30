@@ -170,10 +170,10 @@ class SeasonalityTestsParser:
             }
 
         failed_periods = {
-            'seas_subseries': [k for k in show_plots
-                               if not show_plots[k]['seas_subseries']['show']],
-            'seas_summary': [k for k in show_plots
-                             if not show_plots[k]['seas_summary']['show']],
+            'seas_subseries': [k for k, v in show_plots.items()
+                               if not v['seas_subseries']['show']],
+            'seas_summary': [k for k, v in show_plots.items()
+                             if not v['seas_summary']['show']],
         }
 
         return show_plots, failed_periods

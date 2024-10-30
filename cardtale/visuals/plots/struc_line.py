@@ -36,7 +36,7 @@ class SeriesLinePlot(Plot):
         self.caption = gettext('series_line_plot_caption')
         self.show_me = True
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the time series line plot.
         """
@@ -46,7 +46,7 @@ class SeriesLinePlot(Plot):
                                         y_axis_col=self.tsd.target_col,
                                         add_smooth=True)
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the time series line plot.
 

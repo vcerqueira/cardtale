@@ -35,7 +35,7 @@ class SeriesDistPlots(Plot):
         self.show_me = True
         self.plot_name = PLOT_NAMES['struc_dist']
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the time series distribution plots.
         """
@@ -51,7 +51,7 @@ class SeriesDistPlots(Plot):
 
         self.plot = {'lhs': series_hist, 'rhs': series_boxplot}
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the time series distribution.
 

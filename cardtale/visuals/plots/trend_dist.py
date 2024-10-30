@@ -42,7 +42,7 @@ class TrendDistPlots(Plot):
         self.plot_name = PLOT_NAMES['trend_dist']
         self.tests = tests
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the trend distribution plots.
         """
@@ -74,14 +74,14 @@ class TrendDistPlots(Plot):
 
         self.plot = {'lhs': trend_dhist, 'rhs': trend_lagplot}
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the trend distribution plots.
 
         The analysis includes checking for rejected distributions, outliers, skewness, and kurtosis.
         """
 
-        self.show_me, show_results = TrendTestsParser.show_trend_plots(self.tests.trend)
+        self.show_me, _ = TrendTestsParser.show_trend_plots(self.tests.trend)
 
         if not self.show_me:
             return

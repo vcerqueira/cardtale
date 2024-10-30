@@ -58,3 +58,9 @@ class VarianceTesting(UnivariateTester):
         var_lm.run()
 
         self.performance = var_lm.results
+
+    def run_misc(self):
+        """
+        Runs miscellaneous experiments for variance.
+        """
+        pass

@@ -3,8 +3,8 @@ import warnings
 import pandas as pd
 from statsmodels.tsa.stattools import kpss, adfuller
 from statsmodels.tsa.api import STL
-from arch.unitroot import PhillipsPerron
 from statsmodels.tools.sm_exceptions import InterpolationWarning
+from arch.unitroot import PhillipsPerron
 
 warnings.simplefilter('ignore', InterpolationWarning)
 
@@ -67,11 +67,11 @@ class DifferencingTests:
             raise ValueError(f"Unknown test type. Must be one of {[*DifferencingTests.NSDIFF_TESTS]}")
 
         if test == 'seas':
-            return DifferencingTests._wang_smith_hyndman_test(series, period)
-        elif test == 'ocsb':
-            return DifferencingTests._ocsb_test(series, period)
+            n_diffs = DifferencingTests._wang_smith_hyndman_test(series, period)
         else:
-            return DifferencingTests._canova_hansen_test(series, period)
+            n_diffs = DifferencingTests._ocsb_test(series, period)
+
+        return n_diffs
 
     @staticmethod
     def ndiffs(series: pd.Series, test: str = 'kpss', test_type: str = 'trend') -> int:
@@ -115,49 +115,51 @@ class DifferencingTests:
 
         if test == 'kpss':
             regression = 'ct' if test_type == 'trend' else 'c'
-            stat, p_value, *_ = kpss(series, regression=regression)
+            _, p_value, *_ = kpss(series, regression=regression)
             return p_value > 0.05
 
-        elif test == 'adf':
+        if test == 'adf':
             regression = 'ct' if test_type == 'trend' else 'c'
-            stat, p_value, *_ = adfuller(series, regression=regression)
+            _, p_value, *_ = adfuller(series, regression=regression)
             return p_value < 0.05
-        else:
-            regression = 'ct' if test_type == 'trend' else 'c'
-            test = PhillipsPerron(y=series, trend=regression)
-            return test.pvalue < 0.05
 
-    @staticmethod
-    def _wang_smith_hyndman_test(series: pd.Series, period: int) -> int:
-        """Implementation of Wang-Smith-Hyndman seasonal strength test"""
+        regression = 'ct' if test_type == 'trend' else 'c'
+        test = PhillipsPerron(y=series, trend=regression)
+        return test.pvalue < 0.05
 
-        series_decomp = STL(series, period=period).fit()
 
-        # variance of residuals + seasonality
-        resid_seas_var = (series_decomp.resid + series_decomp.seasonal).var()
-        # variance of residuals
-        resid_var = series_decomp.resid.var()
+@staticmethod
+def _wang_smith_hyndman_test(series: pd.Series, period: int) -> int:
+    """Implementation of Wang-Smith-Hyndman seasonal strength test"""
 
-        # Calculate seasonal strength
-        seasonal_strength = 1 - (resid_var / resid_seas_var)
+    series_decomp = STL(series, period=period).fit()
 
-        # If seasonal strength is greater than 0.64, suggest seasonal differencing
-        ndiffs = 1 if seasonal_strength > 0.64 else 0
+    # variance of residuals + seasonality
+    resid_seas_var = (series_decomp.resid + series_decomp.seasonal).var()
+    # variance of residuals
+    resid_var = series_decomp.resid.var()
 
-        return ndiffs
+    # Calculate seasonal strength
+    seasonal_strength = 1 - (resid_var / resid_seas_var)
 
-    @staticmethod
-    def _ocsb_test(series: pd.Series, period: int) -> int:
-        """
-        Simplified OCSB test
-        """
-        # seasonal differences
-        seasonal_diff = series.diff(period).dropna()
+    # If seasonal strength is greater than 0.64, suggest seasonal differencing
+    ndiffs = 1 if seasonal_strength > 0.64 else 0
 
-        # Perform ADF test on seasonal differences
-        _, p_value, *_ = adfuller(seasonal_diff)
+    return ndiffs
 
-        # If p-value < 0.05, series needs seasonal differencing
-        ndiffs = 1 if p_value < 0.05 else 0
 
-        return ndiffs
+@staticmethod
+def _ocsb_test(series: pd.Series, period: int) -> int:
+    """
+    Simplified OCSB test
+    """
+    # seasonal differences
+    seasonal_diff = series.diff(period).dropna()
+
+    # Perform ADF test on seasonal differences
+    _, p_value, *_ = adfuller(seasonal_diff)
+
+    # If p-value < 0.05, series needs seasonal differencing
+    ndiffs = 1 if p_value < 0.05 else 0
+
+    return ndiffs

@@ -62,7 +62,7 @@ class SeasonalLinePlot(Plot):
 
         self.tests = tests
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the seasonal line plot.
         """
@@ -74,7 +74,7 @@ class SeasonalLinePlot(Plot):
                                        add_labels=self.add_labels,
                                        add_smooth=True)
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the seasonal line plot.
 

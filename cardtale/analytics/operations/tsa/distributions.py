@@ -47,14 +47,14 @@ class KolmogorovSmirnov:
         """
 
         p_values = {}
-        for dist_name in C_DISTRIBUTIONS:
+        for dist_name, dist_label in C_DISTRIBUTIONS.items():
             dist = getattr(stats, dist_name)
             param = dist.fit(series)
 
             # Applying the Kolmogorov-Smirnov test
-            D, dist_p_value = kstest(series, dist_name, args=param)
+            _, dist_p_value = kstest(series, dist_name, args=param)
 
-            p_values[C_DISTRIBUTIONS[dist_name]] = dist_p_value
+            p_values[dist_label] = dist_p_value
 
         p_values = pd.Series(p_values)
         p_values = p_values.sort_values(ascending=False)

@@ -39,13 +39,13 @@ class ChangeDistPlots(Plot):
 
         self.tests = tests
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the change distribution plot.
         """
 
         if self.show_me:
-            cp, cp_idx = self.tests.change.get_change_points()
+            cp, _ = self.tests.change.get_change_points()
 
             data_parts = DataSplit.change_partition(data=self.tsd.df,
                                                     cp_index=cp[0],
@@ -63,14 +63,15 @@ class ChangeDistPlots(Plot):
 
             self.plot = {'lhs': parts_dist, 'rhs': parts_dens}
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the change in distribution.
 
-        The analysis includes checking for significant changes and identifying the best distributions before and after the change point.
+        The analysis includes checking for significant changes and identifying
+        the best distributions before and after the change point.
         """
 
-        cp, cp_idx = self.tests.change.get_change_points()
+        cp, _ = self.tests.change.get_change_points()
 
         if len(cp) > 0:
             self.show_me = True

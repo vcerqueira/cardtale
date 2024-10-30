@@ -44,7 +44,7 @@ class VarianceDistPlots(Plot):
                                             time_col=self.tsd.time_col,
                                             target_col=self.tsd.target_col)
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the variance distribution plots.
         """
@@ -75,7 +75,7 @@ class VarianceDistPlots(Plot):
 
         self.plot = {'lhs': plot_part_residuals, 'rhs': plot_part_series}
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the variance distribution plots.
 

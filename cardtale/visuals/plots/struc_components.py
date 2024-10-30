@@ -37,7 +37,7 @@ class SeriesComponentsPlot(Plot):
 
         self.tests = tests
 
-    def build(self):
+    def build(self, *args, **kwargs):
         """
         Creates the components plot.
         """
@@ -46,7 +46,7 @@ class SeriesComponentsPlot(Plot):
                                                x_axis_col=self.tsd.time_col,
                                                scales='free')
 
-    def analyse(self):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the components plot.
 
@@ -55,7 +55,7 @@ class SeriesComponentsPlot(Plot):
 
         seas_t = self.tests.seasonality.seas_tests_on_main
         # todo level not used
-        trend, no_trend, level, no_level = self.tests.trend.results_in_list()
+        trend, no_trend, _, _ = self.tests.trend.results_in_list()
 
         if len(no_trend) == 0:
             trend_str_anl = gettext('series_components_analysis_trend_all1')

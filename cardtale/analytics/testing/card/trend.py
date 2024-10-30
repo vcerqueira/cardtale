@@ -69,7 +69,7 @@ class UnivariateTrendTesting(UnivariateTester):
 
         self.performance = trend_lm.results
 
-    def run_misc(self):
+    def run_misc(self, *args, **kwargs):
         self.time_model.fit(self.series)
 
     def results_in_list(self):

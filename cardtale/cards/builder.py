@@ -94,13 +94,14 @@ class CardsBuilder:
         print('Tests finished. \n Analysing results...')
 
         if not self.cards_were_analysed:
-            for card_ in self.cards:
-                self.cards[card_].analyse()
 
-                if not self.cards[card_].show_content:
-                    self.cards_to_omit.append(self.cards[card_].toc_content)
+            for _, card in self.cards.items():
+                card.analyse()
+
+                if not card.show_content:
+                    self.cards_to_omit.append(card.toc_content)
                 else:
-                    self.cards_included.append(self.cards[card_].toc_content)
+                    self.cards_included.append(card.toc_content)
 
             self.cards_were_analysed = True
 
@@ -118,19 +119,17 @@ class CardsBuilder:
         self.plot_id = 1
 
         self.cards_raw_str = ''
-        for card_ in self.cards:
-            print(card_)
+        for card_name, card in self.cards.items():
+            print(card_name)
 
-            self.cards[card_].build_plots()
-            for plt in self.cards[card_].plots:
-                self.cards[card_].plots[plt].format_caption(self.plot_id)
+            card.build_plots()
+            for plt in card.plots:
+                card.plots[plt].format_caption(self.plot_id)
                 self.plot_id += 1
 
-            self.cards[card_].build_report_section()
+            card.build_report_section()
 
-            card_content = self.cards[card_].content_html
-
-            self.cards_raw_str += card_content
+            self.cards_raw_str += card.content_html
 
         self._render_html_jinja()
 

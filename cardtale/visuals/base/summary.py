@@ -19,7 +19,7 @@ class SummaryStatPlot:
     """
 
     @staticmethod
-    def summary_by_group(
+    def calc_summary_by_group(
             data: pd.DataFrame,
             y_col: str,
             group_col: str,
@@ -48,14 +48,14 @@ class SummaryStatPlot:
         return group_stat, overall_stat
 
     @classmethod
-    def SummaryPlot(cls,
-                    data: pd.DataFrame,
-                    y_col: str,
-                    group_col: str,
-                    func: str,
-                    x_lab: str = '',
-                    y_lab: str = '',
-                    title: str = ''):
+    def summary_plot(cls,
+                     data: pd.DataFrame,
+                     y_col: str,
+                     group_col: str,
+                     func: str,
+                     x_lab: str = '',
+                     y_lab: str = '',
+                     title: str = ''):
         """
         Creates a summary plot for the specified statistic.
         todo Anova/kruskal post hoc comparison to check which groups differ
@@ -74,7 +74,7 @@ class SummaryStatPlot:
             plotnine.ggplot: The generated summary plot.
         """
 
-        group_stat, overall_stat = cls.summary_by_group(data=data,
+        group_stat, overall_stat = cls.calc_summary_by_group(data=data,
                                                         y_col=y_col,
                                                         group_col=group_col,
                                                         func=func)

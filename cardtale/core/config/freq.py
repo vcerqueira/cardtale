@@ -26,7 +26,7 @@ HORIZON_BY_FREQUENCY = {
     'Y': 3,
 }
 
-LAGS_BY_FREQUENCY = {k: int(HORIZON_BY_FREQUENCY[k] * 1.25) for k in HORIZON_BY_FREQUENCY}
+LAGS_BY_FREQUENCY = {k: int(v * 1.25) for k, v in HORIZON_BY_FREQUENCY.items()}
 
 MONTH_LIST = [
     'January',
