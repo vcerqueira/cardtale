@@ -10,12 +10,24 @@ warnings.simplefilter('ignore', InterpolationWarning)
 
 
 class DifferencingTests:
-    """Seasonal and non-seasonal differencing tests
+    """
+    Seasonal and non-seasonal differencing tests.
 
     can include more nuance based on tests
     # https://medium.com/towards-data-science/understanding-time-series-trend-addfd9d7764e
 
 
+    Methods:
+        nsdiffs(series: pd.Series, period: int, test: str = 'seas') -> int:
+            Estimate number of seasonal differences required for seasonal stationarity.
+        ndiffs(series: pd.Series, test: str = 'kpss', test_type: str = 'trend') -> int:
+            Estimate number of differences required for non-seasonal stationarity.
+        _check_stationarity(series: pd.Series, test: str, test_type: str) -> bool:
+            Check if series is stationary using specified test.
+        _wang_smith_hyndman_test(series: pd.Series, period: int) -> int:
+            Implementation of Wang-Smith-Hyndman seasonal strength test.
+        _ocsb_test(series: pd.Series, period: int) -> int:
+            Simplified OCSB test.
     """
 
     NSDIFF_TESTS = {
@@ -40,15 +52,15 @@ class DifferencingTests:
         Parameters:
         -----------
         series : pd.Series
-            Time series data
-        frequency : int
-            Seasonal period
+            Time series data.
+        period : int
+            Seasonal period.
         test : str
-            Type of test to use ('seas', 'ocsb', 'hegy', or 'ch')
+            Type of test to use ('seas' or 'ocsb').
 
         Returns:
         --------
-        int : Recommended number of seasonal differences
+        int : Recommended number of seasonal differences.
         """
 
         if test not in DifferencingTests.NSDIFF_TESTS:
@@ -69,15 +81,15 @@ class DifferencingTests:
         Parameters:
         -----------
         series : pd.Series
-            Time series data
+            Time series data.
         test : str
-            Type of test to use ('kpss', 'adf', or 'pp')
+            Type of test to use ('kpss', 'adf', or 'pp').
         test_type : str
-            Type of test ('trend' or 'level')
+            Type of test ('trend' or 'level').
 
         Returns:
         --------
-        int : Recommended number of differences
+        int : Recommended number of differences.
         """
         if test not in DifferencingTests.NDIFF_TESTS:
             raise ValueError(f"Unknown test type. Must be one of {[*DifferencingTests.NDIFF_TESTS]}")

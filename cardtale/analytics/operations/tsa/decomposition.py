@@ -6,6 +6,18 @@ def get_stl_components(series: pd.Series,
                        period: int,
                        add_residuals: bool = False) -> pd.DataFrame:
 
+    """
+    Decomposes a time series into trend, seasonal, and optionally residual components using STL.
+
+    Args:
+        series (pd.Series): Time series data.
+        period (int): Period for seasonal decomposition.
+        add_residuals (bool, optional): Flag to include residuals in the output. Defaults to False.
+
+    Returns:
+        pd.DataFrame: DataFrame containing the decomposed components.
+    """
+
     ts_decomp = STL(series, period=period).fit()
 
     components = {

@@ -6,8 +6,27 @@ from cardtale.visuals.plots.change_dist import ChangeDistPlots
 
 
 class ChangePointCard(Card):
+    """
+    Class for analyzing change points in a time series.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        tests (TestingComponents): Testing components for the time series data.
+        plots (dict): Dictionary of Plot objects for change points.
+        marked_changes (ChangesMarksPlot): Plot object for marked changes.
+        dist_changes (ChangeDistPlots): Plot object for distribution of changes.
+        metadata (dict): Metadata for the card.
+    """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
+        """
+        Initializes the ChangePointCard with the given time series data and testing components.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+            tests (TestingComponents): Testing components for the time series data.
+        """
+
         super().__init__(tsd=tsd, tests=tests)
 
         self.plots = {

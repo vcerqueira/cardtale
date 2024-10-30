@@ -11,11 +11,23 @@ LEVEL_T = 'level'
 
 
 class UnivariateTrendTesting(UnivariateTester):
+    """
+    Class for running univariate trend tests on time series data.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        tests (dict): Dictionary containing trend and level test results.
+        prob_trend (float): Probability of trend.
+        prob_level (float): Probability of level.
+        time_model (TimeLinearModel): Time linear model for trend analysis.
+    """
 
     def __init__(self, tsd: TimeSeriesData):
         """
-        todo docs
+        Initializes the UnivariateTrendTesting with the given time series data.
 
+        Args:
+            tsd (TimeSeriesData): Time series data object.
         """
         super().__init__(tsd=tsd)
 
@@ -26,6 +38,12 @@ class UnivariateTrendTesting(UnivariateTester):
         self.time_model = TimeLinearModel()
 
     def run_statistical_tests(self):
+        """
+        Runs statistical tests for trend and level.
+
+        Uses the DifferencingTests class to perform differencing tests.
+        """
+
         for k, name in DifferencingTests.NDIFF_TESTS.items():
             try:
                 for test_type in [TREND_T, LEVEL_T]:
@@ -40,6 +58,12 @@ class UnivariateTrendTesting(UnivariateTester):
         self.prob_level = self.tests[LEVEL_T].mean()
 
     def run_landmarks(self):
+        """
+        Runs landmark experiments for trend.
+
+        Uses the TrendLandmarks class to perform landmark analysis.
+        """
+
         trend_lm = TrendLandmarks(tsd=self.tsd)
         trend_lm.run()
 
@@ -49,6 +73,13 @@ class UnivariateTrendTesting(UnivariateTester):
         self.time_model.fit(self.series)
 
     def results_in_list(self):
+        """
+        Returns the results of the trend and level tests as lists.
+
+        Returns:
+            Tuple[List[str], List[str], List[str], List[str]]: Lists of trend, no trend, level, and no level results.
+        """
+
         trend_t = self.tests[TREND_T]
         level_t = self.tests[LEVEL_T]
 
@@ -61,6 +92,16 @@ class UnivariateTrendTesting(UnivariateTester):
 
     @staticmethod
     def run_tests_on_series(series: pd.Series):
+        """
+        Runs trend and level tests on a given series.
+
+        Args:
+            series (pd.Series): Series to analyze.
+
+        Returns:
+            Tuple[float, float]: Probability of trend and probability of level.
+        """
+
         # series = pd.Series([2640,5640, 2160,3600,2640,4680])
 
         tests = {TREND_T: pd.Series(dtype=int), LEVEL_T: pd.Series(dtype=int)}

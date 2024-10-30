@@ -7,16 +7,23 @@ from cardtale.core.data import TimeSeriesData
 
 class TestingComponents:
     """
-    This is an class which combines all the tests and experiments
+    This is a class which combines all the tests and experiments.
 
     Attributes:
-        trend (TrendTesting): Trend tests
-        variance (VarianceTesting): Variance tests
-        change (ChangeTesting): Change tests
-        seasonality (SeasonalityTestingMulti): Seasonality tests
+        trend (TrendTesting): Trend tests.
+        variance (VarianceTesting): Variance tests.
+        change (ChangeTesting): Change tests.
+        seasonality (SeasonalityTestingMulti): Seasonality tests.
     """
 
     def __init__(self, tsd: TimeSeriesData):
+        """
+        Initializes the TestingComponents with the given time series data.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+        """
+
         self.trend = UnivariateTrendTesting(tsd)
         self.variance = VarianceTesting(tsd)
         self.change = ChangeTesting(tsd)
@@ -25,7 +32,6 @@ class TestingComponents:
     def run(self):
         """
         Run all tests
-
         """
         self.trend.run_statistical_tests()
         self.trend.run_landmarks()

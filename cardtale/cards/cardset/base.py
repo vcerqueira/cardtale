@@ -8,13 +8,28 @@ from cardtale.cards.config import TEMPLATE_DIR, CARD_HTML
 
 class Card:
     """
-    This is an abstract class for analysing a component of a time series
+    This is an abstract class for analysing a component of a time series.
 
-    ReportAnalyser wraps several Plots together
-
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        tests (TestingComponents): Testing components for the time series data.
+        plots (dict): Dictionary of Plot objects.
+        metadata (dict): Metadata for the card.
+        toc_content (dict): Table of contents content for the card.
+        show_content (bool): Flag indicating if the content should be shown.
+        content_html (str): HTML content of the card.
+        content_pdf (str): PDF content of the card.
     """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
+        """
+        Initializes the Card with the given time series data and testing components.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+            tests (TestingComponents): Testing components for the time series data.
+        """
+
         self.tsd = tsd
         self.tests = tests
 
@@ -28,8 +43,9 @@ class Card:
 
     def analyse(self):
         """
-        Analyse the Plot objects  of the component
+        Analyse the Plot objects of the component.
         """
+
         for k in self.plots:
             self.plots[k].analyse()
 
@@ -41,6 +57,10 @@ class Card:
         self.set_toc_content()
 
     def set_toc_content(self):
+        """
+        Sets the table of contents content based on the analysis results.
+        """
+
         if self.show_content:
             self.toc_content = {
                 'id': self.metadata['section_id'],
@@ -56,7 +76,7 @@ class Card:
 
     def build_plots(self):
         """
-        Building the plots of the component
+        Builds the plots of the component.
         """
 
         if self.show_content:
@@ -69,8 +89,7 @@ class Card:
 
     def build_report_section(self):
         """
-        Build report section
-
+        Builds the report section for the card.
         """
 
         env = Environment(loader=FileSystemLoader(TEMPLATE_DIR))

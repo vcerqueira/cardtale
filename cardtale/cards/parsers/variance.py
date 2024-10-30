@@ -8,11 +8,30 @@ from cardtale.cards.strings import join_l, gettext
 
 
 class VarianceTestsParser:
+    """
+    Class for parsing variance test results and generating analysis text.
+
+    Methods:
+        tests_parser(tests: pd.Series) -> str:
+            Parses the results of variance tests and generates analysis text.
+        performance_parser(show_results: Dict) -> str:
+            Parses the performance of variance tests and generates analysis text.
+        distr_after_logt(distr_original: str, distr_logt: str) -> str:
+            Generates analysis text for distributions after logarithm transformation.
+        show_distribution_plot(tests: VarianceTesting) -> Tuple[bool, Dict]:
+            Determines which distribution plots to show based on variance test results.
+    """
 
     @staticmethod
     def tests_parser(tests: pd.Series):
         """
-        :param tests: tests attribute from VarianceTesting
+        Parses the results of variance tests and generates analysis text.
+
+        Args:
+            tests (pd.Series): Series containing the results of variance tests.
+
+        Returns:
+            str: Analysis text based on the test results.
         """
         prob_heterosk = tests.mean()
 
@@ -36,7 +55,13 @@ class VarianceTestsParser:
     @staticmethod
     def performance_parser(show_results: Dict):
         """
-        :param show_results: show_results attribute from VarianceShowTests.show_distribution_plot
+        Parses the performance of variance tests and generates analysis text.
+
+        Args:
+            show_results (Dict): Dictionary containing the performance results of variance tests.
+
+        Returns:
+            str: Analysis text based on the performance results.
         """
         log_improves = show_results['by_log']
         bc_improves = show_results['by_boxcox']
@@ -60,9 +85,14 @@ class VarianceTestsParser:
                          distr_original: str,
                          distr_logt: str):
         """
-        :param distr_original:
-        :param distr_logt:
-        :param show_results: show_results attribute from VarianceShowTests.show_distribution_plot
+        Generates analysis text for distributions after logarithm transformation.
+
+        Args:
+            distr_original (str): Original distribution.
+            distr_logt (str): Distribution after logarithm transformation.
+
+        Returns:
+            str: Analysis text based on the distributions.
         """
 
         t = 'Logarithm'
@@ -85,9 +115,13 @@ class VarianceTestsParser:
     @staticmethod
     def show_distribution_plot(tests: VarianceTesting) -> Tuple[bool, Dict]:
         """
-        show_me, show_results = VarianceShowTests.show_distribution_plot(ds.tests.variance)
+        Determines which distribution plots to show based on variance test results.
 
-        :param tests: VarianceTesting object
+        Args:
+            tests (VarianceTesting): Object containing the variance test results.
+
+        Returns:
+            Tuple[bool, Dict]: Flag indicating whether to show the distribution plots and dictionary of results.
         """
         is_heteroskedastic = tests.prob_heteroskedastic > 0
         log_improves = tests.performance['base'] > tests.performance['log']

@@ -11,9 +11,24 @@ from cardtale.analytics.operations.landmarking.config import EXPERIMENT_MODES, M
 
 
 class SeasonalLandmarks(Landmarks):
+    """
+    Class for running landmark experiments on seasonality in time series data.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        target_period (int): Target period for seasonal decomposition.
+    """
+
     TEST_NAME = 'seasonality'
 
     def __init__(self, tsd: TimeSeriesData, target_period: Optional[int] = None):
+        """
+        Initializes the SeasonalLandmarks with the given time series data and target period.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+            target_period (Optional[int]): Target period for seasonal decomposition. Defaults to None.
+        """
 
         if target_period is not None:
             self.target_period = target_period
@@ -23,6 +38,15 @@ class SeasonalLandmarks(Landmarks):
         super().__init__(tsd=tsd, test_name=self.TEST_NAME)
 
     def run_mlf_cv(self, config_name: str):
+        """
+        Runs cross-validation using MLForecast for seasonality experiments.
+
+        Args:
+            config_name (str): Name of the configuration to use.
+
+        Returns:
+            pd.DataFrame: DataFrame containing the cross-validation results.
+        """
 
         conf = EXPERIMENT_MODES[self.test_name][config_name]
 

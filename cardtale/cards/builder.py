@@ -19,6 +19,21 @@ logging.getLogger('fontTools').setLevel(logging.ERROR)
 
 
 class CardsBuilder:
+    """
+    Class for building and rendering analysis cards for time series data.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        tests (TestingComponents): Testing components for the time series data.
+        cards (dict): Dictionary of card objects for different analyses.
+        cards_were_analysed (bool): Flag indicating if the cards were analysed.
+        cards_to_omit (list): List of cards to omit from the report.
+        cards_included (list): List of cards to include in the report.
+        cards_raw_str (str): Raw HTML string of the cards.
+        cards_raw_html (str): Rendered HTML string of the cards.
+        cards_html (HTML): HTML object for the cards.
+        plot_id (int): ID for the plots.
+    """
 
     def __init__(self,
                  df: pd.DataFrame,
@@ -27,6 +42,18 @@ class CardsBuilder:
                  time_col: str = 'ds',
                  target_col: str = 'y',
                  period: Period = None):
+        """
+        Initializes the CardsBuilder with the given data and parameters.
+
+        Args:
+            df (pd.DataFrame): DataFrame containing the time series data.
+            freq (str): Frequency of the time series data.
+            id_col (str, optional): Column name for unique identifier. Defaults to 'unique_id'.
+            time_col (str, optional): Column name for time. Defaults to 'ds'.
+            target_col (str, optional): Column name for target variable. Defaults to 'y'.
+            period (Period, optional): Period for the time series data. Defaults to None.
+        """
+
 
         self.tsd = TimeSeriesData(df=df.copy(),
                                   freq=freq,
@@ -55,6 +82,13 @@ class CardsBuilder:
         self.plot_id = -1
 
     def build_cards(self, render_html: bool = True):
+        """
+        Builds the analysis cards and optionally renders them to HTML.
+
+        Args:
+            render_html (bool, optional): Flag to render the cards to HTML. Defaults to True.
+        """
+
         self.tests.run()
 
         print('Tests finished. \n Analysing results...')
@@ -74,6 +108,13 @@ class CardsBuilder:
             self.render_doc_html()
 
     def render_doc_html(self):
+        """
+        Renders the document to HTML using Jinja2 templates.
+
+        Returns:
+            HTML: HTML object for the rendered document.
+        """
+
         self.plot_id = 1
 
         self.cards_raw_str = ''
@@ -98,9 +139,20 @@ class CardsBuilder:
         return self.cards_html
 
     def get_pdf(self, path: str = 'EXAMPLE_OUTPUT.pdf'):
+        """
+        Generates a PDF from the rendered HTML.
+
+        Args:
+            path (str, optional): Path to save the PDF. Defaults to 'EXAMPLE_OUTPUT.pdf'.
+        """
+
         self.cards_html.write_pdf(path)
 
     def _render_html_jinja(self):
+        """
+        Renders the HTML content using Jinja2 templates.
+        """
+
         env = Environment(loader=FileSystemLoader(str(TEMPLATE_DIR)))
 
         template = env.get_template(STRUCTURE_TEMPLATE)

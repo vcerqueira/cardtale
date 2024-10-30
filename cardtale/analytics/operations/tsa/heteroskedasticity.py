@@ -4,6 +4,20 @@ from statsmodels.formula.api import ols
 
 
 class Heteroskedasticity:
+    """
+    Class for performing heteroskedasticity tests on time series data.
+
+    Methods:
+        het_tests(series: pd.Series, test: str) -> float:
+            Tests for heteroskedasticity using specified test.
+        get_ols_residuals(series: pd.Series) -> pd.Series:
+            Gets the residuals from OLS regression.
+        get_ols_model(series: pd.Series) -> ols:
+            Fits an OLS model to the series.
+        run_all_tests(series: pd.Series) -> dict:
+            Runs all heteroskedasticity tests and returns a dictionary of p-values.
+    """
+
     TESTS = {
         'white': 'White',
         'breuschpagan': 'Breusch-Pagan',
@@ -16,12 +30,14 @@ class Heteroskedasticity:
     @classmethod
     def het_tests(cls, series: pd.Series, test: str):
         """
-        Testing for heteroskedasticity
-        :param series: Univariate time series as pd.Series
-        :param test: String denoting the test. One of 'white','goldfeldquandt', or 'breuschpagan'
-        :return: p-value as a float.
+        Tests for heteroskedasticity using specified test.
 
-        If the p-value is high, we accept the null hypothesis that the data is homoskedastic
+        Args:
+            series (pd.Series): Univariate time series.
+            test (str): String denoting the test. One of 'white', 'goldfeldquandt', or 'breuschpagan'.
+
+        Returns:
+            float: p-value of the test.
         """
         assert test in cls.TEST_NAMES, 'Unknown test'
 
@@ -38,10 +54,30 @@ class Heteroskedasticity:
 
     @classmethod
     def get_ols_residuals(cls, series: pd.Series):
+        """
+        Gets the residuals from OLS regression.
+
+        Args:
+            series (pd.Series): Univariate time series.
+
+        Returns:
+            pd.Series: Residuals from OLS regression.
+        """
+
         return cls.get_ols_model(series).resid
 
     @classmethod
     def get_ols_model(cls, series: pd.Series):
+        """
+        Fits an OLS model to the series.
+
+        Args:
+            series (pd.Series): Univariate time series.
+
+        Returns:
+            ols: Fitted OLS model.
+        """
+
         series = series.reset_index(drop=True).reset_index()
         series.columns = ['time', 'value']
         series['time'] += 1
@@ -52,6 +88,15 @@ class Heteroskedasticity:
 
     @classmethod
     def run_all_tests(cls, series: pd.Series):
+        """
+        Runs all heteroskedasticity tests and returns a dictionary of p-values.
+
+        Args:
+            series (pd.Series): Univariate time series.
+
+        Returns:
+            dict: Dictionary containing p-values of all tests.
+        """
 
         test_results = {k: cls.het_tests(series, k) for k in cls.TEST_NAMES}
 

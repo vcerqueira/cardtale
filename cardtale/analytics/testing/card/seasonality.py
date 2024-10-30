@@ -16,10 +16,27 @@ from cardtale.core.config.freq import PLOTTING_SEAS_CONFIGS
 
 
 class SeasonalityTesting(UnivariateTester):
+    """
+    Class for analyzing seasonality in a time series.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        period_data (Dict): Dictionary containing period data for seasonality analysis.
+        prob_seasonality (float): Probability of seasonality.
+        group_tests (dict): Results of group-based tests.
+        group_tests_b (dict): Boolean results of group-based tests.
+    """
 
     def __init__(self,
                  tsd: TimeSeriesData,
                  period_data: Dict):
+        """
+        Initializes the SeasonalityTesting with the given time series data and period data.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+            period_data (Dict): Dictionary containing period data for seasonality analysis.
+        """
 
         super().__init__(tsd)
 
@@ -29,6 +46,12 @@ class SeasonalityTesting(UnivariateTester):
         self.group_tests_b = {}
 
     def run_statistical_tests(self):
+        """
+        Runs statistical tests for seasonality.
+
+        Uses the DifferencingTests class to perform non-seasonal differencing tests.
+        """
+
         for k, name in DifferencingTests.NSDIFF_TESTS.items():
             if self.period_data['period'] is not None:
                 self.tests[name] = \
@@ -43,6 +66,12 @@ class SeasonalityTesting(UnivariateTester):
         self.prob_seasonality = self.tests.mean()
 
     def run_landmarks(self):
+        """
+        Runs landmark experiments for seasonality.
+
+        Uses the SeasonalLandmarks class to perform landmark analysis.
+        """
+
         if self.period_data['period'] is None:
             self.performance = {'base': 0, 'both': 0}
             return
@@ -53,6 +82,12 @@ class SeasonalityTesting(UnivariateTester):
         self.performance = seasonal_lm.results
 
     def run_misc(self):
+        """
+        Runs miscellaneous experiments for seasonality.
+
+        Uses the GroupBasedTesting class to perform group-based tests.
+        """
+
         freq = self.period_data['base']
 
         data_group = self.tsd.seas_df.groupby(freq, observed=False)[self.tsd.target_col]
@@ -63,8 +98,27 @@ class SeasonalityTesting(UnivariateTester):
 
 
 class SeasonalityTestingMulti:
+    """
+    Class for running multiple seasonality tests on a time series.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        period_data_l (list): List of period data configurations for seasonality analysis.
+        tests (list): List of SeasonalityTesting objects for each period.
+        seas_tests_on_main (pd.Series): Seasonality tests on the main period.
+        groups_with_diff_var (list): List of groups with different variance.
+        group_trends (dict): Dictionary of group trends.
+        show_plots (dict): Dictionary indicating which plots to show.
+        failed_periods (dict): Dictionary of failed periods.
+    """
 
     def __init__(self, tsd: TimeSeriesData):
+        """
+        Initializes the SeasonalityTestingMulti with the given time series data.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+        """
 
         self.tsd = tsd
 
@@ -102,7 +156,15 @@ class SeasonalityTestingMulti:
         self.show_plots, self.failed_periods = SeasonalityTestsParser.get_show_analysis(tests=self.tests)
 
     def get_period_groups_trend(self, period_name: str):
-        # period trends
+        """
+        Gets the trend analysis for each group within the specified period.
+
+        Args:
+            period_name (str): Name of the period.
+
+        Returns:
+            pd.Series: Series containing the trend probabilities within groups.
+        """
 
         data_groups = self.tsd.get_period_groups(grouping_period=period_name)
 
@@ -122,15 +184,15 @@ class SeasonalityTestingMulti:
 
     def get_tests_by_named_seasonality(self, named_seasonality: str):
         """
-        Get SeasonalityTesting object by named seasonality
+        Gets the SeasonalityTesting object by named seasonality.
 
         Args:
-            named_seasonality:  the name of the seasonal patterns, e.g.
-            yaerly seasonality for monthly data when the period is 12
+            named_seasonality (str): Name of the seasonal pattern (e.g., 'Yearly').
 
         Returns:
-
+            SeasonalityTesting: SeasonalityTesting object for the specified named seasonality.
         """
+
         for t in self.tests:
             if t.period_data['name'] == named_seasonality:
                 return t

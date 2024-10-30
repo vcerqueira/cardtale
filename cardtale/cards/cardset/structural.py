@@ -9,8 +9,25 @@ from cardtale.analytics.testing.base import TestingComponents
 
 
 class StructuralCard(Card):
+    """
+    Class for analyzing structural components of a time series.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        tests (TestingComponents): Testing components for the time series data.
+        plots (dict): Dictionary of Plot objects for structural analysis.
+        metadata (dict): Metadata for the card.
+    """
 
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
+        """
+        Initializes the StructuralCard with the given time series data and testing components.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+            tests (TestingComponents): Testing components for the time series data.
+        """
+
         super().__init__(tsd, tests)
 
         self.plots = {

@@ -10,8 +10,26 @@ from cardtale.core.data import TimeSeriesData
 
 
 class VarianceTesting(UnivariateTester):
+    """
+    Class for analyzing variance in a time series.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        prob_heteroskedastic (float): Probability of heteroskedasticity.
+        groups_with_diff_var (list): List of groups with different variance.
+        residuals (pd.Series): Residuals from OLS regression.
+        distr_original (str): Original distribution.
+        distr_logt (str): Distribution after logarithm transformation.
+    """
 
     def __init__(self, tsd: TimeSeriesData):
+        """
+        Initializes the VarianceTesting with the given time series data.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+        """
+
         super().__init__(tsd)
 
         self.prob_heteroskedastic: float = -1

@@ -9,12 +9,35 @@ from cardtale.analytics.operations.landmarking.config import EXPERIMENT_MODES, M
 
 
 class TrendLandmarks(Landmarks):
+    """
+    Class for running landmark experiments on trend in time series data.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+    """
+
     TEST_NAME = 'trend'
 
     def __init__(self, tsd: TimeSeriesData):
+        """
+        Initializes the TrendLandmarks with the given time series data.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+        """
+
         super().__init__(tsd=tsd, test_name=self.TEST_NAME)
 
     def run_mlf_cv(self, config_name: str):
+        """
+        Runs cross-validation using MLForecast for trend experiments.
+
+        Args:
+            config_name (str): Name of the configuration to use.
+
+        Returns:
+            pd.DataFrame: DataFrame containing the cross-validation results.
+        """
 
         conf = EXPERIMENT_MODES[self.test_name][config_name]
 

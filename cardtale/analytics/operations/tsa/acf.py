@@ -8,6 +8,19 @@ from cardtale.core.utils.splits import DataSplit
 
 
 class AutoCorrelation:
+    """
+    Class for calculating and analyzing autocorrelation and partial autocorrelation in a time series.
+
+    Attributes:
+        n_lags (int): Number of lags to calculate.
+        alpha (float): Significance level for confidence intervals.
+        significance_thr (float): Threshold for significance.
+        acf (np.ndarray): Autocorrelation function values.
+        acf_df (pd.DataFrame): DataFrame containing ACF values and confidence intervals.
+        conf_int (np.ndarray): Confidence intervals for ACF values.
+        acf_analysis (dict): Dictionary containing results of ACF analysis.
+    """
+
     PARAMS = {
         'bartlett_confint': True,
         'adjusted': False,
@@ -15,6 +28,14 @@ class AutoCorrelation:
     }
 
     def __init__(self, n_lags: int, alpha: float):
+        """
+        Initializes the AutoCorrelation with the given parameters.
+
+        Args:
+            n_lags (int): Number of lags to calculate.
+            alpha (float): Significance level for confidence intervals.
+        """
+
         self.n_lags = n_lags
         self.alpha = alpha
         self.significance_thr = 0
@@ -24,6 +45,13 @@ class AutoCorrelation:
         self.acf_analysis = {}
 
     def calc_acf(self, data: pd.Series):
+        """
+        Calculates the autocorrelation function (ACF) for the given data.
+
+        Args:
+            data (pd.Series): Time series data.
+        """
+
         self.significance_thr = 2 / np.sqrt(len(data))
 
         acf_x = acf(
@@ -45,6 +73,13 @@ class AutoCorrelation:
         self.acf_df['Lag'] = DataSplit.df_var_to_categorical(self.acf_df, 'Lag')
 
     def calc_pacf(self, data: pd.Series):
+        """
+        Calculates the partial autocorrelation function (PACF) for the given data.
+
+        Args:
+            data (pd.Series): Time series data.
+        """
+
         self.significance_thr = 2 / np.sqrt(len(data))
 
         acf_x = pacf(
@@ -66,10 +101,10 @@ class AutoCorrelation:
 
     def significance_analysis(self, period: int):
         """
-        todo autoseasonality -> so faz sentido se remover a sazonalidade
-        mas para isso ja tenho os testes mais a frente...
-        :param period:
-        :return:
+        Analyzes the significance of the ACF values for seasonality.
+
+        Args:
+            period (int): Period for seasonality analysis.
         """
 
         raw_seasonality = []

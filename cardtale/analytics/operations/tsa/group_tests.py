@@ -5,6 +5,21 @@ from scipy.stats import levene, bartlett
 
 
 class GroupBasedTesting:
+    """
+    Class for performing group-based statistical tests on time series data.
+
+    Methods:
+        anova_test(group_list: List[Union[float, int]]) -> float:
+            Performs ANOVA test to check for equal means.
+        kruskal_test(group_list: List[Union[float, int]]) -> float:
+            Performs Kruskal-Wallis test to check for equal medians (non-parametric).
+        levene_test(group_list: List[Union[float, int]]) -> float:
+            Performs Levene's test to check for equal variances (more robust, not assuming normality).
+        bartlett_test(group_list: List[Union[float, int]]) -> float:
+            Performs Bartlett's test to check for equal variances (assuming normality).
+        run_tests(group_list: List) -> dict:
+            Runs all group-based tests and returns a dictionary of p-values.
+    """
 
     @staticmethod
     def anova_test(group_list: List[Union[float, int]]):

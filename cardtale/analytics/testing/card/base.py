@@ -5,11 +5,10 @@ class Tester:
     """
     Tester abstract class
 
-    todo docs
-
     Attributes:
-        tests (dict): Test results
-        performance (dict): Performance results
+        tsd (TimeSeriesData): Time series data object.
+        tests (dict): Test results.
+        performance (dict): Performance results.
     """
 
     def __init__(self, tsd: TimeSeriesData):
@@ -37,8 +36,22 @@ class Tester:
 
 
 class UnivariateTester(Tester):
+    """
+    UnivariateTester class for running univariate tests on time series data.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+        series (pd.Series): Target series extracted from the time series data.
+    """
 
     def __init__(self, tsd: TimeSeriesData):
+        """
+        Initializes the UnivariateTester with the given time series data.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+        """
+
         super().__init__(tsd)
 
         self.series = tsd.get_target_series(df=self.tsd.df,

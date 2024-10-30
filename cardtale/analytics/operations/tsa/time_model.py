@@ -23,17 +23,14 @@ class TimeLinearModel:
 
     def fit(self, series: pd.Series):
         """
-        Quantifying how the time variable explains the series
+        Quantifying how the time variable explains the series.
+        todo include tedd tests
 
-        Extended description of function.
-
-        Parameters:
-        series (pd.Series): A univariate time series
+        Args:
+            series (pd.Series): A univariate time series.
 
         Returns:
-        self: Fitted class object
-
-        todo include tedd tests
+            self: Fitted class object.
         """
 
         aux_df = pd.DataFrame({'Series': series,

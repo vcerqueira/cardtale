@@ -10,12 +10,35 @@ from cardtale.core.config.freq import HORIZON_BY_FREQUENCY, LAGS_BY_FREQUENCY
 
 
 class VarianceLandmarks(Landmarks):
+    """
+    Class for running landmark experiments on variance in time series data.
+
+    Attributes:
+        tsd (TimeSeriesData): Time series data object.
+    """
+
     TEST_NAME = 'variance'
 
     def __init__(self, tsd: TimeSeriesData):
+        """
+        Initializes the VarianceLandmarks with the given time series data.
+
+        Args:
+            tsd (TimeSeriesData): Time series data object.
+        """
+
         super().__init__(tsd=tsd, test_name=self.TEST_NAME)
 
     def run_mlf_cv(self, config_name: str):
+        """
+        Runs cross-validation using MLForecast for variance experiments.
+
+        Args:
+            config_name (str): Name of the configuration to use.
+
+        Returns:
+            pd.DataFrame: DataFrame containing the cross-validation results.
+        """
 
         conf = EXPERIMENT_MODES[self.test_name][config_name]
 

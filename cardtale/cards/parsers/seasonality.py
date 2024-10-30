@@ -9,9 +9,37 @@ from cardtale.cards.strings import join_l, gettext
 
 
 class SeasonalityTestsParser:
+    """
+    Class for parsing seasonality test results and generating analysis text.
+
+    Methods:
+        seasonal_tests_parser(tests: pd.Series, named_frequency: str) -> str:
+            Parses the results of seasonality tests and generates analysis text.
+        seasonal_subseries_parser(show_plots: Dict, st_freq: str, lm_freq: str) -> str:
+            Parses the results of subseries seasonality tests and generates analysis text.
+        subseries_tests_parser(period_name: str, group_trend: pd.Series, overall_level_status: str) -> str:
+            Parses the results of subseries tests and generates analysis text.
+        get_show_analysis(tests) -> Tuple[Dict, Dict]:
+            Determines which plots to show based on seasonality test results.
+        show_summary_plot(tester) -> bool:
+            Determines whether to show a summary plot based on seasonality test results.
+        show_subseries(tester) -> Tuple[bool, Dict]:
+            Determines whether to show a subseries plot based on seasonality test results.
+    """
 
     @staticmethod
     def seasonal_tests_parser(tests: pd.Series, named_frequency: str):
+        """
+        Parses the results of seasonality tests and generates analysis text.
+
+        Args:
+            tests (pd.Series): Series containing the results of seasonality tests.
+            named_frequency (str): Named frequency for the tests (e.g., 'Monthly').
+
+        Returns:
+            str: Analysis text based on the test results.
+        """
+
 
         all_tests = tests.index.tolist()
         rej_tests = tests[tests > 0].index.tolist()
@@ -34,19 +62,15 @@ class SeasonalityTestsParser:
     @staticmethod
     def seasonal_subseries_parser(show_plots: Dict, st_freq: str, lm_freq: str):
         """
+        Parses the results of subseries seasonality tests and generates analysis text.
 
-        :param show_plots: First element from outcome of SeasonalityTestingMulti.get_show_analysis()
-        :param st_freq: Named frequency for statistical tests (e.g. Quarterly)
-        :param lm_freq: Named frequency for landmark tests (e.g. Quarterly)
+        Args:
+            show_plots (Dict): Dictionary containing the results of subseries tests.
+            st_freq (str): Named frequency for statistical tests (e.g., 'Quarterly').
+            lm_freq (str): Named frequency for landmark tests (e.g., 'Quarterly').
 
-        When do these differ?
-        For the main period... For example, suppose the ts is monthly.
-        The main period is 12 for yearly seasonality.
-        The statistical tests look for a named yearly seasonality,
-        but landmarks look for a monthly information...
-        What a mess... but I'm not sure how to unshit this.
-
-        :return: text content
+        Returns:
+            str: Analysis text based on the subseries test results.
         """
 
         by_st = show_plots[st_freq]['seas_subseries']['which']['by_st']
@@ -72,10 +96,17 @@ class SeasonalityTestsParser:
                                group_trend: pd.Series,
                                overall_level_status: str):
         """
-        :param period_name: Period name (e.g. month)
-        :param group_trend: trend prob within groups
-        :param overall_level_status: Overall stationarity condition of the time series
+        Parses the results of subseries tests and generates analysis text.
+
+        Args:
+            period_name (str): Period name (e.g., 'Month').
+            group_trend (pd.Series): Series containing trend probabilities within groups.
+            overall_level_status (str): Overall stationarity condition of the time series.
+
+        Returns:
+            str: Analysis text based on the subseries test results.
         """
+
         # data_groups = ds.get_period_groups('Month')
         # overall_level_status = ds.tests.trend.prob_level_str
         if overall_level_status == 'no evidence':
@@ -85,8 +116,6 @@ class SeasonalityTestsParser:
             preprend = 'Within'
             emphasis = ' also'
 
-        print('group_trend')
-        print(group_trend)
         perc_within = 100 * (group_trend > 0.6).mean()
         perc_within_str = f'{int(perc_within)}%'
         if perc_within_str == '100%':
@@ -112,12 +141,13 @@ class SeasonalityTestsParser:
     @classmethod
     def get_show_analysis(cls, tests):
         """
+        Determines which plots to show based on seasonality test results.
 
         Args:
-            tests: SeasonalityTestingMulti.tests
+            tests: SeasonalityTestingMulti.tests object containing the test results.
 
         Returns:
-
+            Tuple[Dict, Dict]: Dictionary indicating which plots to show and dictionary of failed periods.
         """
         # if len(self.show_plots) > 0:
         #     # analysis was already done
@@ -151,12 +181,13 @@ class SeasonalityTestsParser:
     @staticmethod
     def show_summary_plot(tester) -> bool:
         """
+        Determines whether to show a summary plot based on seasonality test results.
 
         Args:
-            tester: SeasonalityTesting
+            tester: SeasonalityTesting object containing the test results.
 
         Returns:
-
+            bool: Flag indicating whether to show the summary plot.
         """
         grp_tests = tester.group_tests_b
 
@@ -167,10 +198,13 @@ class SeasonalityTestsParser:
     @staticmethod
     def show_subseries(tester) -> Tuple[bool, Dict]:
         """
-        Testing whether a subseries plot should be shown based on SeasonalityTesting results
-        :param tester: SeasonalityTesting object
+        Determines whether to show a subseries plot based on seasonality test results.
 
-        :return: bool (whether to show), dict (which component(s) defines result)
+        Args:
+            tester: SeasonalityTesting object containing the test results.
+
+        Returns:
+            Tuple[bool, Dict]: Flag indicating whether to show the subseries plot and dictionary of results.
         """
         period_tests = tester.tests
 
