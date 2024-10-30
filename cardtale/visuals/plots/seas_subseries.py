@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import gettext
@@ -7,9 +9,6 @@ from cardtale.cards.parsers.trend import TrendTestsParser
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.config import PLOT_NAMES
-
-MEANS = 'eq_means'
-SDEVS = 'eq_std'
 
 
 class SeasonalSubSeriesPlot(Plot):
@@ -48,7 +47,6 @@ class SeasonalSubSeriesPlot(Plot):
             y_axis_col (str): Column name for the y-axis.
             tests_were_analysed (bool): Flag indicating if tests were already analyzed.
         """
-
 
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
@@ -90,22 +88,18 @@ class SeasonalSubSeriesPlot(Plot):
         else:
             freq_named = f'{self.x_axis_col}ly'
 
-        show_plots, _ = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
+        self.deq_group_differences_aux()
+
+        show_plots = self.tests.seasonality.show_plots
 
         if show_plots[self.named_seasonality][self.plot_id]['show']:
             self.show_me = True
         else:
             return
 
-        if not show_plots[freq_named]['seas_summary']['show']:
-            groups_comps = gettext('seasonality_summary_fail').format(f'{self.x_axis_col.lower()}s')
-            self.analysis.append(groups_comps)
-
-        # tests = self.tests.seasonality.tests[self.named_seasonality].tests
         tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
 
         named_level_st = TrendTestsParser.parse_level_prob(self.tests.trend)
-        # named_level_st = self.tests.trend.prob_level_str
 
         if not self.tests_were_analysed:
             seas_str_analysis = SeasonalityTestsParser.seasonal_tests_parser(tests, freq_named.lower())
@@ -138,3 +132,29 @@ class SeasonalSubSeriesPlot(Plot):
 
         self.img_data['caption'] = self.img_data['caption'].format(plot_id, self.caption_expr.title(),
                                                                    self.caption_expr)
+
+    def deq_group_differences_aux(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Are there statistical differences in the time series groups?
+
+        Approach:
+            - anova_test
+            - kruskal_test
+            - levene_test
+            - bartlett_test
+        """
+
+        if self.x_axis_col == 'Day':
+            freq_named = 'Daily'
+        else:
+            freq_named = f'{self.x_axis_col}ly'
+
+        show_plots = self.tests.seasonality.show_plots
+
+        if not show_plots[freq_named]['seas_summary']['show']:
+            expr = gettext('seasonality_summary_fail')
+            expr_fmt = expr.format(self.x_axis_col.lower())
+        else:
+            expr_fmt = None
+
+        return expr_fmt

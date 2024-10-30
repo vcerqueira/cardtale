@@ -1,3 +1,5 @@
+from typing import Optional
+
 import numpy as np
 import pandas as pd
 
@@ -63,37 +65,76 @@ class TrendLinePlot(Plot):
         if not self.show_me:
             return
 
+        plt_deq1 = self.deq_trend_stationarity()
+        plt_deq2 = self.deq_level_stationarity()
+        plt_deq3 = self.deq_accuracy_rowid_feature()
+
+        self.analysis = [plt_deq1, plt_deq2, plt_deq3]
+        self.analysis = [x for x in self.analysis if x is not None]
+
+    def deq_trend_stationarity(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): What's the trend like?
+
+        Approach:
+            - Unit root tests
+        """
+
         time_corr_avg = self.tests.trend.time_model.time_corr_avg
         corr_side = self.tests.trend.time_model.side
 
-        trend, no_trend, level, no_level = self.tests.trend.results_in_list()
+        trend, no_trend, *_ = self.tests.trend.results_in_list()
 
         dt = pd.Series(TREND_STRENGTH_INTERVAL) - np.abs(time_corr_avg)
         trend_label = dt[dt < 0].index[0]
 
-        trend_analysis = gettext('trend_line_analysis1').format(join_l(trend))
-        trend_analysis += gettext('trend_line_analysis2').format(trend_label, corr_side)
-        self.analysis.append(trend_analysis)
+        expr_fmt = gettext('trend_line_analysis1').format(join_l(trend))
+        expr_fmt += gettext('trend_line_analysis2').format(trend_label, corr_side)
 
         if len(no_trend) > 0:
-            if len(no_trend) == 1:
-                suffix = ''
-            else:
-                suffix = 's'
+            suffix = '' if len(no_trend) == 1 else 's'
 
-            no_trend_methods = gettext('trend_line_analysis3').format(suffix, join_l(no_trend))
-            self.analysis.append(no_trend_methods)
+            expr_fmt += gettext('trend_line_analysis3').format(suffix, join_l(no_trend))
+
+        return expr_fmt
+
+    def deq_level_stationarity(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): What's the long-term level like?
+
+        Approach:
+            - Unit root tests
+        """
+
+        _, _, level, no_level = self.tests.trend.results_in_list()
 
         if len(level) > 0:
-            lvl_anls = gettext('trend_line_analysis4').format(join_l(level))
+            expr_fmt = gettext('trend_line_analysis4').format(join_l(level))
 
             if len(no_level) > 0:
-                lvl_anls += gettext('trend_line_analysis4ifany').format(join_l(no_level))
+                expr_fmt += gettext('trend_line_analysis4ifany').format(join_l(no_level))
         else:
-            lvl_anls = gettext('trend_line_analysis4none')
+            expr_fmt = gettext('trend_line_analysis4none')
 
-        self.analysis.append(lvl_anls)
+        return expr_fmt
 
-        perf_t = TrendTestsParser.parse_t_performance(self.tests.trend)
+    def deq_accuracy_rowid_feature(self) -> Optional[str]:
+        """
+        DEQ: Does a rowid feature improve forecasting accuracy?
 
-        self.analysis.append(perf_t)
+        todo adicionar scores para esclarecer
+
+        Approach:
+            - Row id feature extraction + CV with landmark
+        """
+
+        perf = self.tests.trend.performance
+
+        t_improves = perf['base'] > perf['trend_feature']
+
+        if t_improves:
+            expr_fmt = gettext('trend_line_analysis_t_good')
+        else:
+            expr_fmt = gettext('trend_line_analysis_t_bad')
+
+        return expr_fmt

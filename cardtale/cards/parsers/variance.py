@@ -22,63 +22,7 @@ class VarianceTestsParser:
             Determines which distribution plots to show based on variance test results.
     """
 
-    @staticmethod
-    def tests_parser(tests: pd.Series):
-        """
-        Parses the results of variance tests and generates analysis text.
 
-        Args:
-            tests (pd.Series): Series containing the results of variance tests.
-
-        Returns:
-            str: Analysis text based on the test results.
-        """
-        prob_heterosk = tests.mean()
-
-        test_names = tests.index.tolist()
-        rej_nms = tests[tests < ALPHA].index.tolist()
-        n_rej_nms = tests[tests > ALPHA].index.tolist()
-
-        if prob_heterosk > 0:
-            if prob_heterosk == 1:
-                analysis_text = gettext('variance_partition_analysis_heterosk_prob_all')
-                analysis_text = analysis_text.format(join_l(test_names))
-            else:
-                analysis_text = gettext('variance_partition_analysis_heterosk_prob_some')
-                analysis_text = analysis_text.format(join_l(rej_nms), join_l(n_rej_nms))
-        else:
-            analysis_text = gettext('variance_partition_analysis_heterosk_prob_none')
-            analysis_text = analysis_text.format(join_l(test_names))
-
-        return analysis_text
-
-    @staticmethod
-    def performance_parser(show_results: Dict):
-        """
-        Parses the performance of variance tests and generates analysis text.
-
-        Args:
-            show_results (Dict): Dictionary containing the performance results of variance tests.
-
-        Returns:
-            str: Analysis text based on the performance results.
-        """
-        log_improves = show_results['by_log']
-        bc_improves = show_results['by_boxcox']
-
-        if log_improves or bc_improves:
-            if log_improves and bc_improves:
-                analysis_text = gettext('variance_partition_analysis_perf_both')
-            else:
-                analysis_text = gettext('variance_partition_analysis_perf_one')
-                if log_improves:
-                    analysis_text = analysis_text.format('logarithm', 'Box-Cox method')
-                else:
-                    analysis_text = analysis_text.format('Box-Cox method', 'logarithm')
-        else:
-            analysis_text = gettext('variance_partition_analysis_perf_none')
-
-        return analysis_text
 
     @classmethod
     def distr_after_logt(cls,

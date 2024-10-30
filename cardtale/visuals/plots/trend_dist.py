@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 from mlforecast import MLForecast
@@ -86,55 +86,119 @@ class TrendDistPlots(Plot):
         if not self.show_me:
             return
 
+        plt_deq1 = self.deq_diff_reject_distr()
+        plt_deq2 = self.deq_diff_best_distr()
+        plt_deq3 = self.deq_diff_skewness()
+        plt_deq4 = self.deq_diff_kurtosis()
+        plt_deq5 = self.deq_accuracy_differencing()
+
+        self.analysis = [plt_deq1, plt_deq2, plt_deq3, plt_deq4, plt_deq5]
+        self.analysis = [x for x in self.analysis if x is not None]
+
+    def deq_diff_reject_distr(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): What distributions do not fit the differenced time series?
+
+        Approach:
+            - Differencing + KS test
+        """
+
         diff_stats = self.tsd.diff_summary
 
         if len(diff_stats.reject_dists) > 0:
-            format_txt_d1 = f'{join_l(diff_stats.reject_dist_nms)}.'
-            analysis_dist1 = gettext('trend_diff_dist_analysis1').format(format_txt_d1)
+            expr = gettext('trend_diff_dist_analysis1')
+            expr_fmt = expr.format(join_l(diff_stats.reject_dist_nms))
+        else:
+            expr_fmt = None
 
-            self.analysis.append(analysis_dist1)
+        return expr_fmt
+
+    def deq_diff_best_distr(self) -> Optional[str]:
+        """
+        DEQ: What distribution best fits the differenced time series?
+
+        Approach:
+            - Differencing + KS test
+        """
+
+        diff_stats = self.tsd.diff_summary
 
         if len(diff_stats.n_reject_dist_nms) > 0:
-            analysis_dist2 = gettext('trend_diff_dist_analysis2')
-            analysis_dist2 = \
-                analysis_dist2.format(diff_stats.n_reject_dist_nms[0],
-                                      np.round(diff_stats.n_reject_dists.iloc[0], 2),
-                                      f'{join_l(diff_stats.n_reject_dist_nms[1:])}.')
-        else:
-            analysis_dist2 = gettext('trend_diff_dist_analysis2none')
+            expr = gettext('trend_diff_dist_analysis2')
 
-        self.analysis.append(analysis_dist2)
+            best_distr = diff_stats.n_reject_dist_nms[0]
+            best_distr_pv = np.round(diff_stats.n_reject_dists.iloc[0], 2)
+
+            expr_fmt = expr.format(best_distr, best_distr_pv, join_l(diff_stats.n_reject_dist_nms[1:]))
+        else:
+            expr_fmt = gettext('trend_diff_dist_analysis2none')
+
+        return expr_fmt
+
+    def deq_diff_skewness(self) -> Optional[str]:
+        """
+        DEQ: What's the skewness of the differenced time series like?
+
+        Approach:
+            - Differencing + stats
+        """
+
+        diff_stats = self.tsd.diff_summary
+        skwn = np.round(diff_stats.stats['skew'], 2)
 
         if not diff_stats.reject_normal_skewness:
-            if diff_stats.stats['skew'] < 0:
-                side = 'left'
-            else:
-                side = 'right'
-            skewness_analysis = gettext('trend_diff_dist_analysis4_skew_symmetric'). \
-                format(np.round(diff_stats.stats['skew'], 2), side)
+            side = 'left' if skwn < 0 else 'right'
+
+            expr = gettext('trend_diff_dist_analysis4_skew_symmetric')
+            expr_fmt = expr.format(skwn, side)
         else:
-            if diff_stats.stats['skew'] < 0:
-                skewness_analysis = gettext('series_dist_analysis4_skew_asymmetric'). \
-                    format(np.round(diff_stats.stats['skew'], 2), 'left', 'right')
+            if skwn < 0:
+                expr = gettext('series_dist_analysis4_skew_asymmetric')
+                expr_fmt = expr.format(skwn, 'left', 'right')
             else:
-                skewness_analysis = gettext('trend_diff_dist_analysis4_skew_asymmetric'). \
-                    format(np.round(diff_stats.stats['skew'], 2), 'right', 'left')
+                expr = gettext('trend_diff_dist_analysis4_skew_asymmetric')
+                expr_fmt = expr.format(skwn, 'right', 'left')
+
+        return expr_fmt
+
+    def deq_diff_kurtosis(self) -> Optional[str]:
+        """
+        DEQ: What's the skewness of the differenced time series like?
+
+        Approach:
+            - Differencing + stats
+        """
+
+        diff_stats = self.tsd.diff_summary
+        krt = np.round(diff_stats.stats['kurtosis'], 2)
 
         if not diff_stats.reject_normal_kurtosis:
-            kurtosis_analysis = gettext('trend_diff_dist_analysis5_kurtosis_normal'). \
-                format(np.round(diff_stats.stats['kurtosis'], 2))
+            expr = gettext('trend_diff_dist_analysis5_kurtosis_normal')
+            expr_fmt = expr.format(krt)
+
         else:
-            if diff_stats.stats['kurtosis'] < 0:
-                kurtosis_lab = 'light tailed'
-            else:
-                kurtosis_lab = 'heavy tailed'
+            krt_lab = 'light tailed' if krt < 0 else 'heavy tailed'
 
-            kurtosis_analysis = gettext('trend_diff_dist_analysis5_kurtosis_notnormal'). \
-                format(np.round(diff_stats.stats['kurtosis'], 2), kurtosis_lab)
+            expr = gettext('trend_diff_dist_analysis5_kurtosis_notnormal')
+            expr_fmt = expr.format(krt, krt_lab)
 
-        self.analysis.append(kurtosis_analysis)
-        self.analysis.append(skewness_analysis)
+        return expr_fmt
 
-        perf_diff = TrendTestsParser.parse_differencing_performance(self.tests.trend)
+    def deq_accuracy_differencing(self) -> Optional[str]:
+        """
+        DEQ: Does differencing improve forecasting accuracy?
 
-        self.analysis.append(perf_diff)
+        Approach:
+            - Differencing + CV with landmark
+        """
+
+        perf = self.tests.trend.performance
+
+        diff_improves = perf['base'] > perf['first_differences']
+
+        if diff_improves:
+            expr_fmt = gettext('trend_line_analysis_diff_good')
+        else:
+            expr_fmt = gettext('trend_line_analysis_diff_bad')
+
+        return expr_fmt

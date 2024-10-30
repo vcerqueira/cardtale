@@ -44,52 +44,6 @@ class TrendTestsParser:
         return text
 
     @staticmethod
-    def parse_t_performance(tester: UnivariateTrendTesting):
-        """
-        Parses the performance of the trend feature and generates analysis text.
-
-        Args:
-            tester (UnivariateTrendTesting): Object containing the trend test results.
-
-        Returns:
-            str: Analysis text based on the trend feature performance.
-        """
-
-        perf = tester.performance
-
-        t_improves = perf['base'] > perf['trend_feature']
-
-        if t_improves:
-            analysis_text = gettext('trend_line_analysis_t_good')
-        else:
-            analysis_text = gettext('trend_line_analysis_t_bad')
-
-        return analysis_text
-
-    @staticmethod
-    def parse_differencing_performance(tester: UnivariateTrendTesting):
-        """
-        Parses the performance of the first differences and generates analysis text.
-
-        Args:
-            tester (UnivariateTrendTesting): Object containing the trend test results.
-
-        Returns:
-            str: Analysis text based on the first differences performance.
-        """
-
-        perf = tester.performance
-
-        diff_improves = perf['base'] > perf['first_differences']
-
-        if diff_improves:
-            analysis_text = gettext('trend_line_analysis_diff_good')
-        else:
-            analysis_text = gettext('trend_line_analysis_diff_bad')
-
-        return analysis_text
-
-    @staticmethod
     def show_trend_plots(tester: UnivariateTrendTesting) -> Tuple[bool, Dict]:
         """
         Determines which trend plots to show based on test results.

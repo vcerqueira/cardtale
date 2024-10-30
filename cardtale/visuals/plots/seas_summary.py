@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.summary import SummaryStatPlot
@@ -67,16 +67,16 @@ class SeasonalSummaryPlots(Plot):
         """
 
         mean_plot = SummaryStatPlot.summary_plot(data=self.tsd.seas_df,
-                                                group_col=self.x_axis_col,
-                                                y_col=self.tsd.target_col,
-                                                func='mean',
-                                                y_lab='Mean')
+                                                 group_col=self.x_axis_col,
+                                                 y_col=self.tsd.target_col,
+                                                 func='mean',
+                                                 y_lab='Mean')
 
         std_plot = SummaryStatPlot.summary_plot(data=self.tsd.seas_df,
-                                               group_col=self.x_axis_col,
-                                               y_col=self.tsd.target_col,
-                                               func='std',
-                                               y_lab='Standard Deviation')
+                                                group_col=self.x_axis_col,
+                                                y_col=self.tsd.target_col,
+                                                func='std',
+                                                y_lab='Standard Deviation')
 
         self.plot = {'lhs': mean_plot, 'rhs': std_plot}
 
@@ -87,31 +87,17 @@ class SeasonalSummaryPlots(Plot):
         The analysis includes checking for significant differences in means and standard deviations.
         """
 
-        show_plots, _ = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
+        show_plots = self.tests.seasonality.show_plots
 
         if show_plots[self.named_seasonality][self.plot_id]['show']:
             self.show_me = True
         else:
             return
 
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality)
+        plt_deq1 = self.deq_group_differences()
 
-        group_tests = tests.group_tests_b
-        rej_mean, rej_std = group_tests['eq_means'], group_tests['eq_std']
-
-        if rej_mean and rej_std:
-            summary_an = gettext('seasonality_summary_plot_analysis')
-            summary_an = summary_an.format(MEAN_AND_STD, self.x_axis_col.lower())
-        elif rej_mean and not rej_std:
-            summary_an = gettext('seasonality_summary_plot_analysis')
-            summary_an = summary_an.format(MEAN_ONLY, self.x_axis_col.lower())
-        elif not rej_mean and rej_std:
-            summary_an = gettext('seasonality_summary_plot_analysis')
-            summary_an = summary_an.format(STD_ONLY, self.x_axis_col.lower())
-        else:
-            raise AnalysisLogicalError(LOGICAL_ERROR_MSG)
-
-        self.analysis.append(summary_an)
+        self.analysis = [plt_deq1]
+        self.analysis = [x for x in self.analysis if x is not None]
 
     def format_caption(self, plot_id: int):
         """
@@ -123,3 +109,32 @@ class SeasonalSummaryPlots(Plot):
 
         self.img_data['caption'] = \
             self.img_data['caption'].format(plot_id, self.caption_expr.lower())
+
+    def deq_group_differences(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Are there statistical differences in the time series groups?
+
+        Approach:
+            - anova_test
+            - kruskal_test
+            - levene_test
+            - bartlett_test
+        """
+
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality)
+
+        rej_mean, rej_std = tests.group_tests_b['eq_means'], tests.group_tests_b['eq_std']
+
+        if rej_mean and rej_std:
+            expr = gettext('seasonality_summary_plot_analysis')
+            expr_fmt = expr.format(MEAN_AND_STD, self.x_axis_col.lower())
+        elif rej_mean and not rej_std:
+            expr = gettext('seasonality_summary_plot_analysis')
+            expr_fmt = expr.format(MEAN_ONLY, self.x_axis_col.lower())
+        elif not rej_mean and rej_std:
+            expr = gettext('seasonality_summary_plot_analysis')
+            expr_fmt = expr.format(STD_ONLY, self.x_axis_col.lower())
+        else:
+            return None
+
+        return expr_fmt
