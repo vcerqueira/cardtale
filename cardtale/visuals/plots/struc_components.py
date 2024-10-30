@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cardtale.core.data import TimeSeriesData
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.line_plots import LinePlot
@@ -53,33 +55,12 @@ class SeriesComponentsPlot(Plot):
         The analysis includes identifying significant trends and seasonal patterns.
         """
 
-        seas_t = self.tests.seasonality.seas_tests_on_main
-        # todo level not used
-        trend, no_trend, _, _ = self.tests.trend.results_in_list()
+        plt_deq1 = self.deq_trend_component()
+        plt_deq2 = self.deq_seasonal_component()
 
-        if len(no_trend) == 0:
-            trend_str_anl = gettext('series_components_analysis_trend_all1')
-            trend_str_anl = trend_str_anl.format(join_l(trend))
-        elif len(trend) == 0:
-            trend_str_anl = gettext('series_components_analysis_trend_all0')
-            trend_str_anl = trend_str_anl.format(join_l(no_trend))
-        else:
-            trend_str_anl = gettext('series_components_analysis_trend_mix')
-            trend_str_anl = trend_str_anl.format(join_l(trend), join_l(no_trend))
+        self.analysis = [plt_deq1, plt_deq2]
 
-        if all(seas_t > 0):
-            seas_str_anl = gettext('series_components_analysis_seas_all1')
-            seas_str_anl = seas_str_anl.format(join_l(seas_t.index))
-        elif all(seas_t < 1):
-            seas_str_anl = gettext('series_components_analysis_seas_all0')
-            seas_str_anl = seas_str_anl.format(join_l(seas_t.index))
-        else:
-            seas_str_anl = gettext('series_components_analysis_seas_mix')
-            seas_str_anl = seas_str_anl.format(join_l(seas_t[seas_t > 0].index),
-                                               join_l(seas_t[seas_t < 1].index))
-
-        self.analysis.append(trend_str_anl)
-        self.analysis.append(seas_str_anl)
+        self.analysis = [x for x in self.analysis if x is not None]
 
     def format_caption(self, plot_id: int):
         """
@@ -90,3 +71,52 @@ class SeriesComponentsPlot(Plot):
         """
 
         self.img_data['caption'] = self.img_data['caption'].format(plot_id, DECOMPOSITION_METHOD)
+
+    def deq_trend_component(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Is there a strong trend component in the time series?
+
+        todo measure trend strength
+
+        Approach:
+            - Decomposition analysis
+        """
+
+        trend, no_trend, _, _ = self.tests.trend.results_in_list()
+
+        if len(no_trend) == 0:
+            expr = gettext('series_components_analysis_trend_all1')
+            expr_fmt = expr.format(join_l(trend))
+        elif len(trend) == 0:
+            expr = gettext('series_components_analysis_trend_all0')
+            expr_fmt = expr.format(join_l(no_trend))
+        else:
+            expr = gettext('series_components_analysis_trend_mix')
+            expr_fmt = expr.format(join_l(trend), join_l(no_trend))
+
+        return expr_fmt
+
+    def deq_seasonal_component(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Is there a strong seasonal component in the time series?
+
+        todo measure seasonal strength, at various levels
+
+        Approach:
+            - Decomposition analysis
+        """
+
+        seas_t = self.tests.seasonality.seas_tests_on_main
+
+        if all(seas_t > 0):
+            expr = gettext('series_components_analysis_seas_all1')
+            expr_fmt = expr.format(join_l(seas_t.index))
+        elif all(seas_t < 1):
+            expr = gettext('series_components_analysis_seas_all0')
+            expr_fmt = expr.format(join_l(seas_t.index))
+        else:
+            expr = gettext('series_components_analysis_seas_mix')
+            expr_fmt = expr.format(join_l(seas_t[seas_t > 0].index),
+                                   join_l(seas_t[seas_t < 1].index))
+
+        return expr_fmt

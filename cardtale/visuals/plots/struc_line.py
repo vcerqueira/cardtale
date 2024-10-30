@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.line_plots import LinePlot
 from cardtale.cards.strings import gettext
@@ -53,18 +55,53 @@ class SeriesLinePlot(Plot):
         The analysis includes summarizing the data range and basic statistics.
         """
 
-        range_analysis = \
-            gettext('series_line_plot_analysis1').format(int(self.tsd.summary.stats['count']),
-                                                         self.tsd.dt.freq_name,
-                                                         self.tsd.summary.dt_range[0],
-                                                         self.tsd.summary.dt_range[1])
+        plt_deq1 = self.deq_basic_info()
+        plt_deq2 = self.deq_basic_stats()
 
-        stats_analysis = \
-            gettext('series_line_plot_analysis2').format(self.tsd.summary.stats['mean'],
-                                                         self.tsd.summary.stats['50%'],
-                                                         self.tsd.summary.stats['std'],
-                                                         self.tsd.summary.stats['min'],
-                                                         self.tsd.summary.stats['max'])
+        self.analysis = [
+            plt_deq1,
+            plt_deq2
+        ]
 
-        self.analysis.append(range_analysis)
-        self.analysis.append(stats_analysis)
+        self.analysis = [x for x in self.analysis if x is not None]
+
+    def deq_basic_info(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): What is the basic structure of the time series?
+
+        Approach:
+            - Number of data points
+            - Frequency of the data
+            - Start and end dates of the data
+        """
+
+        expr = gettext('series_line_plot_analysis1')
+
+        expr_fmt = expr.format(int(self.tsd.summary.stats['count']),
+                               self.tsd.dt.freq_name,
+                               self.tsd.summary.dt_range[0],
+                               self.tsd.summary.dt_range[1])
+
+        return expr_fmt
+
+    def deq_basic_stats(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Description of the basic moments of the time series
+
+        Approach:
+            - Median
+            - Mean
+            - Standard deviation
+            - Max
+            - Min
+        """
+
+        expr = gettext('series_line_plot_analysis2')
+
+        expr_fmt = expr.format(self.tsd.summary.stats['mean'],
+                               self.tsd.summary.stats['50%'],
+                               self.tsd.summary.stats['std'],
+                               self.tsd.summary.stats['min'],
+                               self.tsd.summary.stats['max'])
+
+        return expr_fmt

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 import numpy as np
 
@@ -58,67 +58,137 @@ class SeriesDistPlots(Plot):
         The analysis includes checking for rejected distributions, outliers, skewness, and kurtosis.
         """
 
-        if len(self.tsd.summary.reject_dists) > 0:
-            dist_anl_1 = gettext('series_dist_analysis1').format(join_l(self.tsd.summary.reject_dist_nms))
-            self.analysis.append(dist_anl_1)
+        plt_deq1 = self.deq_rejected_distr()
+        plt_deq2 = self.deq_best_distr()
+        plt_deq3 = self.deq_outliers()
+        plt_deq4 = self.deq_skewness()
+        plt_deq5 = self.deq_kurtosis()
 
+        self.analysis = [
+            plt_deq1,
+            plt_deq2,
+            plt_deq3,
+            plt_deq4,
+            plt_deq5,
+        ]
+
+        self.analysis = [x for x in self.analysis if x is not None]
+
+    def deq_rejected_distr(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): What distributions do not fit the data?
+
+        Approach:
+            - Kolmorogov-Smirnov test
+        """
+        if len(self.tsd.summary.reject_dists) < 1:
+            return None
+
+        expr = gettext('series_dist_analysis1')
+
+        expr_fmt = expr.format(join_l(self.tsd.summary.reject_dist_nms))
+
+        return expr_fmt
+
+    def deq_best_distr(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): What distribution best fits the data?
+
+        Approach:
+            - Kolmorogov-Smirnov test
+        """
         n_rej_dists = self.tsd.summary.n_reject_dist_nms
-        if len(n_rej_dists) == 0:
-            dist_anl_2 = gettext('series_dist_analysis2_none')
-        elif len(n_rej_dists) == 1:
-            dist_anl_2 = gettext('series_dist_analysis2_one')
-            dist_anl_2 = dist_anl_2.format(self.tsd.summary.n_reject_dist_nms[0],
-                                           np.round(self.tsd.summary.n_reject_dists[0], 2))
+        n_dists = len(n_rej_dists)
+
+        # no distribution fits
+        if n_dists == 0:
+            expr_fmt = gettext('series_dist_analysis2_none')
+            return expr_fmt
         else:
-            dist_anl_2 = gettext('series_dist_analysis2_many')
-            dist_anl_2 = dist_anl_2.format(self.tsd.summary.n_reject_dist_nms[0],
-                                           np.round(self.tsd.summary.n_reject_dists.iloc[0], 2),
-                                           join_l(self.tsd.summary.n_reject_dist_nms[1:]))
+            best_dist = self.tsd.summary.n_reject_dist_nms[0]
+            best_dist_pval = np.round(self.tsd.summary.n_reject_dists[0], 2)
 
-        self.analysis.append(dist_anl_2)
-
-        if self.tsd.summary.n_outliers > 0:
-            if self.tsd.summary.perc_upp_outliers == 100:
-                bp_outlier_analysis = \
-                    gettext('series_dist_analysis3allupper').format(self.tsd.summary.n_outliers,
-                                                                    self.tsd.summary.perc_outliers)
-            else:
-                bp_outlier_analysis = \
-                    gettext('series_dist_analysis3').format(self.tsd.summary.n_outliers,
-                                                            self.tsd.summary.n_outliers_upper,
-                                                            self.tsd.summary.perc_upp_outliers,
-                                                            self.tsd.summary.perc_outliers)
+        # only one distribution fits
+        if n_dists == 1:
+            expr = gettext('series_dist_analysis2_one')
+            expr_fmt = expr.format(best_dist, best_dist_pval)
         else:
-            bp_outlier_analysis = gettext('series_dist_analysis3fail')
+            # many distributions fit
+            expr = gettext('series_dist_analysis2_many')
+            other_dists = join_l(self.tsd.summary.n_reject_dist_nms[1:])
 
-        self.analysis.append(bp_outlier_analysis)
+            expr_fmt = expr.format(best_dist, best_dist_pval, other_dists)
 
-        if not self.tsd.summary.reject_normal_skewness:
-            if self.tsd.summary.stats['skew'] < 0:
-                side = 'left'
-            else:
-                side = 'right'
-            skewness_analysis = gettext('series_dist_analysis4_skew_symmetric'). \
-                format(np.round(self.tsd.summary.stats['skew'], 2), side)
+        return expr_fmt
+
+    def deq_outliers(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Are there outliers in the time series?
+
+        Approach:
+            - Tukey's fences
+        """
+
+        # no outliers
+        if self.tsd.summary.n_outliers < 1:
+            return gettext('series_dist_analysis3fail')
+
+        # all upper outliers
+        if self.tsd.summary.perc_upp_outliers == 100:
+            expr = gettext('series_dist_analysis3allupper')
+            expr_fmt = expr.format(self.tsd.summary.n_outliers,
+                                   self.tsd.summary.perc_outliers)
         else:
-            if self.tsd.summary.stats['skew'] < 0:
-                skewness_analysis = gettext('series_dist_analysis4_skew_asymmetric'). \
-                    format(np.round(self.tsd.summary.stats['skew'], 2), 'left', 'right')
-            else:
-                skewness_analysis = gettext('series_dist_analysis4_skew_asymmetric'). \
-                    format(np.round(self.tsd.summary.stats['skew'], 2), 'right', 'left')
+            expr = gettext('series_dist_analysis3')
+            expr_fmt = expr.format(self.tsd.summary.n_outliers,
+                                   self.tsd.summary.n_outliers_upper,
+                                   self.tsd.summary.perc_upp_outliers,
+                                   self.tsd.summary.perc_outliers)
+
+        return expr_fmt
+
+    def deq_kurtosis(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): How is the kurtosis of the time series?
+
+        Approach:
+            - Moments and KS test
+        """
+
+        krt = np.round(self.tsd.summary.stats['kurtosis'], 2)
 
         if not self.tsd.summary.reject_normal_kurtosis:
-            kurtosis_analysis = gettext('series_dist_analysis5_kurtosis_normal'). \
-                format(np.round(self.tsd.summary.stats['kurtosis'], 2))
+            expr = gettext('series_dist_analysis5_kurtosis_normal')
+            expr_fmt = expr.format(krt)
         else:
-            if self.tsd.summary.stats['kurtosis'] < 0:
-                kurtosis_lab = 'light tailed'
+            kurtosis_lab = 'light tailed' if krt < 0 else 'heavy tailed'
+
+            expr = gettext('series_dist_analysis5_kurtosis_notnormal')
+            expr_fmt = expr.format(krt, kurtosis_lab)
+
+        return expr_fmt
+
+    def deq_skewness(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): How is the skewness of the time series?
+
+        Approach:
+            - Moments and KS test
+        """
+
+        skwn = np.round(self.tsd.summary.stats['skew'], 2)
+
+        if not self.tsd.summary.reject_normal_skewness:
+            side = 'left' if self.tsd.summary.stats['skew'] < 0 else 'right'
+
+            expr = gettext('series_dist_analysis4_skew_symmetric')
+            expr_fmt = expr.format(skwn, side)
+        else:
+            if self.tsd.summary.stats['skew'] < 0:
+                expr = gettext('series_dist_analysis4_skew_asymmetric')
+                expr_fmt = expr.format(skwn, 'left', 'right')
             else:
-                kurtosis_lab = 'heavy tailed'
+                expr = gettext('series_dist_analysis4_skew_asymmetric')
+                expr_fmt = expr.format(skwn, 'right', 'left')
 
-            kurtosis_analysis = gettext('series_dist_analysis5_kurtosis_notnormal'). \
-                format(np.round(self.tsd.summary.stats['kurtosis'], 2), kurtosis_lab)
-
-        self.analysis.append(kurtosis_analysis)
-        self.analysis.append(skewness_analysis)
+        return expr_fmt

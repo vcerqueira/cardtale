@@ -70,6 +70,7 @@ class Plot:
             self.plot = {'lhs': None, 'rhs': None}
         else:
             self.plot = None
+
     def build(self, *args, **kwargs):
         """
         Creates the plot.
@@ -80,7 +81,7 @@ class Plot:
         """
         raise NotImplementedError
 
-    def analyse(self,  *args, **kwargs):
+    def analyse(self, *args, **kwargs):
         """
         Analyzes the data to be plotted.
 

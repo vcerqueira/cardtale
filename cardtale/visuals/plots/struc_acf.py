@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cardtale.visuals.plot import Plot
 from cardtale.core.data import TimeSeriesData
 from cardtale.visuals.base.lollipop import Lollipop
@@ -48,43 +50,11 @@ class SeriesACFPlot(Plot):
         The analysis includes identifying significant lags and seasonal lags.
         """
 
-        acf_ = self.tsd.summary.acf.acf_analysis
+        plt_deq1 = self.deq_acf_nonseasonal()
+        plt_deq2 = self.deq_acf_seasonal()
 
-        if len(acf_['significant_ids']) < 1:
-            acf_analysis_sign = gettext('series_acf_analysis_wn')
-            self.analysis.append(acf_analysis_sign)
-        else:
-            significant_lags = [f't-{i}' for i in acf_['significant_ids']]
-            acf_anl_sign_which = gettext('series_acf_analysis_slags1').format(join_l(significant_lags))
-
-            if len(acf_['under_thr_ids']) > 0 and len(acf_['over_thr_ids']) > 0:
-                neg_signf_lags = [f't-{i}' for i in acf_['under_thr_ids']]
-                pos_signf_lags = [f't-{i}' for i in acf_['over_thr_ids']]
-                acf_anl_sign_which += gettext('series_acf_analysis_slags1a').format(join_l(neg_signf_lags),
-                                                                                    join_l(pos_signf_lags))
-            elif len(acf_['under_thr_ids']) > 0 and len(acf_['over_thr_ids']) == 0:
-                acf_anl_sign_which += gettext('series_acf_analysis_slags1b')
-            elif len(acf_['under_thr_ids']) == 0 and len(acf_['over_thr_ids']) > 0:
-                acf_anl_sign_which += gettext('series_acf_analysis_slags1c')
-            else:
-                pass
-
-            self.analysis.append(acf_anl_sign_which)
-
-        seas_signf_lags = acf_['seasonal_lags_sig']
-        seas_signf_lags_nm = [f't-{i}' for i in seas_signf_lags.index]
-
-        if all(acf_['seasonal_lags_sig']):
-            seasonal_lag_analysis = gettext('series_acf_analysis_seas_all').format(join_l(seas_signf_lags_nm))
-        else:
-            if all(~acf_['seasonal_lags_sig']):
-                seasonal_lag_analysis = gettext('series_acf_analysis_seas_none').format(join_l(seas_signf_lags_nm))
-            else:
-                seas_signf_lags_ = seas_signf_lags[seas_signf_lags]
-                seas_signf_lags_nm_ = [f't-{i}' for i in seas_signf_lags_.index]
-                seasonal_lag_analysis = gettext('series_acf_analysis_seas_some').format(join_l(seas_signf_lags_nm_))
-
-        self.analysis.append(seasonal_lag_analysis)
+        self.analysis = [plt_deq1, plt_deq2]
+        self.analysis = [x for x in self.analysis if x is not None]
 
     def format_caption(self, plot_id: int):
         """
@@ -96,3 +66,67 @@ class SeriesACFPlot(Plot):
 
         self.img_data['caption'] = self.img_data['caption'].format(plot_id,
                                                                    self.tsd.summary.acf.n_lags)
+
+    def deq_acf_nonseasonal(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Are there any significant non-seasonal lags in the ACF?
+
+        Approach:
+            - ACF analysis
+        """
+
+        acf_ = self.tsd.summary.acf.acf_analysis
+
+        if len(acf_['significant_ids']) < 1:
+            expr_fmt = gettext('series_acf_analysis_wn')
+        else:
+            significant_lags = [f't-{i}' for i in acf_['significant_ids']]
+            expr = gettext('series_acf_analysis_slags1')
+            expr_fmt = expr.format(join_l(significant_lags))
+
+            if len(acf_['under_thr_ids']) > 0 and len(acf_['over_thr_ids']) > 0:
+                neg_signf_lags = [f't-{i}' for i in acf_['under_thr_ids']]
+                pos_signf_lags = [f't-{i}' for i in acf_['over_thr_ids']]
+
+                expr_aux = gettext('series_acf_analysis_slags1a')
+                expr_aux_fmt = expr_aux.format(join_l(neg_signf_lags), join_l(pos_signf_lags))
+
+                expr_fmt += expr_aux_fmt
+
+            elif len(acf_['under_thr_ids']) > 0 and len(acf_['over_thr_ids']) == 0:
+                expr_fmt += gettext('series_acf_analysis_slags1b')
+            elif len(acf_['under_thr_ids']) == 0 and len(acf_['over_thr_ids']) > 0:
+                expr_fmt += gettext('series_acf_analysis_slags1c')
+            else:
+                pass
+
+        return expr_fmt
+
+    def deq_acf_seasonal(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Are there any significant seasonal lags in the ACF?
+
+        Approach:
+            - ACF analysis
+        """
+
+        acf_ = self.tsd.summary.pacf.acf_analysis
+
+        seas_signf_lags = acf_['seasonal_lags_sig']
+        seas_signf_lags_nm = [f't-{i}' for i in seas_signf_lags.index]
+
+        if all(acf_['seasonal_lags_sig']):
+            expr = gettext('series_acf_analysis_seas_all')
+            expr_fmt = expr.format(join_l(seas_signf_lags_nm))
+        else:
+            if all(~acf_['seasonal_lags_sig']):
+                expr = gettext('series_acf_analysis_seas_none')
+                expr_fmt = expr.format(join_l(seas_signf_lags_nm))
+            else:
+                seas_signf_lags_ = seas_signf_lags[seas_signf_lags]
+                seas_signf_lags_nm_ = [f't-{i}' for i in seas_signf_lags_.index]
+
+                expr = gettext('series_acf_analysis_seas_some')
+                expr_fmt = expr.format(join_l(seas_signf_lags_nm_))
+
+        return expr_fmt
