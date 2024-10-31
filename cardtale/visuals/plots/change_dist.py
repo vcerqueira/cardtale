@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from cardtale.visuals.plot import Plot
 from cardtale.core.data import TimeSeriesData
@@ -70,38 +70,45 @@ class ChangeDistPlots(Plot):
         The analysis includes checking for significant changes and identifying
         the best distributions before and after the change point.
         """
-
         cp, _ = self.tests.change.get_change_points()
 
-        if len(cp) > 0:
-            self.show_me = True
+        if len(cp) < 1:
+            self.show_me = False
+            return
 
-            s = self.tsd.get_target_series(df=self.tsd.df,
-                                           time_col=self.tsd.time_col,
-                                           target_col=self.tsd.target_col)
+        self.show_me = True
 
-            change_in_dist = self.tests.change.change_significance(s)
+        # there's at least one change point
+        plt_deq1 = self.deq_change_point_distr()
+        self.analysis = [plt_deq1]
+        self.analysis = [x for x in self.analysis if x is not None]
 
-            before, after = DataSplit.change_partition(s, cp[0], return_series=True)
-            dist_bf, dist_af = KolmogorovSmirnov.best_dist_in_two_parts(before, after)
+    def deq_change_point_distr(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Did the distribution change at the first change point?
 
-            if change_in_dist:
-                chg_dist_analysis = gettext('change_beforeafter_1st_analysis_diff')
-                self.analysis.append(chg_dist_analysis)
+        Approach:
+            - PELT testing
+        """
 
-                if dist_bf == dist_af:
-                    # if the dist are the same and None (no dist was found)
-                    pass
-                else:
-                    # dists are diff
-                    if dist_bf is None:
-                        chg_best_dists = gettext('change_beforeafter_dists_p1none').format(dist_af)
-                    elif dist_af is None:
-                        chg_best_dists = gettext('change_beforeafter_dists_p2none').format(dist_bf)
-                    else:
-                        chg_best_dists = gettext('change_beforeafter_dists_p1p2').format(dist_bf, dist_af)
+        dist_bf, dist_af = self.tests.change.distr['before'], self.tests.change.distr['after']
 
-                    self.analysis.append(chg_best_dists)
+        if self.tests.change.change_in_distr:
+            expr_fmt = gettext('change_beforeafter_1st_analysis_diff')
+
+            if dist_bf == dist_af:
+                # if the dist are the same and None (no dist was found)
+                pass
             else:
-                chg_dist_analysis = gettext('change_beforeafter_1st_analysis_nodiff')
-                self.analysis.append(chg_dist_analysis)
+                # dists are diff
+                if dist_bf is None:
+                    expr_fmt = gettext('change_beforeafter_dists_p1none').format(dist_af)
+                elif dist_af is None:
+                    expr_fmt = gettext('change_beforeafter_dists_p2none').format(dist_bf)
+                else:
+                    expr_fmt = gettext('change_beforeafter_dists_p1p2').format(dist_bf, dist_af)
+
+        else:
+            expr_fmt = gettext('change_beforeafter_1st_analysis_nodiff')
+
+        return expr_fmt

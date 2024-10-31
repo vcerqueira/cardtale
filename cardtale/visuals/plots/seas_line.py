@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import join_l, gettext
@@ -43,7 +45,6 @@ class SeasonalLinePlot(Plot):
             group_col (str): Column name for grouping.
         """
 
-
         super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.named_seasonality = named_seasonality
@@ -83,49 +84,12 @@ class SeasonalLinePlot(Plot):
         """
         self.show_me = True
 
-        # tests = self.tests.seasonality.tests[self.named_seasonality].tests
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
+        plt_deq1 = self.deq_seasonality_on_main_period()
+        plt_deq2 = self.deq_seasonality_landmarks()
+        plt_deq3 = self.deq_excluded_analysis()
 
-        main_freq = self.caption_expr[0]
-
-        # print(tests)
-
-        period = f'{self.group_col}ly'.lower()
-
-        seas_str_analysis = SeasonalityTestsParser.seasonal_tests_parser(tests, period)
-        self.analysis.append(seas_str_analysis)
-
-        show_analysis, failed_periods = self.tests.seasonality.show_plots, self.tests.seasonality.failed_periods
-
-        self_perf = show_analysis[main_freq]['seas_subseries']['which']['by_perf']
-        if self_perf:
-            perf_analysis = gettext('seasonality_line_self_perf').format(main_freq.lower(), 'improves')
-        else:
-            perf_analysis = gettext('seasonality_line_self_perf').format(main_freq.lower(), 'decreases')
-
-        self.analysis.append(perf_analysis)
-
-        # which seasonal subseries plots will not be shown
-        invalid_periods = [self.named_seasonality, f'{self.x_axis_col}ly']
-        no_season_periods = failed_periods['seas_subseries']
-        no_season_periods = [k for k in no_season_periods if k not in invalid_periods]
-
-        # which summary plots will not be shown
-        no_groupdiff_periods = failed_periods['seas_summary']
-        no_groupdiff_periods = [k for k in no_groupdiff_periods if k != self.named_seasonality]
-        no_groupdiff_periods = [k for k in no_groupdiff_periods if k in no_season_periods]
-
-        if len(no_season_periods) > 0:
-            # explain the outcome which led to the exclusion of the subseries plot
-            seas_other_analysis = gettext('seasonality_line_analysis_other').format(join_l(no_season_periods))
-
-            self.analysis.append(seas_other_analysis)
-
-        if len(no_groupdiff_periods) > 0:
-            # explain the outcome which led to the exclusion of the summary plot
-            # in this case, I only show this here for the periods which also exclude subseries
-            groups_comps = gettext('seasonality_summary_fail').format(f'{self.x_axis_col.lower()}s')
-            self.analysis.append(groups_comps)
+        self.analysis = [plt_deq1, plt_deq2, plt_deq3]
+        self.analysis = [x for x in self.analysis if x is not None]
 
     def format_caption(self, plot_id: int):
         """
@@ -139,3 +103,89 @@ class SeasonalLinePlot(Plot):
             self.img_data['caption'].format(plot_id,
                                             self.caption_expr[0].lower(),
                                             self.caption_expr[1].lower())
+
+    def deq_seasonality_on_main_period(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Is there a noticeable seasonality in the main period?
+
+        Approach:
+            - statistical tests
+        """
+
+        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
+
+        named_freq = f'{self.group_col}ly'.lower()
+
+        all_tests = tests.index.tolist()
+        rej_tests = tests[tests > 0].index.tolist()
+        not_rej_tests = tests[tests < 1].index.tolist()
+
+        if all(tests > 0):
+            expr = gettext('seasonality_line_analysis_seas_all1')
+            expr_fmt = expr.format(join_l(all_tests), named_freq)
+        elif all(tests < 1):
+            expr = gettext('seasonality_line_analysis_seas_all0')
+            expr_fmt = expr.format(join_l(all_tests), named_freq)
+        else:
+            expr = gettext('seasonality_line_analysis_seas_mix')
+            expr_fmt = expr.format(named_freq, join_l(rej_tests), join_l(not_rej_tests))
+
+        return expr_fmt
+
+    def deq_seasonality_landmarks(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Does modeling seasonality improve forecasting accuracy?
+
+        Approach:
+            - Fourier terms
+            - CV
+        """
+
+        main_freq = self.caption_expr[0]
+        show_analysis = self.tests.seasonality.show_plots
+
+        self_perf = show_analysis[main_freq]['seas_subseries']['which']['by_perf']
+
+        expr = gettext('seasonality_line_self_perf')
+
+        if self_perf:
+            expr_fmt = expr.format(main_freq.lower(), 'improves')
+        else:
+            expr_fmt = expr.format(main_freq.lower(), 'decreases')
+
+        return expr_fmt
+
+    def deq_excluded_analysis(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Which periods show an irrelevant seasonal profile?
+
+        Approach:
+            - Statistical tests
+        """
+        failed_periods = self.tests.seasonality.failed_periods
+
+        # which seasonal subseries plots will not be shown
+        invalid_periods = [self.named_seasonality, f'{self.x_axis_col}ly']
+        no_season_periods = failed_periods['seas_subseries']
+        no_season_periods = [k for k in no_season_periods if k not in invalid_periods]
+
+        # which summary plots will not be shown
+        no_groupdiff_periods = failed_periods['seas_summary']
+        no_groupdiff_periods = [k for k in no_groupdiff_periods if k != self.named_seasonality]
+        no_groupdiff_periods = [k for k in no_groupdiff_periods if k in no_season_periods]
+
+        if len(no_season_periods) > 0:
+            # explain the outcome which led to the exclusion of the subseries plot
+            expr_fmt1 = gettext('seasonality_line_analysis_other').format(join_l(no_season_periods))
+        else:
+            expr_fmt1 = None
+
+        if len(no_groupdiff_periods) > 0:
+            # explain the outcome which led to the exclusion of the summary plot
+            # in this case, I only show this here for the periods which also exclude subseries
+            expr_fmt2 = gettext('seasonality_summary_fail').format(self.x_axis_col.lower())
+            expr_fmt = f'{expr_fmt1} {expr_fmt2}' if expr_fmt1 else expr_fmt2
+        else:
+            expr_fmt = expr_fmt1
+
+        return expr_fmt

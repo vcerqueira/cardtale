@@ -5,6 +5,8 @@ from cardtale.analytics.operations.tsa.change_points import ChangePointDetection
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
+from cardtale.analytics.operations.tsa.distributions import KolmogorovSmirnov
+from cardtale.core.utils.splits import DataSplit
 
 NO_CHANGE_ERROR = 'No change point has been detected'
 
@@ -35,6 +37,8 @@ class ChangeTesting(UnivariateTester):
         self.method = ChangePointDetection.METHOD
         self.detection = ChangePointDetection(self.series)
         self.level_increased = False
+        self.change_in_distr = False
+        self.distr = {'before': None, 'after': None}
 
     def run_misc(self, *args, **kwargs):
         """
@@ -44,6 +48,14 @@ class ChangeTesting(UnivariateTester):
         self.detection.detect_changes()
         if len(self.detection.change_points) > 0:
             self.detected_change = True
+
+            self.change_in_distr = self.change_significance(self.series)
+
+            cp, _ = self.get_change_points()
+
+            before, after = DataSplit.change_partition(self.series, cp[0], return_series=True)
+            dist_bf, dist_af = KolmogorovSmirnov.best_dist_in_two_parts(before, after)
+            self.distr['before'], self.distr['after'] = dist_bf, dist_af
 
     def get_change_points(self):
         """

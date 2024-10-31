@@ -1,3 +1,5 @@
+from typing import Optional
+
 from cardtale.visuals.plot import Plot
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
@@ -54,37 +56,22 @@ class ChangesMarksPlot(Plot):
         The analysis includes identifying the number of change points and their characteristics.
         """
 
-        cp, cp_idx = self.tests.change.get_change_points()
+        cp, _ = self.tests.change.get_change_points()
 
         n_cp = len(cp)
 
-        if n_cp > 0:
-            self.show_me = True
-            # first_cp = cp[0]
-            # if first_cp.direction == 'increase':
-            #     cp_direction = 'increasing'
-            # else:
-            #     cp_direction = 'decreasing'
+        if n_cp < 1:
+            self.show_me = False
+            return
 
-            if self.tests.change.level_increased:
-                cp_direction = 'increasing'
-            else:
-                cp_direction = 'decreasing'
+        self.show_me = True
 
-            cp_time = cp_idx[0].strftime(self.tsd.date_format)
+        # assuming there's at least one change point
+        plt_deq1 = self.deq_any_change_point()
+        plt_deq2 = self.deq_change_point_effect()
 
-            if n_cp == 1:
-                n_anls = gettext('change_line_1point')
-                prefix = ''
-            else:
-                n_anls = gettext('change_line_npoints').format(n_cp)
-                prefix = 'first '
-
-            self.analysis.append(n_anls)
-
-            marked_analysis_first = gettext('change_line_analysis').format(prefix, cp_time, cp_direction)
-
-            self.analysis.append(marked_analysis_first)
+        self.analysis = [plt_deq1, plt_deq2]
+        self.analysis = [x for x in self.analysis if x is not None]
 
     def format_caption(self, plot_id: int):
         """
@@ -96,3 +83,43 @@ class ChangesMarksPlot(Plot):
 
         self.img_data['caption'] = \
             self.img_data['caption'].format(plot_id, self.tests.change.method)
+
+    def deq_any_change_point(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): Are the any change points in the time series?
+
+        Approach:
+            - PELT testing
+        """
+
+        cp, _ = self.tests.change.get_change_points()
+
+        n_cp = len(cp)
+
+        if n_cp == 1:
+            expr_fmt = gettext('change_line_1point')
+        else:
+            expr_fmt = gettext('change_line_npoints').format(n_cp)
+
+        return expr_fmt
+
+    def deq_change_point_effect(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): What is the effect of the change points?
+
+        Approach:
+            - PELT testing
+        """
+
+        cp, cp_idx = self.tests.change.get_change_points()
+
+        n_cp = len(cp)
+
+        cp_dir = 'increasing' if self.tests.change.level_increased else 'decreasing'
+        cp_time = cp_idx[0].strftime(self.tsd.date_format)
+
+        prefix = '' if n_cp == 1 else 'first '
+
+        expr_fmt = gettext('change_line_analysis').format(prefix, cp_time, cp_dir)
+
+        return expr_fmt

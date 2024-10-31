@@ -92,7 +92,7 @@
   "seasonality_subseries_group2": "{} each group, there is{} indication that the data is not constant around a level in {} of the {}s.",
   "seasonality_summary_plot_caption": "Figure {}: Mean plot (left) and standard deviation plot (right) of {} values.",
   "seasonality_summary_plot_analysis": "The data shows significantly different {} when grouped by {}.",
-  "seasonality_summary_fail": "Statistical tests were carried out to check for differences among means and variances across {}. No significant differences were found.",
+  "seasonality_summary_fail": "Statistical tests were carried out to check for differences among means and variances across {}s. No significant differences were found.",
   "seasonality_bp_month_year_caption": "Figure {}: Seasonal boxplot of {} distributions{}.",
   "seasonality_hm_month_year_caption": "Figure {}: Seasonal heatmap of {} values grouped by {}.",
   "seasonality_quarter_year_caption": "Figure {}: {} seasonal effects. Seasonal plot of {} values grouped by {} (left), and boxplot of {} distributions (right).",
