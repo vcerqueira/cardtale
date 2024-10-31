@@ -127,39 +127,37 @@ class DifferencingTests:
         test = PhillipsPerron(y=series, trend=regression)
         return test.pvalue < 0.05
 
+    @staticmethod
+    def _wang_smith_hyndman_test(series: pd.Series, period: int) -> int:
+        """Implementation of Wang-Smith-Hyndman seasonal strength test"""
 
-@staticmethod
-def _wang_smith_hyndman_test(series: pd.Series, period: int) -> int:
-    """Implementation of Wang-Smith-Hyndman seasonal strength test"""
+        series_decomp = STL(series, period=period).fit()
 
-    series_decomp = STL(series, period=period).fit()
+        # variance of residuals + seasonality
+        resid_seas_var = (series_decomp.resid + series_decomp.seasonal).var()
+        # variance of residuals
+        resid_var = series_decomp.resid.var()
 
-    # variance of residuals + seasonality
-    resid_seas_var = (series_decomp.resid + series_decomp.seasonal).var()
-    # variance of residuals
-    resid_var = series_decomp.resid.var()
+        # Calculate seasonal strength
+        seasonal_strength = 1 - (resid_var / resid_seas_var)
 
-    # Calculate seasonal strength
-    seasonal_strength = 1 - (resid_var / resid_seas_var)
+        # If seasonal strength is greater than 0.64, suggest seasonal differencing
+        ndiffs = 1 if seasonal_strength > 0.64 else 0
 
-    # If seasonal strength is greater than 0.64, suggest seasonal differencing
-    ndiffs = 1 if seasonal_strength > 0.64 else 0
+        return ndiffs
 
-    return ndiffs
+    @staticmethod
+    def _ocsb_test(series: pd.Series, period: int) -> int:
+        """
+        Simplified OCSB test
+        """
+        # seasonal differences
+        seasonal_diff = series.diff(period).dropna()
 
+        # Perform ADF test on seasonal differences
+        _, p_value, *_ = adfuller(seasonal_diff)
 
-@staticmethod
-def _ocsb_test(series: pd.Series, period: int) -> int:
-    """
-    Simplified OCSB test
-    """
-    # seasonal differences
-    seasonal_diff = series.diff(period).dropna()
+        # If p-value < 0.05, series needs seasonal differencing
+        ndiffs = 1 if p_value < 0.05 else 0
 
-    # Perform ADF test on seasonal differences
-    _, p_value, *_ = adfuller(seasonal_diff)
-
-    # If p-value < 0.05, series needs seasonal differencing
-    ndiffs = 1 if p_value < 0.05 else 0
-
-    return ndiffs
+        return ndiffs

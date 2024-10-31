@@ -8,7 +8,7 @@ from cardtale.visuals.base.histogram import PlotHistogram
 from cardtale.visuals.base.scatterplot import Scatterplot
 
 from cardtale.cards.strings import join_l, gettext
-from cardtale.cards.parsers.trend import TrendTestsParser
+from cardtale.analytics.testing.card.trend import TrendTestsParser
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents

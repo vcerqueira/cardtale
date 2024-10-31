@@ -6,8 +6,7 @@ import pandas as pd
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.line_plots import LinePlot
 from cardtale.cards.strings import join_l, gettext
-from cardtale.cards.parsers.trend import TrendTestsParser
-
+from cardtale.analytics.testing.card.trend import TrendTestsParser
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.config import PLOT_NAMES

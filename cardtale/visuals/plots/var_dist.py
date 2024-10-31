@@ -3,7 +3,7 @@ from typing import List, Optional
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.violin_partial import PartialViolinPlot
 from cardtale.cards.strings import join_l, gettext
-from cardtale.cards.parsers.variance import VarianceTestsParser
+from cardtale.analytics.testing.card.variance import VarianceTestsParser
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.core.utils.splits import DataSplit

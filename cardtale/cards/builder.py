@@ -54,7 +54,6 @@ class CardsBuilder:
             period (Period, optional): Period for the time series data. Defaults to None.
         """
 
-
         self.tsd = TimeSeriesData(df=df.copy(),
                                   freq=freq,
                                   id_col=id_col,
