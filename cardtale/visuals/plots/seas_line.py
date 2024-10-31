@@ -113,7 +113,7 @@ class SeasonalLinePlot(Plot):
 
         tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
 
-        named_freq = f'{self.group_col}ly'.lower()
+        freq_longly = f'{self.group_col}ly'.lower()
 
         all_tests = tests.index.tolist()
         rej_tests = tests[tests > 0].index.tolist()
@@ -121,13 +121,13 @@ class SeasonalLinePlot(Plot):
 
         if all(tests > 0):
             expr = gettext('seasonality_line_analysis_seas_all1')
-            expr_fmt = expr.format(join_l(all_tests), named_freq)
+            expr_fmt = expr.format(join_l(all_tests), freq_longly)
         elif all(tests < 1):
             expr = gettext('seasonality_line_analysis_seas_all0')
-            expr_fmt = expr.format(join_l(all_tests), named_freq)
+            expr_fmt = expr.format(join_l(all_tests), freq_longly)
         else:
             expr = gettext('seasonality_line_analysis_seas_mix')
-            expr_fmt = expr.format(named_freq, join_l(rej_tests), join_l(not_rej_tests))
+            expr_fmt = expr.format(freq_longly, join_l(rej_tests), join_l(not_rej_tests))
 
         return expr_fmt
 

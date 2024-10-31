@@ -78,7 +78,7 @@ class SeriesLinePlot(Plot):
         expr = gettext('series_line_plot_analysis1')
 
         expr_fmt = expr.format(int(self.tsd.summary.stats['count']),
-                               self.tsd.dt.freq_name,
+                               self.tsd.dt.freq_long,
                                self.tsd.summary.dt_range[0],
                                self.tsd.summary.dt_range[1])
 

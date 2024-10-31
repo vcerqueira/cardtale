@@ -122,7 +122,7 @@ class SeasonalityTestingMulti:
 
         self.tsd = tsd
 
-        self.period_data_l = PLOTTING_SEAS_CONFIGS[self.tsd.dt.freq_name.lower()]
+        self.period_data_l = PLOTTING_SEAS_CONFIGS[self.tsd.dt.freq_long.lower()]
 
         self.tests = []
         self.seas_tests_on_main = None

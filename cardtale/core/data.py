@@ -87,9 +87,9 @@ class TimeSeriesData:
         if period is not None:
             self.period = period
         else:
-            self.period = self.dt.formats.loc[self.dt.freq, 'main_period_int']
+            self.period = self.dt.formats.loc[self.dt.freq_short, 'main_period_int']
 
-        self.date_format = self.dt.formats['format_pretty'][self.dt.freq]
+        self.date_format = self.dt.formats['format_pretty'][self.dt.freq_short]
 
         self.summary = SeriesProfile(n_lags=self.period * 2)
         self.diff_summary = SeriesProfile(n_lags=self.period * 2)

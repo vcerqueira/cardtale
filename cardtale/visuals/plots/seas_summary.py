@@ -4,7 +4,6 @@ from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.summary import SummaryStatPlot
 
 from cardtale.cards.strings import gettext
-from cardtale.core.utils.errors import AnalysisLogicalError, LOGICAL_ERROR_MSG
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.config import PLOT_NAMES

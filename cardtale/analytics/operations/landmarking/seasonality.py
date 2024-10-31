@@ -59,7 +59,7 @@ class SeasonalLandmarks(Landmarks):
 
         if conf['fourier']:
             df, _ = fourier(df=df_,
-                            freq=self.tsd.dt.freq,
+                            freq=self.tsd.dt.freq_short,
                             season_length=self.target_period,
                             k=N_TERMS,
                             h=0)
@@ -70,14 +70,14 @@ class SeasonalLandmarks(Landmarks):
 
         self.mlf = MLForecast(
             models=MODEL,
-            freq=self.tsd.dt.freq,
+            freq=self.tsd.dt.freq_short,
             target_transforms=target_t,
-            lags=list(range(1, LAGS_BY_FREQUENCY[self.tsd.dt.freq] + 1)),
+            lags=list(range(1, LAGS_BY_FREQUENCY[self.tsd.dt.freq_short] + 1)),
         )
 
         cv_df = self.mlf.cross_validation(
             df=df,
-            h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq],
+            h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq_short],
             n_windows=N_WINDOWS,
             refit=False,
             static_features=static_features

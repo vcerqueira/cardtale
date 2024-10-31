@@ -25,11 +25,11 @@ class TimeDF:
     Time features dataset.
 
     Attributes:
-        freq (str): Sampling frequency of the time series.
+        freq_short (str): Sampling frequency of the time series.
         formats (pd.DataFrame): Frequency formats.
         sequence (pd.DataFrame): Sequential time features.
         recurrent (pd.DataFrame): Recurrent time features.
-        freq_name (str): Name of the frequency.
+        freq_long (str): Name of the frequency.
     """
 
     def __init__(self, freq: str):
@@ -39,12 +39,13 @@ class TimeDF:
         Args:
             freq (str): Sampling frequency of the time series, pandas compatible.
         """
-        self.freq = freq
+        self.freq_short = freq
+        self.freq_long = ''
+        self.freq_longly = ''
+
         self.formats = None
         self.sequence = None
         self.recurrent = None
-        self.freq_name = ''
-        # self.seasonal_period_units = FREQUENCY_TABLE_UNITS[self.freq]
 
     def setup(self, df: pd.DataFrame, time_col: str, target_col: str):
         """
@@ -70,13 +71,18 @@ class TimeDF:
         """
         Prepares the frequency table.
         """
-        valid_periods = self.get_valid_int_freqs(self.freq)
+        valid_periods = self.get_valid_int_freqs(self.freq_short)
 
-        self.formats = self.get_freqs(self.freq)
+        self.formats = self.get_freqs(self.freq_short)
         self.formats = pd.concat([self.formats, valid_periods], axis=1)
         self.formats.fillna(1, inplace=True)
         self.formats['period'] = self.formats['period'].astype(int)
-        self.freq_name = self.formats.loc[self.freq]['name'].lower()
+        self.freq_long = self.formats.loc[self.freq_short]['name'].lower()
+
+        if self.freq_long == 'day':
+            self.freq_longly = 'Daily'
+        else:
+            self.freq_longly = f'{self.freq_long.title()}ly'
 
     def get_freq_averages(self, series: pd.Series):
         """

@@ -118,14 +118,11 @@ class SeasonalSubSeriesPlot(Plot):
             - bartlett_test
         """
 
-        if self.x_axis_col == 'Day':
-            freq_named = 'Daily'
-        else:
-            freq_named = f'{self.x_axis_col}ly'
+        freq_longly = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
 
         show_plots = self.tests.seasonality.show_plots
 
-        if not show_plots[freq_named]['seas_summary']['show']:
+        if not show_plots[freq_longly]['seas_summary']['show']:
             expr = gettext('seasonality_summary_fail')
             expr_fmt = expr.format(self.x_axis_col.lower())
         else:
@@ -141,7 +138,7 @@ class SeasonalSubSeriesPlot(Plot):
             - Statistical tests
         """
 
-        freq_named = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
+        freq_longly = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
 
         tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
 
@@ -154,13 +151,13 @@ class SeasonalSubSeriesPlot(Plot):
 
         if all(tests > 0):
             expr = gettext('seasonality_line_analysis_seas_all1')
-            expr_fmt = expr.format(join_l(all_tests), freq_named)
+            expr_fmt = expr.format(join_l(all_tests), freq_longly)
         elif all(tests < 1):
             expr = gettext('seasonality_line_analysis_seas_all0')
-            expr_fmt = expr.format(join_l(all_tests), freq_named)
+            expr_fmt = expr.format(join_l(all_tests), freq_longly)
         else:
             expr = gettext('seasonality_line_analysis_seas_mix')
-            expr_fmt = expr.format(freq_named, join_l(rej_tests), join_l(not_rej_tests))
+            expr_fmt = expr.format(freq_longly, join_l(rej_tests), join_l(not_rej_tests))
 
         return expr_fmt
 
@@ -172,9 +169,9 @@ class SeasonalSubSeriesPlot(Plot):
             - Statistical tests
         """
 
-        freq_named = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
+        freq_longly = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
 
-        if freq_named not in self.tests.seasonality.group_trends:
+        if freq_longly not in self.tests.seasonality.group_trends:
             return None
 
         prob = self.tests.trend.prob_level
@@ -188,7 +185,7 @@ class SeasonalSubSeriesPlot(Plot):
         else:
             named_level_st = 'a strong evidence'
 
-        g_trend = self.tests.seasonality.group_trends[freq_named]
+        g_trend = self.tests.seasonality.group_trends[freq_longly]
 
         if named_level_st == 'no evidence':
             preprend = 'But, within'
@@ -233,10 +230,10 @@ class SeasonalSubSeriesPlot(Plot):
 
         show_plots = self.tests.seasonality.show_plots
 
-        freq_named = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
+        freq_longly = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
 
         by_st = show_plots[self.named_seasonality]['seas_subseries']['which']['by_st']
-        by_perf = show_plots[freq_named]['seas_subseries']['which']['by_perf']
+        by_perf = show_plots[freq_longly]['seas_subseries']['which']['by_perf']
 
         if not by_st and not by_perf:
             self.show_me = False

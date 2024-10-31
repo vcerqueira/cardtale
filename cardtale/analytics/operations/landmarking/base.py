@@ -69,7 +69,7 @@ class Landmarks:
         if config_name == "":
             self.mlf = MLForecast(
                 models=MODEL,
-                freq=self.tsd.dt.freq,
+                freq=self.tsd.dt.freq_short,
                 # target_transforms=[Differences([1])],
                 # target_transforms=[GlobalSklearnTransformer(sk_log1p)],
                 lags=list(range(1, LAGS_BY_FREQUENCY[self.tsd.dt.freq] + 1)),
@@ -78,7 +78,7 @@ class Landmarks:
 
         cv_df = self.mlf.cross_validation(
             df=self.tsd.df,
-            h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq],
+            h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq_short],
             n_windows=N_WINDOWS,
             refit=False,
         )

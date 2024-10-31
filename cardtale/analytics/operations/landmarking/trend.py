@@ -50,7 +50,7 @@ class TrendLandmarks(Landmarks):
 
         if conf['trend_feature']:
             df_, _ = trend(df=df_,
-                          freq=self.tsd.dt.freq,
+                          freq=self.tsd.dt.freq_short,
                           h=0,
                           id_col=self.tsd.id_col,
                           time_col=self.tsd.time_col)
@@ -60,14 +60,14 @@ class TrendLandmarks(Landmarks):
 
         self.mlf = MLForecast(
             models=MODEL,
-            freq=self.tsd.dt.freq,
+            freq=self.tsd.dt.freq_short,
             target_transforms=target_t,
-            lags=list(range(1, LAGS_BY_FREQUENCY[self.tsd.dt.freq] + 1)),
+            lags=list(range(1, LAGS_BY_FREQUENCY[self.tsd.dt.freq_short] + 1)),
         )
 
         cv_df = self.mlf.cross_validation(
             df=df_,
-            h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq],
+            h=HORIZON_BY_FREQUENCY[self.tsd.dt.freq_short],
             n_windows=N_WINDOWS,
             refit=False,
             static_features=static_features,

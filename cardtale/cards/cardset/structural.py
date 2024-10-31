@@ -12,6 +12,8 @@ class StructuralCard(Card):
     """
     Class for analyzing structural components of a time series.
 
+    todo - add holidays and missing values
+
     Attributes:
         tsd (TimeSeriesData): Time series data object.
         tests (TestingComponents): Testing components for the time series data.
