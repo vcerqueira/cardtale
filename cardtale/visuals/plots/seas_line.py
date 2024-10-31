@@ -3,7 +3,6 @@ from typing import Optional
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import join_l, gettext
-from cardtale.cards.parsers.seasonality import SeasonalityTestsParser
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.config import PLOT_NAMES

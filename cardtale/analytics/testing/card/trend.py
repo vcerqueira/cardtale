@@ -1,3 +1,5 @@
+from typing import Tuple, Dict
+
 import pandas as pd
 
 from cardtale.analytics.operations.landmarking.trend import TrendLandmarks
@@ -114,3 +116,41 @@ class UnivariateTrendTesting(UnivariateTester):
         prob_level = tests[LEVEL_T].mean()
 
         return prob_trend, prob_level
+
+
+class TrendTestsParser:
+    """
+    Class for parsing trend test results and generating analysis text.
+
+    Methods:
+        show_trend_plots(tester: UnivariateTrendTesting) -> Tuple[bool, Dict]:
+            Determines which trend plots to show based on test results.
+    """
+
+    @staticmethod
+    def show_trend_plots(tester: UnivariateTrendTesting) -> Tuple[bool, Dict]:
+        """
+        Determines which trend plots to show based on test results.
+
+        Args:
+            tester (UnivariateTrendTesting): Object containing the trend test results.
+
+        Returns:
+            Tuple[bool, Dict]: Flag indicating whether to show the trend plots and dictionary of results.
+        """
+
+        perf = tester.performance
+
+        diff_improves = perf['base'] > perf['first_differences']
+        t_improves = perf['base'] > perf['trend_feature']
+
+        show_results = {
+            'by_trend': tester.prob_trend > 0,
+            'by_level': tester.prob_level > 0,
+            'by_diff': diff_improves,
+            'by_t': t_improves,
+        }
+
+        show_me = any([*show_results.values()])
+
+        return show_me, show_results

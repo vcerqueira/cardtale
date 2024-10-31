@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Tuple, Dict
 
 import numpy as np
 import pandas as pd
@@ -8,7 +8,6 @@ from cardtale.analytics.operations.tsa.group_tests import GroupBasedTesting
 from cardtale.analytics.operations.landmarking.seasonality import SeasonalLandmarks
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.analytics.testing.card.trend import UnivariateTrendTesting
-from cardtale.cards.parsers.seasonality import SeasonalityTestsParser
 from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
 
@@ -199,3 +198,99 @@ class SeasonalityTestingMulti:
                 return t
 
         return None
+
+
+class SeasonalityTestsParser:
+    """
+    Class for parsing seasonality test results and generating analysis text.
+
+    Methods:
+        get_show_analysis(tests) -> Tuple[Dict, Dict]:
+            Determines which plots to show based on seasonality test results.
+        show_summary_plot(tester) -> bool:
+            Determines whether to show a summary plot based on seasonality test results.
+        show_subseries(tester) -> Tuple[bool, Dict]:
+            Determines whether to show a subseries plot based on seasonality test results.
+    """
+
+    @classmethod
+    def get_show_analysis(cls, tests):
+        """
+        Determines which plots to show based on seasonality test results.
+
+        Args:
+            tests: SeasonalityTestingMulti.tests object containing the test results.
+
+        Returns:
+            Tuple[Dict, Dict]: Dictionary indicating which plots to show and dictionary of failed periods.
+        """
+        # if len(self.show_plots) > 0:
+        #     # analysis was already done
+        #     return self.show_plots, self.failed_periods
+
+        show_plots, failed_periods = {}, {}
+
+        for period_tests in tests:
+            show_ss, ss_partial_outcomes = cls.show_subseries(period_tests)
+            show_summary = cls.show_summary_plot(period_tests)
+
+            show_plots[period_tests.period_data['name']] = {
+                'seas_subseries': {
+                    'show': show_ss,
+                    'which': ss_partial_outcomes,
+                },
+                'seas_summary': {
+                    'show': show_summary,
+                }
+            }
+
+        failed_periods = {
+            'seas_subseries': [k for k, v in show_plots.items()
+                               if not v['seas_subseries']['show']],
+            'seas_summary': [k for k, v in show_plots.items()
+                             if not v['seas_summary']['show']],
+        }
+
+        return show_plots, failed_periods
+
+    @staticmethod
+    def show_summary_plot(tester) -> bool:
+        """
+        Determines whether to show a summary plot based on seasonality test results.
+
+        Args:
+            tester: SeasonalityTesting object containing the test results.
+
+        Returns:
+            bool: Flag indicating whether to show the summary plot.
+        """
+        grp_tests = tester.group_tests_b
+
+        show_plots_if = grp_tests['eq_means'] or grp_tests['eq_std']
+
+        return show_plots_if
+
+    @staticmethod
+    def show_subseries(tester) -> Tuple[bool, Dict]:
+        """
+        Determines whether to show a subseries plot based on seasonality test results.
+
+        Args:
+            tester: SeasonalityTesting object containing the test results.
+
+        Returns:
+            Tuple[bool, Dict]: Flag indicating whether to show the subseries plot and dictionary of results.
+        """
+        period_tests = tester.tests
+
+        any_st_tests_rejects = any(period_tests > 0)
+        performance_improves = tester.performance['base'] > tester.performance['both']
+
+        show_results = {
+            'by_st': any_st_tests_rejects,
+            'by_perf': performance_improves,
+        }
+
+        show_me = any_st_tests_rejects or performance_improves
+
+        return show_me, show_results

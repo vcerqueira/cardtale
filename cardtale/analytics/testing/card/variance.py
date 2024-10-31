@@ -1,3 +1,5 @@
+from typing import Dict, Tuple
+
 import pandas as pd
 
 from cardtale.analytics.operations.landmarking.variance import VarianceLandmarks
@@ -63,4 +65,41 @@ class VarianceTesting(UnivariateTester):
         """
         Runs miscellaneous experiments for variance.
         """
-        pass
+        raise NotImplementedError
+
+
+class VarianceTestsParser:
+    """
+    Class for parsing variance test results and generating analysis text.
+
+    Methods:
+        show_distribution_plot(tests: VarianceTesting) -> Tuple[bool, Dict]:
+            Determines which distribution plots to show based on variance test results.
+    """
+
+    @staticmethod
+    def show_distribution_plot(tests: VarianceTesting) -> Tuple[bool, Dict]:
+        """
+        Determines which distribution plots to show based on variance test results.
+
+        Args:
+            tests (VarianceTesting): Object containing the variance test results.
+
+        Returns:
+            Tuple[bool, Dict]: Flag indicating whether to show the distribution plots and dictionary of results.
+        """
+        is_heteroskedastic = tests.prob_heteroskedastic > 0
+        log_improves = tests.performance['base'] > tests.performance['log']
+        boxcox_improves = tests.performance['base'] > tests.performance['boxcox']
+        exists_groupdiff = len(tests.groups_with_diff_var) > 0
+
+        show_results = {
+            'by_st': is_heteroskedastic,
+            'by_log': log_improves,
+            'by_boxcox': boxcox_improves,
+            'by_groupdiff': exists_groupdiff,
+        }
+
+        show_me = any([*show_results.values()])
+
+        return show_me, show_results

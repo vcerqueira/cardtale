@@ -178,7 +178,16 @@ class SeasonalSubSeriesPlot(Plot):
         if freq_named not in self.tests.seasonality.group_trends:
             return None
 
-        named_level_st = TrendTestsParser.parse_level_prob(self.tests.trend)
+        prob = self.tests.trend.prob_level
+
+        if prob < 0.3:
+            named_level_st = 'no evidence'
+        elif prob < 0.6:
+            named_level_st = 'a slight evidence'
+        elif prob < 0.9:
+            named_level_st = 'a reasonable evidence'
+        else:
+            named_level_st = 'a strong evidence'
 
         g_trend = self.tests.seasonality.group_trends[freq_named]
 
