@@ -41,7 +41,7 @@ class SeasonalMetaPlots:
             dict: Dictionary containing the generated plots.
         """
 
-        self.plots = self._frequency_plots()[self.tsd.dt.freq_name.lower()]
+        self.plots = self._frequency_plots()[self.tsd.dt.freq_longly.lower()]
 
         self.make_all()
 

@@ -47,7 +47,7 @@ class SeasonalityCard(Card):
         If the frequency of the time series data is 'Yearly', the content will not be shown.
         """
 
-        if self.tsd.dt.freq_name == 'Yearly':
+        if self.tsd.dt.freq_longly == 'Yearly':
             self.show_content = False
 
     def build_plots(self):

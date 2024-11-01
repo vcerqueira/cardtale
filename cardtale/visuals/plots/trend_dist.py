@@ -51,7 +51,7 @@ class TrendDistPlots(Plot):
                                        time_col=self.tsd.time_col,
                                        target_col=self.tsd.target_col)
 
-        mlf = MLForecast(models=[], freq=self.tsd.dt.freq, lags=[1])
+        mlf = MLForecast(models=[], freq=self.tsd.dt.freq_short, lags=[1])
 
         lagged_df = mlf.preprocess(df=self.tsd.df)
         lagged_df = lagged_df[[self.tsd.target_col, 'lag1']]

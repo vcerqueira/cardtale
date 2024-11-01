@@ -77,12 +77,9 @@ class TimeDF:
         self.formats = pd.concat([self.formats, valid_periods], axis=1)
         self.formats.fillna(1, inplace=True)
         self.formats['period'] = self.formats['period'].astype(int)
-        self.freq_long = self.formats.loc[self.freq_short]['name'].lower()
+        self.freq_longly = self.formats.loc[self.freq_short]['name'].lower()
 
-        if self.freq_long == 'day':
-            self.freq_longly = 'Daily'
-        else:
-            self.freq_longly = f'{self.freq_long.title()}ly'
+        self.freq_long = 'Day' if self.freq_longly == 'Daily' else self.freq_longly[:-2]
 
     def get_freq_averages(self, series: pd.Series):
         """
