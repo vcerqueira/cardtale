@@ -41,7 +41,7 @@ class PlotHistogram:
         plot = p9.ggplot(data) + \
                p9.aes(**aes_) + \
                p9.theme_minimal(base_family=FONT_FAMILY, base_size=12) + \
-               p9.theme(plot_margin=.015,
+               p9.theme(plot_margin=.035,
                         axis_text=p9.element_text(size=12),
                         legend_title=p9.element_blank(),
                         legend_position=None) + \

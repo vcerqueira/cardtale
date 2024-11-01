@@ -39,7 +39,7 @@ class PlotDensity:
         colors = [THEME_PALETTE[THEME]['hard'],
                   THEME_PALETTE[THEME]['hard_alt']]
 
-        data_grp = data.groupby(group_col).mean().reset_index()
+        data_grp = data.groupby(group_col, observed=False).mean().reset_index()
         data_grp.set_index(group_col, inplace=True)
 
         aes_ = {'x': x_axis_col, 'color': group_col, 'fill': group_col}

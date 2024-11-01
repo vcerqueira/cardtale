@@ -5,6 +5,7 @@ import numpy as np
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.histogram import PlotHistogram
 from cardtale.visuals.base.boxplot import Boxplot
+from cardtale.visuals.base.violin_partial import PartialViolinPlot
 from cardtale.core.data import TimeSeriesData
 from cardtale.visuals.config import PLOT_NAMES
 from cardtale.cards.strings import join_l, gettext
@@ -46,10 +47,10 @@ class SeriesDistPlots(Plot):
                                                n_bins=15)
 
         # Time series distribution w/ boxplot
-        series_boxplot = Boxplot.univariate_flipped(data=self.tsd.df,
-                                                    y_axis_col=self.tsd.target_col)
+        series_violinplot = PartialViolinPlot.univariate_flipped(data=self.tsd.df,
+                                                              y_axis_col=self.tsd.target_col)
 
-        self.plot = {'lhs': series_hist, 'rhs': series_boxplot}
+        self.plot = {'lhs': series_hist, 'rhs': series_violinplot}
 
     def analyse(self, *args, **kwargs):
         """
@@ -106,7 +107,7 @@ class SeriesDistPlots(Plot):
             return expr_fmt
         else:
             best_dist = self.tsd.summary.n_reject_dist_nms[0]
-            best_dist_pval = np.round(self.tsd.summary.n_reject_dists[0], 2)
+            best_dist_pval = np.round(self.tsd.summary.n_reject_dists.iloc[0], 2)
 
         # only one distribution fits
         if n_dists == 1:

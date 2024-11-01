@@ -21,6 +21,8 @@ class SeriesComponentsPlot(Plot):
         tests (TestingComponents): Testing components for seasonality and trend analysis.
     """
 
+    HEIGHT = 5.25
+
     def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: str):
         """
         Initializes the SeriesComponentsPlot class.
@@ -46,6 +48,7 @@ class SeriesComponentsPlot(Plot):
 
         self.plot = LinePlot.multivariate_grid(data=self.tsd.stl_df,
                                                x_axis_col=self.tsd.time_col,
+                                               category_list=['Trend', 'Seasonal', 'Residuals'],
                                                scales='free')
 
     def analyse(self, *args, **kwargs):
@@ -57,8 +60,9 @@ class SeriesComponentsPlot(Plot):
 
         plt_deq1 = self.deq_trend_component()
         plt_deq2 = self.deq_seasonal_component()
+        plt_deq3 = self.deq_residuals_component()
 
-        self.analysis = [plt_deq1, plt_deq2]
+        self.analysis = [plt_deq1, plt_deq2, plt_deq3]
 
         self.analysis = [x for x in self.analysis if x is not None]
 
@@ -118,5 +122,17 @@ class SeriesComponentsPlot(Plot):
             expr = gettext('series_components_analysis_seas_mix')
             expr_fmt = expr.format(join_l(seas_t[seas_t > 0].index),
                                    join_l(seas_t[seas_t < 1].index))
+
+        return expr_fmt
+
+    def deq_residuals_component(self) -> Optional[str]:
+        """
+        DEQ (Data Exploratory Question): What is the structure of the residuals based on an STL decomposition?
+
+        Approach:
+            - Decomposition analysis
+        """
+
+        expr_fmt = 'ANALYSE RESIDUALS'
 
         return expr_fmt

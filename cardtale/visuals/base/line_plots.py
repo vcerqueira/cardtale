@@ -208,6 +208,7 @@ class LinePlot:
     def multivariate_grid(data: pd.DataFrame,
                           x_axis_col: str,
                           scales: str,
+                          category_list: Optional[List[str]] = None,
                           x_lab: str = '',
                           y_lab: str = '',
                           title: str = ''):
@@ -218,6 +219,7 @@ class LinePlot:
             data (pd.DataFrame): Data for the plot.
             x_axis_col (str): Column name for the x-axis.
             scales (str): Scales for the facets.
+            category_list (Optional[List[str]], optional): List of categories. Defaults to None.
             x_lab (str, optional): Label for the x-axis. Defaults to ''.
             y_lab (str, optional): Label for the y-axis. Defaults to ''.
             title (str, optional): Title of the plot. Defaults to ''.
@@ -227,6 +229,9 @@ class LinePlot:
         """
 
         melted_data = pd.melt(data, x_axis_col)
+
+        if category_list is not None:
+            melted_data['variable'] = pd.Categorical(melted_data['variable'], categories=category_list)
 
         aes_ = {'x': x_axis_col, 'y': 'value'}
         facet_ = {'rows': 'variable ~.', 'scales': scales}

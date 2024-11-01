@@ -34,7 +34,7 @@ class StructuralCard(Card):
 
         self.plots = {
             'line_plot': SeriesLinePlot(tsd=tsd, name='series_plot'),
-            'dist_plot': SeriesDistPlots(tsd=tsd, name=['hist_plot', 'boxplot_plot']),
+            # 'dist_plot': SeriesDistPlots(tsd=tsd, name=['hist_plot', 'boxplot_plot']),
             'comp_plot': SeriesComponentsPlot(tsd=tsd, tests=tests, name='components_plot'),
             'acf_plot': SeriesACFPlot(tsd=tsd, name='acf_plot'),
             'pacf_plot': SeriesPACFPlot(tsd=tsd, name='pacf_plot'),

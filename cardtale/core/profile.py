@@ -105,6 +105,14 @@ class SeriesProfile:
         self.stats = series.describe()
         self.stats['skew'] = skew(series.values)
         self.stats['kurtosis'] = kurtosis(series)
+        self.stats['first_value'] = series.values[0]
+        self.stats['last_value'] = series.values[-1]
+        self.stats['nan_percentage'] = np.round(100 * series.isna().sum() / self.n, 2)
+
+        pct_c = series.pct_change()
+
+        self.stats['growth_average'] = np.round(pct_c.mean() * 100, 2)
+        self.stats['growth_median'] = np.round(pct_c.median() * 100, 2)
 
         self.reject_normal_kurtosis = kurtosistest(series).pvalue < self.alpha
         self.reject_normal_skewness = skewtest(series).pvalue < self.alpha
@@ -129,6 +137,9 @@ class SeriesProfile:
 
         self.stats = self.stats.to_dict()
         for st, val in self.stats.items():
+            if np.isinf(val):
+                continue
+
             self.stats[st] = int(val) if val == int(val) else val
 
             if st in STATS_TO_ROUND:

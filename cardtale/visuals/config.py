@@ -10,7 +10,7 @@ PLOT_NAMES = {
     'struc_line': 'Time Series Plot',
     'struc_ns_zone': 'Non-stationary Periods',
     'struc_dist': 'Data Distribution',
-    'struc_components': 'Trend and Seasonality',
+    'struc_components': 'Trend, Seasonality, and Residuals',
     'struc_acf': 'Auto-Correlation',
     'struc_pacf': 'Partial Auto-Correlation',
 }

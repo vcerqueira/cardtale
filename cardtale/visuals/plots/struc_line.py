@@ -78,9 +78,9 @@ class SeriesLinePlot(Plot):
         expr = gettext('series_line_plot_analysis1')
 
         expr_fmt = expr.format(int(self.tsd.summary.stats['count']),
-                               self.tsd.dt.freq_long,
                                self.tsd.summary.dt_range[0],
-                               self.tsd.summary.dt_range[1])
+                               self.tsd.summary.dt_range[1],
+                               self.tsd.dt.freq_longly)
 
         return expr_fmt
 
@@ -98,10 +98,21 @@ class SeriesLinePlot(Plot):
 
         expr = gettext('series_line_plot_analysis2')
 
-        expr_fmt = expr.format(self.tsd.summary.stats['mean'],
-                               self.tsd.summary.stats['50%'],
-                               self.tsd.summary.stats['std'],
-                               self.tsd.summary.stats['min'],
-                               self.tsd.summary.stats['max'])
+        expr_fmt = expr.format(
+            # self.tsd.summary.stats['mean'],
+            # self.tsd.summary.stats['50%'],
+            # self.tsd.summary.stats['std'],
+            self.tsd.summary.stats['min'],
+            self.tsd.summary.stats['max'],
+            self.tsd.summary.stats['first_value'],
+            self.tsd.summary.stats['last_value'],
+            self.tsd.summary.stats['growth_average'],
+            self.tsd.summary.stats['growth_median'],
+            self.tsd.summary.stats['mean'])
+
+        if self.tsd.summary.stats['nan_percentage'] > 0:
+            expr_fmt += gettext('series_line_plot_analysis2_nan').format(self.tsd.summary.stats['nan_percentage'])
+        else:
+            expr_fmt += gettext('series_line_plot_analysis2_no_nan')
 
         return expr_fmt

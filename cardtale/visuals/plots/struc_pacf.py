@@ -20,6 +20,8 @@ class SeriesPACFPlot(Plot):
         plot_name (str): Name of the plot.
     """
 
+    HEIGHT = 4
+
     def __init__(self, tsd: TimeSeriesData, name: str):
         """
         Initializes the SeriesPACFPlot class.

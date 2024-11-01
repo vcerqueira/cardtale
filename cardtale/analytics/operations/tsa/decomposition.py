@@ -4,7 +4,7 @@ from statsmodels.tsa.seasonal import STL
 
 def get_stl_components(series: pd.Series,
                        period: int,
-                       add_residuals: bool = False) -> pd.DataFrame:
+                       add_residuals: bool = True) -> pd.DataFrame:
 
     """
     Decomposes a time series into trend, seasonal, and optionally residual components using STL.
