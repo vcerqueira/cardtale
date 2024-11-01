@@ -33,17 +33,25 @@ class TestingComponents:
         """
         Run all tests
         """
+        print('Tests: Trend')
         self.trend.run_statistical_tests()
         self.trend.run_landmarks()
         self.trend.run_misc()
 
+        print('Tests: Seasonality')
         self.seasonality.run_tests()
 
+        print('Tests: Variance')
+        print('\trun_statistical_tests')
         self.variance.run_statistical_tests()
+        print('\trun_landmarks')
         self.variance.run_landmarks()
+        print('\trun_misc')
         self.variance.run_misc()
+        print('\tgroups_with_diff_var')
         self.variance.groups_with_diff_var = self.seasonality.groups_with_diff_var
 
+        print('Tests: Change Points')
         self.change.run_statistical_tests()
         self.change.run_landmarks()
         self.change.run_misc()

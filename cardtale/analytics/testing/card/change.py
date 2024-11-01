@@ -97,3 +97,9 @@ class ChangeTesting(UnivariateTester):
         change_in_dist = change_p_value < ALPHA
 
         return change_in_dist
+
+    def run_statistical_tests(self):
+        pass
+
+    def run_landmarks(self):
+        pass

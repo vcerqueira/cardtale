@@ -90,11 +90,10 @@ class CardsBuilder:
 
         self.tests.run()
 
-        print('Tests finished. \n Analysing results...')
-
         if not self.cards_were_analysed:
 
-            for _, card in self.cards.items():
+            for card_name, card in self.cards.items():
+                print(card_name)
                 card.analyse()
 
                 if not card.show_content:
@@ -119,7 +118,6 @@ class CardsBuilder:
 
         self.cards_raw_str = ''
         for card_name, card in self.cards.items():
-            print(card_name)
 
             card.build_plots()
             for plt in card.plots:

@@ -53,7 +53,6 @@ class SeasonalMetaPlots:
         """
 
         for k in self.plots:
-            print(k)
             self.plots[k].analyse()
 
         self.plots = {k: self.plots[k] for k in self.plots

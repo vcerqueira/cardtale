@@ -134,7 +134,6 @@ class SeasonalityTestingMulti:
 
     def run_tests(self):
         for period_ in self.period_data_l:
-            print(period_)
 
             seas_tests = SeasonalityTesting(tsd=self.tsd, period_data=period_)
             seas_tests.run_statistical_tests()

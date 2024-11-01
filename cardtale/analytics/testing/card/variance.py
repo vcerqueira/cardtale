@@ -65,7 +65,7 @@ class VarianceTesting(UnivariateTester):
         """
         Runs miscellaneous experiments for variance.
         """
-        raise NotImplementedError
+        pass
 
 
 class VarianceTestsParser:
