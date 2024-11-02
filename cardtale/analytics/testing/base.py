@@ -40,6 +40,7 @@ class TestingComponents:
 
         print('Tests: Seasonality')
         self.seasonality.run_tests()
+        self.seasonality.run_misc()
 
         print('Tests: Variance')
         print('\trun_statistical_tests')

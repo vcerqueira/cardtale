@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 from cardtale.core.time import TimeDF
-from cardtale.analytics.operations.tsa.decomposition import get_stl_components
+from cardtale.analytics.operations.tsa.decomposition import DecompositionSTL
 from cardtale.core.config.freq import AVAILABLE_FREQ
 from cardtale.core.config.typing import Period
 from cardtale.core.profile import SeriesProfile
@@ -82,6 +82,7 @@ class TimeSeriesData:
         self.dt.setup(self.df, self.time_col, self.target_col)
         self.seas_df = None
         self.stl_df = None
+        self.stl_resid_str = None
         self.name = ''
 
         if period is not None:
@@ -113,7 +114,8 @@ class TimeSeriesData:
         self.diff_summary.run(s.diff()[1:], self.period, self.date_format)
 
         self.seas_df = pd.concat([self.df, self.dt.recurrent], axis=1)
-        self.stl_df = get_stl_components(series=s, period=self.period)
+        self.stl_df = DecompositionSTL.get_stl_components(series=s, period=self.period)
+        self.stl_resid_str = DecompositionSTL.residuals_ljung_box(self.stl_df['Residuals'], n_lags=self.period)
 
         self.set_tsd_name()
 

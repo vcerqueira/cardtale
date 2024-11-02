@@ -87,13 +87,11 @@ class TrendLinePlot(Plot):
         dt = pd.Series(TREND_STRENGTH_INTERVAL) - np.abs(time_corr_avg)
         trend_label = dt[dt < 0].index[0]
 
-        expr_fmt = gettext('trend_line_analysis1').format(join_l(trend))
-        expr_fmt += gettext('trend_line_analysis2').format(trend_label, corr_side)
+        expr_fmt = gettext('trend_line_analysis2').format(trend_label, corr_side)
+        expr_fmt += gettext('trend_line_analysis1').format(join_l(trend))
 
         if len(no_trend) > 0:
-            suffix = '' if len(no_trend) == 1 else 's'
-
-            expr_fmt += gettext('trend_line_analysis3').format(suffix, join_l(no_trend))
+            expr_fmt += gettext('trend_line_analysis3').format(join_l(no_trend))
 
         return expr_fmt
 
@@ -128,6 +126,8 @@ class TrendLinePlot(Plot):
         """
 
         perf = self.tests.trend.performance
+
+        print(perf)
 
         t_improves = perf['base'] > perf['trend_feature']
 

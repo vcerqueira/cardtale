@@ -8,6 +8,7 @@ from cardtale.analytics.operations.tsa.group_tests import GroupBasedTesting
 from cardtale.analytics.operations.landmarking.seasonality import SeasonalLandmarks
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.analytics.testing.card.trend import UnivariateTrendTesting
+from cardtale.analytics.operations.tsa.decomposition import DecompositionSTL
 from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
 
@@ -132,6 +133,8 @@ class SeasonalityTestingMulti:
         self.show_plots = {}
         self.failed_periods = {}
 
+        self.seasonal_strength = -1
+
     def run_tests(self):
         for period_ in self.period_data_l:
             seas_tests = SeasonalityTesting(tsd=self.tsd, period_data=period_)
@@ -152,6 +155,11 @@ class SeasonalityTestingMulti:
             self.tests.append(seas_tests)
 
         self.show_plots, self.failed_periods = SeasonalityTestsParser.get_show_analysis(tests=self.tests)
+
+    def run_misc(self):
+
+        self.seasonal_strength = DecompositionSTL.seasonal_strength(self.tsd.stl_df['Seasonal'],
+                                                                    self.tsd.stl_df['Residuals'])
 
     def get_period_groups_trend(self, period_name: str):
         """

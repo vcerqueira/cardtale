@@ -6,8 +6,7 @@ from cardtale.visuals.base.line_plots import LinePlot
 from cardtale.cards.strings import gettext, join_l
 from cardtale.analytics.testing.base import TestingComponents
 
-from cardtale.core.config.analysis import DECOMPOSITION_METHOD
-from cardtale.visuals.config import PLOT_NAMES
+from cardtale.core.config.analysis import DECOMPOSITION_METHOD, DECOMPOSITION_METHOD_SHORT
 
 
 class SeriesComponentsPlot(Plot):
@@ -37,7 +36,7 @@ class SeriesComponentsPlot(Plot):
 
         self.caption = gettext('series_components_caption')
         self.show_me = True
-        self.plot_name = PLOT_NAMES['struc_components']
+        self.plot_name = 'Trend, Seasonality, and Residuals'
 
         self.tests = tests
 
@@ -74,19 +73,22 @@ class SeriesComponentsPlot(Plot):
             plot_id (int): Plot id.
         """
 
-        self.img_data['caption'] = self.img_data['caption'].format(plot_id, DECOMPOSITION_METHOD)
+        freq = self.tsd.dt.freq_longly
+
+        self.img_data['caption'] = self.img_data['caption'].format(plot_id, freq, DECOMPOSITION_METHOD)
 
     def deq_trend_component(self) -> Optional[str]:
         """
         DEQ (Data Exploratory Question): Is there a strong trend component in the time series?
-
-        todo measure trend strength
 
         Approach:
             - Decomposition analysis
         """
 
         trend, no_trend, _, _ = self.tests.trend.results_in_list()
+
+        expr0 = gettext('series_components_analysis_trend_str')
+        expr_fmt0 = expr0.format(self.tests.trend.trend_strength)
 
         if len(no_trend) == 0:
             expr = gettext('series_components_analysis_trend_all1')
@@ -98,17 +100,20 @@ class SeriesComponentsPlot(Plot):
             expr = gettext('series_components_analysis_trend_mix')
             expr_fmt = expr.format(join_l(trend), join_l(no_trend))
 
+        expr_fmt = expr_fmt0 + expr_fmt
+
         return expr_fmt
 
     def deq_seasonal_component(self) -> Optional[str]:
         """
         DEQ (Data Exploratory Question): Is there a strong seasonal component in the time series?
 
-        todo measure seasonal strength, at various levels
-
         Approach:
             - Decomposition analysis
         """
+
+        expr0 = gettext('series_components_analysis_seas_str')
+        expr_fmt0 = expr0.format(self.tests.seasonality.seasonal_strength)
 
         seas_t = self.tests.seasonality.seas_tests_on_main
 
@@ -123,6 +128,8 @@ class SeriesComponentsPlot(Plot):
             expr_fmt = expr.format(join_l(seas_t[seas_t > 0].index),
                                    join_l(seas_t[seas_t < 1].index))
 
+        expr_fmt = expr_fmt0 + expr_fmt
+
         return expr_fmt
 
     def deq_residuals_component(self) -> Optional[str]:
@@ -133,6 +140,23 @@ class SeriesComponentsPlot(Plot):
             - Decomposition analysis
         """
 
-        expr_fmt = 'ANALYSE RESIDUALS'
+        resid_str = self.tsd.stl_resid_str
+
+        expr = gettext('series_components_resid_symmetry')
+        expr_fmt = expr.format(DECOMPOSITION_METHOD_SHORT,
+                               resid_str['behaviour'],
+                               resid_str['positive_pct'],
+                               resid_str['negative_pct'],
+                               resid_str['pos_mean'],
+                               resid_str['neg_mean'])
+
+        if not resid_str['auto_corr_exists'].any():
+            expr2 = gettext('series_components_resid_auto_corr_ind')
+        else:
+            expr2 = gettext('series_components_resid_auto_corr')
+
+        expr_fmt2 = expr2.format(self.tsd.period)
+
+        expr_fmt += expr_fmt2
 
         return expr_fmt

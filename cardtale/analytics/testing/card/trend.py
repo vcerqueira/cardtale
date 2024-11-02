@@ -6,6 +6,7 @@ from cardtale.analytics.operations.landmarking.trend import TrendLandmarks
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.analytics.operations.tsa.ndiffs import DifferencingTests
 from cardtale.analytics.operations.tsa.time_model import TimeLinearModel
+from cardtale.analytics.operations.tsa.decomposition import DecompositionSTL
 from cardtale.core.data import TimeSeriesData
 
 TREND_T = 'trend'
@@ -38,6 +39,7 @@ class UnivariateTrendTesting(UnivariateTester):
         self.prob_level = -1
 
         self.time_model = TimeLinearModel()
+        self.trend_strength = -1
 
     def run_statistical_tests(self):
         """
@@ -73,6 +75,8 @@ class UnivariateTrendTesting(UnivariateTester):
 
     def run_misc(self, *args, **kwargs):
         self.time_model.fit(self.series)
+        self.trend_strength = DecompositionSTL.trend_strength(self.tsd.stl_df['Trend'],
+                                                              self.tsd.stl_df['Residuals'])
 
     def results_in_list(self):
         """

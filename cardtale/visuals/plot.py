@@ -96,6 +96,7 @@ class Plot:
         """
 
         if not self.multi_plot:
+
             img_code = self.get_encode(self.plot,
                                        height=self.height,
                                        width=self.width)
