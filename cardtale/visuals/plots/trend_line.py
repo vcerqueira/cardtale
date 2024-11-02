@@ -119,21 +119,22 @@ class TrendLinePlot(Plot):
         """
         DEQ: Does a rowid feature improve forecasting accuracy?
 
-        todo adicionar scores para esclarecer
-
         Approach:
             - Row id feature extraction + CV with landmark
         """
 
         perf = self.tests.trend.performance
 
-        print(perf)
+        base = np.round(perf['base'], 2)
+        t_feat = np.round(perf['trend_feature'], 2)
 
         t_improves = perf['base'] > perf['trend_feature']
 
         if t_improves:
-            expr_fmt = gettext('trend_line_analysis_t_good')
+            expr = gettext('trend_line_analysis_t_good')
         else:
-            expr_fmt = gettext('trend_line_analysis_t_bad')
+            expr = gettext('trend_line_analysis_t_bad')
+
+        expr_fmt = expr.format(base, t_feat)
 
         return expr_fmt
