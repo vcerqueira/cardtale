@@ -14,3 +14,7 @@ class LogTransformation:
         x = np.sign(xt) * (np.exp(np.abs(xt)) - 1)
 
         return x
+
+    @classmethod
+    def returns(cls, x, periods: int = 1):
+        return cls.transform(x).diff(periods=periods)

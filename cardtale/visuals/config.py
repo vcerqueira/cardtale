@@ -1,6 +1,6 @@
 PLOT_NAMES = {
     'trend_line': 'Trend Line Plot',
-    'trend_dist': 'Distribution of Differences',
+    'trend_dist': 'Long-term Growth',
     'change_marking': 'Change Points',
     'change_dist': 'Changes in Distribution',
     'seas_line': 'Seasonal Line Plot',

@@ -42,7 +42,7 @@
   "series_dist_analysis5_kurtosis_normal": "The excess kurtosis is equal to {}. This value is similar to that found from data following a Gaussian distribution",
   "series_dist_analysis5_kurtosis_notnormal": "The excess kurtosis is equal to {}. This indicates that the data has a {} distribution.",
   "series_components_caption": "Figure {}: Seasonal, Trend, and Residuals components after decomposition on a {} frequency using the {} method.",
-  "series_components_analysis_trend_str": "The trend strength (ranges from 0 to 1) is {}.",
+  "series_components_analysis_trend_str": "The trend strength (ranges from 0 to 1) is {}. ",
   "series_components_analysis_seas_str": "The seasonal strength (also ranges from 0 to 1) is {}. ",
   "series_components_analysis_trend_all0": "All hypothesis tests carried out ({}) indicate that the time series is stationary in trend or level.",
   "series_components_analysis_trend_all1": "All hypothesis tests carried out ({}) indicate that the time series is not stationary in trend or level.",
