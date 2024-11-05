@@ -12,6 +12,7 @@ from cardtale.analytics.testing.card.trend import TrendTestsParser
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
+from cardtale.analytics.operations.tsa.log import LogTransformation
 from cardtale.visuals.config import PLOT_NAMES
 
 
@@ -64,12 +65,13 @@ class TrendDistPlots(Plot):
                                             x_lab=f'{self.tsd.target_col} at time t',
                                             y_lab=f'{self.tsd.target_col} at time t+1')
 
-        diff_df = s.pct_change()[1:].reset_index()
+        # diff_df = s.pct_change()[1:].reset_index()
+        rets_df = LogTransformation.returns(s)[1:].reset_index()
 
-        trend_dhist = PlotHistogram.univariate(data=diff_df,
+        trend_dhist = PlotHistogram.univariate(data=rets_df,
                                                x_axis_col=self.tsd.target_col,
                                                n_bins=15,
-                                               x_lab='% Change',
+                                               x_lab='Log returns',
                                                y_lab='Count')
 
         self.plot = {'lhs': trend_dhist, 'rhs': trend_lagplot}

@@ -22,9 +22,9 @@ class SeriesProfile:
         alpha (float): Significance level
         dt_range (List): Sampling period
         stats (pd.Series): Basic stats, incl. 3rd/4th moments
-        reject_normal_kurtosis (bool): If should reject the hypothesis
+        kurtosis_like_normal (bool): If should reject the hypothesis
         that kurtosis is that of a Normal
-        reject_normal_skewness (bool): If should reject the hypothesis
+        skewness_like_normal (bool): If should reject the hypothesis
         that skewness is that of a Normal
         n_outliers_upper (int): Number of upper outliers
         n_outliers_lower (int): Number of lower outliers
@@ -53,8 +53,8 @@ class SeriesProfile:
         self.dt_range: List = []
         self.stats: pd.Series = pd.Series(dtype=float)
 
-        self.reject_normal_kurtosis: bool = False
-        self.reject_normal_skewness: bool = False
+        self.kurtosis_like_normal: bool = False
+        self.skewness_like_normal: bool = False
 
         self.n_outliers_upper: int = -1
         self.n_outliers_lower: int = -1
@@ -114,14 +114,14 @@ class SeriesProfile:
         self.stats['growth_average'] = np.round(pct_c.mean() * 100, 2)
         self.stats['growth_median'] = np.round(pct_c.median() * 100, 2)
 
-        self.reject_normal_kurtosis = kurtosistest(series).pvalue < self.alpha
-        self.reject_normal_skewness = skewtest(series).pvalue < self.alpha
+        self.kurtosis_like_normal = kurtosistest(series).pvalue < self.alpha
+        self.skewness_like_normal = skewtest(series).pvalue < self.alpha
 
         self.stats['iqr'] = self.stats['75%'] - self.stats['25%']
 
+        # todo this outlier analysis is obsolete, rigth?
         upper_outliers = series > self.stats['75%'] + self.stats['iqr'] * 1.5
         lower_outliers = series < self.stats['25%'] - self.stats['iqr'] * 1.5
-
         self.n_outliers_upper = np.sum(upper_outliers)
         self.n_outliers_lower = np.sum(lower_outliers)
         self.n_outliers = self.n_outliers_upper + self.n_outliers_lower
@@ -147,6 +147,8 @@ class SeriesProfile:
 
     def fit_distributions(self, series: pd.Series):
         """
+        todo can i delete this safely?
+
         Applies Kolmogorov-Smirnov test to the series.
 
         Args:

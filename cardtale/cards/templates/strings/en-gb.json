@@ -67,7 +67,7 @@
   "series_acf_analysis_other_m": "Besides the specified seasonal period ({}), there is an indication that the period {} shows a regular pattern.",
   "trend_line_plot_caption": "Figure {}: Time series trend plot.",
   "trend_bp_plot_caption": "Figure {}: Boxplots showing the distribution of the series in {} consecutive quantiles.",
-  "trend_lagplot_dhist_caption": "Figure {}: Distribution of percentage changes (left), and a Lag-plot (right). These plots help to understand how the data changes over consecutive observations. The histogram shown the distribution of these changes. The lag-plot depicts the randomness in the data. The time series shows greater randomness as the points deviate from the dotted line.",
+  "trend_lagplot_dhist_caption": "Figure {}: Distribution of log differences (left), and a Lag-plot (right). These plots help to understand how the data changes over consecutive observations. The histogram show the distribution of these changes using log returns. The lag-plot depicts the randomness in the data. The time series shows greater randomness as the points deviate from the dotted line.",
   "trend_line_analysis1": "This trend is non-stationary (i.e. not deterministic) according to the statistical test(s): {}. ",
   "trend_line_analysis2": "There is a {} {} trend. ",
   "trend_line_analysis3": " The test(s) {} did not find evidence for non-stationarity around a deterministic trend.",

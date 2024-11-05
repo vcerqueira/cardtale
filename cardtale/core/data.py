@@ -6,6 +6,7 @@ from cardtale.analytics.operations.tsa.decomposition import DecompositionSTL
 from cardtale.core.config.freq import AVAILABLE_FREQ
 from cardtale.core.config.typing import Period
 from cardtale.core.profile import SeriesProfile
+from cardtale.analytics.operations.tsa.log import LogTransformation
 from cardtale.cards.strings import join_l
 
 unq_freq_list = pd.Series([*AVAILABLE_FREQ.values()]).unique().tolist()
@@ -33,7 +34,7 @@ class TimeSeriesData:
         period (Period): Main period of the data (e.g. 12 for monthly data)
         dt (TimeDF): Temporal information class object
         summary (SeriesSummary): Summary stats of the series
-        diff_summary (SeriesSummary): Summary stats of the differenced series
+        logdiff_summary (SeriesSummary): Summary stats of the log differenced series
         id_col (str): Column name for the time series identifier
         time_col (str): Column name for the time variable
         target_col (str): Column name for the target variable
@@ -93,7 +94,7 @@ class TimeSeriesData:
         self.date_format = self.dt.formats['format_pretty'][self.dt.freq_short]
 
         self.summary = SeriesProfile(n_lags=self.period * 2)
-        self.diff_summary = SeriesProfile(n_lags=self.period * 2)
+        self.logdiff_summary = SeriesProfile(n_lags=self.period * 2)
 
         self.setup()
 
@@ -111,7 +112,11 @@ class TimeSeriesData:
         s = self.get_target_series(self.df, self.target_col, self.time_col)
 
         self.summary.run(s, self.period, self.date_format)
-        self.diff_summary.run(s.diff()[1:], self.period, self.date_format)
+
+        # log returns
+        s_logdiff = LogTransformation.returns(s)[1:]
+
+        self.logdiff_summary.run(s_logdiff, self.period, self.date_format)
 
         self.seas_df = pd.concat([self.df, self.dt.recurrent], axis=1)
         self.stl_df = DecompositionSTL.get_stl_components(series=s, period=self.period)
