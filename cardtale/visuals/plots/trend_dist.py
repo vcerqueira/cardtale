@@ -80,6 +80,9 @@ class TrendDistPlots(Plot):
         """
         Analyzes the trend distribution plots.
 
+        # todo lagplot (check nist) analysis
+        ## .. maybe not...already done on ACF??
+
         The analysis includes checking for rejected distributions, outliers, skewness, and kurtosis.
         """
 
@@ -88,67 +91,45 @@ class TrendDistPlots(Plot):
         if not self.show_me:
             return
 
-        plt_deq1 = self.deq_diff_reject_distr()
-        plt_deq2 = self.deq_diff_best_distr()
-        plt_deq3 = self.deq_diff_skewness()
-        plt_deq4 = self.deq_diff_kurtosis()
-        plt_deq5 = self.deq_accuracy_differencing()
+        plt_deq1 = self.deq_dist_log_returns()
+        plt_deq2 = self.deq_logdiff_skewness()
+        plt_deq3 = self.deq_logdiff_kurtosis()
+        plt_deq4 = self.deq_log_returns_magnitudes()
+        plt_deq5 = self.deq_log_returns_extrema()
+        plt_deq6 = self.deq_accuracy_differencing()
 
-        self.analysis = [plt_deq1, plt_deq2, plt_deq3, plt_deq4, plt_deq5]
+        plt_deq1_2_3 = plt_deq1 + ' ' + plt_deq2 + ' ' + plt_deq3
+
+        self.analysis = [plt_deq1_2_3, plt_deq4, plt_deq5, plt_deq6]
         self.analysis = [x for x in self.analysis if x is not None]
 
-    def deq_diff_reject_distr(self) -> Optional[str]:
+    def deq_dist_log_returns(self) -> Optional[str]:
         """
-        DEQ (Data Exploratory Question): What distributions do not fit the differenced time series?
+        DEQ (Data Exploratory Question): How is the distribution of the log returns?
 
         Approach:
-            - Differencing + KS test
+            - Log Differencing + stats
         """
 
-        diff_stats = self.tsd.diff_summary
-
-        if len(diff_stats.reject_dists) > 0:
-            expr = gettext('trend_diff_dist_analysis1')
-            expr_fmt = expr.format(join_l(diff_stats.reject_dist_nms))
-        else:
-            expr_fmt = None
+        expr = gettext('trend_logdiff_dist')
+        expr_fmt = expr.format(self.tsd.summary.growth['average_ret'],
+                               self.tsd.summary.growth['median_ret'],
+                               self.tsd.summary.growth['growth_vol'])
 
         return expr_fmt
 
-    def deq_diff_best_distr(self) -> Optional[str]:
+    def deq_logdiff_skewness(self) -> Optional[str]:
         """
-        DEQ: What distribution best fits the differenced time series?
-
-        Approach:
-            - Differencing + KS test
-        """
-
-        diff_stats = self.tsd.diff_summary
-
-        if len(diff_stats.n_reject_dist_nms) > 0:
-            expr = gettext('trend_diff_dist_analysis2')
-
-            best_distr = diff_stats.n_reject_dist_nms[0]
-            best_distr_pv = np.round(diff_stats.n_reject_dists.iloc[0], 2)
-
-            expr_fmt = expr.format(best_distr, best_distr_pv, join_l(diff_stats.n_reject_dist_nms[1:]))
-        else:
-            expr_fmt = gettext('trend_diff_dist_analysis2none')
-
-        return expr_fmt
-
-    def deq_diff_skewness(self) -> Optional[str]:
-        """
-        DEQ: What's the skewness of the differenced time series like?
+        DEQ: What's the skewness of the log differenced time series like?
 
         Approach:
             - Differencing + stats
         """
 
-        diff_stats = self.tsd.diff_summary
-        skwn = np.round(diff_stats.stats['skew'], 2)
+        skwn = np.round(self.tsd.summary.growth['skewness'], 2)
+        skewness_like_normal = self.tsd.summary.growth['skewness_like_normal']
 
-        if not diff_stats.reject_normal_skewness:
+        if skewness_like_normal:
             side = 'left' if skwn < 0 else 'right'
 
             expr = gettext('trend_diff_dist_analysis4_skew_symmetric')
@@ -163,7 +144,7 @@ class TrendDistPlots(Plot):
 
         return expr_fmt
 
-    def deq_diff_kurtosis(self) -> Optional[str]:
+    def deq_logdiff_kurtosis(self) -> Optional[str]:
         """
         DEQ: What's the skewness of the differenced time series like?
 
@@ -171,18 +152,53 @@ class TrendDistPlots(Plot):
             - Differencing + stats
         """
 
-        diff_stats = self.tsd.diff_summary
-        krt = np.round(diff_stats.stats['kurtosis'], 2)
+        krt = np.round(self.tsd.summary.growth['kurtosis'], 2)
 
-        if not diff_stats.reject_normal_kurtosis:
+        if self.tsd.summary.growth['kurtosis_like_normal']:
             expr = gettext('trend_diff_dist_analysis5_kurtosis_normal')
             expr_fmt = expr.format(krt)
-
         else:
             krt_lab = 'light tailed' if krt < 0 else 'heavy tailed'
 
             expr = gettext('trend_diff_dist_analysis5_kurtosis_notnormal')
             expr_fmt = expr.format(krt, krt_lab)
+
+        return expr_fmt
+
+    def deq_log_returns_magnitudes(self) -> Optional[str]:
+        """
+
+        DEQ (Data Exploratory Question): What is the magnitude and direction of the log returns?
+
+        Approach:
+            - Log Differencing + stats
+        """
+
+        expr = gettext('trend_logdiff_magnitudes')
+        expr_fmt = expr.format(self.tsd.summary.growth['upward_moves_prob'],
+                               self.tsd.summary.growth['upward_moves_mag'],
+                               self.tsd.summary.growth['downward_moves_prob'],
+                               self.tsd.summary.growth['downward_moves_mag'],
+                               self.tsd.summary.growth['direction_changes'],
+                               self.tsd.summary.growth['direction_changes_perc'])
+
+        return expr_fmt
+
+    def deq_log_returns_extrema(self) -> Optional[str]:
+        """
+
+        DEQ (Data Exploratory Question): What is the behaviors of the log returns in the tails?
+
+        Approach:
+            - Log Differencing + stats
+        """
+
+        expr = gettext('trend_logdiff_extrema')
+        expr_fmt = expr.format(self.tsd.summary.growth['extreme_pct'],
+                               self.tsd.summary.growth['largest_increase'],
+                               self.tsd.summary.growth['largest_increase_loc'],
+                               self.tsd.summary.growth['largest_decrease'],
+                               self.tsd.summary.growth['largest_decrease_loc'])
 
         return expr_fmt
 

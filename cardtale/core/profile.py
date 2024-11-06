@@ -119,7 +119,6 @@ class SeriesProfile:
 
         self.kurtosis_like_normal = kurtosistest(series).pvalue < self.alpha
         self.skewness_like_normal = skewtest(series).pvalue < self.alpha
-
         self.stats['iqr'] = self.stats['75%'] - self.stats['25%']
 
         # todo this outlier analysis is obsolete, rigth?
@@ -170,11 +169,12 @@ class SeriesProfile:
             'downward_moves_prob': (rets < 0).mean() * 100,
             # Growth Direction Changes
             'direction_changes': (rets > 0).diff().abs().sum(),
+            'direction_changes_perc': (rets > 0).diff().abs().mean() * 100,
 
             # dist
             'average_ret': mean_rets,
             'median_ret': rets.median(),
-            'growth_volatility': std_rets,
+            'growth_vol': std_rets,
             'kurtosis': kurtosis(rets),
             'kurtosis_like_normal': kurtosistest(rets).pvalue > ALPHA,
             'skewness': skew(rets),
