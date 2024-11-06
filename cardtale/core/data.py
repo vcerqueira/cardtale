@@ -94,7 +94,6 @@ class TimeSeriesData:
         self.date_format = self.dt.formats['format_pretty'][self.dt.freq_short]
 
         self.summary = SeriesProfile(n_lags=self.period * 2)
-        self.logdiff_summary = SeriesProfile(n_lags=self.period * 2)
 
         self.setup()
 
@@ -112,11 +111,6 @@ class TimeSeriesData:
         s = self.get_target_series(self.df, self.target_col, self.time_col)
 
         self.summary.run(s, self.period, self.date_format)
-
-        # log returns
-        s_logdiff = LogTransformation.returns(s)[1:]
-
-        self.logdiff_summary.run(s_logdiff, self.period, self.date_format)
 
         self.seas_df = pd.concat([self.df, self.dt.recurrent], axis=1)
         self.stl_df = DecompositionSTL.get_stl_components(series=s, period=self.period)
