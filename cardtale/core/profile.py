@@ -1,3 +1,4 @@
+import copy
 import warnings
 
 from typing import List
@@ -161,29 +162,46 @@ class SeriesProfile:
         # Calculate percentage of extreme values
         extreme_pct = ((rets > upper_bound) | (rets < lower_bound)).mean() * 100
 
-        # Growth Stability/Patterns:
-        self.growth = {
+        growth_flt = {
             'upward_moves_mag': rets[rets > 0].mean(),
             'upward_moves_prob': (rets > 0).mean() * 100,
             'downward_moves_mag': rets[rets < 0].mean(),
             'downward_moves_prob': (rets < 0).mean() * 100,
-            # Growth Direction Changes
-            'direction_changes': (rets > 0).diff().abs().sum(),
             'direction_changes_perc': (rets > 0).diff().abs().mean() * 100,
-
-            # dist
             'average_ret': mean_rets,
             'median_ret': rets.median(),
             'growth_vol': std_rets,
             'kurtosis': kurtosis(rets),
-            'kurtosis_like_normal': kurtosistest(rets).pvalue > ALPHA,
             'skewness': skew(rets),
-            'skewness_like_normal': skewtest(rets).pvalue > ALPHA,
-
-            # Extreme Movements
             'extreme_pct': extreme_pct,
             'largest_increase': rets.max(),
-            'largest_increase_loc': rets.argmax(),
             'largest_decrease': rets.min(),
-            'largest_decrease_loc': rets.argmin(),
         }
+
+        for k in growth_flt:
+            round_st = copy.deepcopy(ROUND_N)
+            if growth_flt[k] == 0:
+                continue
+
+            while True:
+                rounded_v = np.round(growth_flt[k], round_st)
+                if rounded_v != 0:
+                    growth_flt[k] = rounded_v
+                    break
+                else:
+                    round_st += 1
+
+        # growth_flt = {k: np.round(v, 2) for k, v in growth_flt.items()}
+        print(series.index[rets.argmax()])
+        # pd.Timestamp('1994-04-30 00:00:00').strftime('%B %Y')
+        # print(tcard.tsd.dt.formats['format_pretty'])
+
+        growth_non_flt = {
+            'direction_changes': (rets > 0).diff().abs().sum(),
+            'kurtosis_like_normal': kurtosistest(rets).pvalue > ALPHA,
+            'skewness_like_normal': skewtest(rets).pvalue > ALPHA,
+            'largest_increase_loc': series.index[rets.argmax()],
+            'largest_decrease_loc': series.index[rets.argmin()],
+        }
+
+        self.growth = {**growth_flt, **growth_non_flt}
