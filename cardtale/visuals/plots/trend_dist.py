@@ -212,6 +212,10 @@ class TrendDistPlots(Plot):
 
         perf = self.tests.trend.performance
 
+        print('perf')
+        print(perf)
+        # {'base': 79.32501855787585, 'trend_feature': 64.67486541177587, 'first_differences': 87.88908875970056, 'log_differences': 58.1520085993665, 'both': 87.88908875970056}
+
         diff_improves = perf['base'] > perf['first_differences']
 
         if diff_improves:

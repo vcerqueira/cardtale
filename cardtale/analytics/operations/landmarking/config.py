@@ -7,10 +7,11 @@ MODEL = {'lgb': lgb.LGBMRegressor(verbosity=-1)}
 
 EXPERIMENT_MODES = {
     'trend': {
-        'base': {'trend_feature': False, 'first_diff': False},  # t as feature
-        'trend_feature': {'trend_feature': True, 'first_diff': False},  # t as feature
-        'first_differences': {'trend_feature': False, 'first_diff': True},  # first differences
-        'both': {'trend_feature': True, 'first_diff': True},
+        'base': {'trend_feature': False, 'first_diff': False, 'log_diff': False},  # t as feature
+        'trend_feature': {'trend_feature': True, 'first_diff': False, 'log_diff': False},  # t as feature
+        'first_differences': {'trend_feature': False, 'first_diff': True, 'log_diff': False},  # first differences
+        'log_differences': {'trend_feature': False, 'first_diff': False, 'log_diff': True},  # log differences
+        'both': {'trend_feature': True, 'first_diff': True, 'log_diff': False},
     },
     'seasonality': {
         'base': {'fourier': False, 'seasonal_differences': False},

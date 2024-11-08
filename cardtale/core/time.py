@@ -42,6 +42,7 @@ class TimeDF:
         self.freq_short = freq
         self.freq_long = ''
         self.freq_longly = ''
+        self.freq_pretty = ''
 
         self.formats = None
         self.sequence = None
@@ -80,6 +81,7 @@ class TimeDF:
         self.freq_longly = self.formats.loc[self.freq_short]['name'].lower()
 
         self.freq_long = 'Day' if self.freq_longly == 'Daily' else self.freq_longly[:-2]
+        self.freq_pretty = self.formats['format_pretty'][self.freq_short]
 
     def get_freq_averages(self, series: pd.Series):
         """

@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 from scipy.stats import skew, kurtosis, kurtosistest, skewtest
 
-from cardtale.analytics.operations.tsa.distributions import KolmogorovSmirnov
 from cardtale.analytics.operations.tsa.acf import AutoCorrelation
 from cardtale.core.config.analysis import ALPHA, STATS_TO_ROUND, ROUND_N
 from cardtale.analytics.operations.tsa.log import LogTransformation
@@ -40,7 +39,7 @@ class SeriesProfile:
         acf (AutoCorrelation): Auto-correlation class object
     """
 
-    def __init__(self, n_lags: int, alpha: float = ALPHA):
+    def __init__(self, n_lags: int, freq_pretty: str, alpha: float = ALPHA):
         """
         Class constructor.
 
@@ -51,6 +50,7 @@ class SeriesProfile:
 
         self.n = -1
         self.alpha = alpha
+        self.freq_pretty = freq_pretty
 
         self.dt_range: List = []
         self.stats: pd.Series = pd.Series(dtype=float)
@@ -191,17 +191,12 @@ class SeriesProfile:
                 else:
                     round_st += 1
 
-        # growth_flt = {k: np.round(v, 2) for k, v in growth_flt.items()}
-        print(series.index[rets.argmax()])
-        # pd.Timestamp('1994-04-30 00:00:00').strftime('%B %Y')
-        # print(tcard.tsd.dt.formats['format_pretty'])
-
         growth_non_flt = {
             'direction_changes': (rets > 0).diff().abs().sum(),
             'kurtosis_like_normal': kurtosistest(rets).pvalue > ALPHA,
             'skewness_like_normal': skewtest(rets).pvalue > ALPHA,
-            'largest_increase_loc': series.index[rets.argmax()],
-            'largest_decrease_loc': series.index[rets.argmin()],
+            'largest_increase_loc': series.index[rets.argmax()].strftime(self.freq_pretty),
+            'largest_decrease_loc': series.index[rets.argmin()].strftime(self.freq_pretty),
         }
 
         self.growth = {**growth_flt, **growth_non_flt}

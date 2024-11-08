@@ -1,7 +1,10 @@
 from mlforecast import MLForecast
 from mlforecast.target_transforms import Differences
+from mlforecast.target_transforms import GlobalSklearnTransformer
 from utilsforecast.feature_engineering import trend
+from sklearn.preprocessing import FunctionTransformer
 
+from cardtale.analytics.operations.tsa.log import LogTransformation
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.operations.landmarking.base import Landmarks
 from cardtale.core.config.freq import HORIZON_BY_FREQUENCY, LAGS_BY_FREQUENCY
@@ -43,6 +46,11 @@ class TrendLandmarks(Landmarks):
 
         if conf['first_diff']:
             target_t = [Differences([1])]
+        elif conf['log_diff']:
+            log_transform = FunctionTransformer(func=LogTransformation.transform,
+                                                inverse_func=LogTransformation.inverse_transform)
+
+            target_t = [GlobalSklearnTransformer(log_transform), Differences([1])]
         else:
             target_t = None
 
@@ -50,10 +58,10 @@ class TrendLandmarks(Landmarks):
 
         if conf['trend_feature']:
             df_, _ = trend(df=df_,
-                          freq=self.tsd.dt.freq_short,
-                          h=0,
-                          id_col=self.tsd.id_col,
-                          time_col=self.tsd.time_col)
+                           freq=self.tsd.dt.freq_short,
+                           h=0,
+                           id_col=self.tsd.id_col,
+                           time_col=self.tsd.time_col)
             static_features = []
         else:
             static_features = None

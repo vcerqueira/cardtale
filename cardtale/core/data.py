@@ -93,7 +93,7 @@ class TimeSeriesData:
 
         self.date_format = self.dt.formats['format_pretty'][self.dt.freq_short]
 
-        self.summary = SeriesProfile(n_lags=self.period * 2)
+        self.summary = SeriesProfile(n_lags=self.period * 2, freq_pretty=self.dt.freq_pretty)
 
         self.setup()
 
