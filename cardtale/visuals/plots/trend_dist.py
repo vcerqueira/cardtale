@@ -1,6 +1,7 @@
 from typing import List, Optional
 
 import numpy as np
+import pandas as pd
 from mlforecast import MLForecast
 
 from cardtale.visuals.plot import Plot
@@ -210,17 +211,16 @@ class TrendDistPlots(Plot):
             - Differencing + CV with landmark
         """
 
-        perf = self.tests.trend.performance
-
-        print('perf')
-        print(perf)
-        # {'base': 79.32501855787585, 'trend_feature': 64.67486541177587, 'first_differences': 87.88908875970056, 'log_differences': 58.1520085993665, 'both': 87.88908875970056}
+        perf = pd.Series(self.tests.trend.performance).round(2)
 
         diff_improves = perf['base'] > perf['first_differences']
+        logdiff_improves = perf['base'] > perf['log_differences']
 
-        if diff_improves:
-            expr_fmt = gettext('trend_line_analysis_diff_good')
+        if diff_improves or logdiff_improves:
+            expr = gettext('trend_line_analysis_diff_good')
         else:
-            expr_fmt = gettext('trend_line_analysis_diff_bad')
+            expr = gettext('trend_line_analysis_diff_bad')
+
+        expr_fmt = expr.format(perf['base'], perf['first_differences'], perf['log_differences'])
 
         return expr_fmt
