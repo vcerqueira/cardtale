@@ -1,5 +1,4 @@
 from cardtale.visuals.plots.struc_line import SeriesLinePlot
-from cardtale.visuals.plots.struc_dist import SeriesDistPlots
 from cardtale.visuals.plots.struc_components import SeriesComponentsPlot
 from cardtale.visuals.plots.struc_acf import SeriesACFPlot
 from cardtale.visuals.plots.struc_pacf import SeriesPACFPlot

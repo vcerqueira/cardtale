@@ -6,7 +6,6 @@ from cardtale.analytics.operations.tsa.decomposition import DecompositionSTL
 from cardtale.core.config.freq import AVAILABLE_FREQ
 from cardtale.core.config.typing import Period
 from cardtale.core.profile import SeriesProfile
-from cardtale.analytics.operations.tsa.log import LogTransformation
 from cardtale.cards.strings import join_l
 
 unq_freq_list = pd.Series([*AVAILABLE_FREQ.values()]).unique().tolist()
@@ -34,7 +33,6 @@ class TimeSeriesData:
         period (Period): Main period of the data (e.g. 12 for monthly data)
         dt (TimeDF): Temporal information class object
         summary (SeriesSummary): Summary stats of the series
-        logdiff_summary (SeriesSummary): Summary stats of the log differenced series
         id_col (str): Column name for the time series identifier
         time_col (str): Column name for the time variable
         target_col (str): Column name for the target variable

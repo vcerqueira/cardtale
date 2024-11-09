@@ -27,15 +27,6 @@ class SeriesProfile:
         that kurtosis is that of a Normal
         skewness_like_normal (bool): If should reject the hypothesis
         that skewness is that of a Normal
-        n_outliers_upper (int): Number of upper outliers
-        n_outliers_lower (int): Number of lower outliers
-        n_outliers (int): Number of outliers
-        perc_outliers (float): % of outliers
-        perc_upp_outliers (float): % of upper outliers
-        reject_dists (list): Rejected distributions
-        reject_dist_nms (list): Named rejected distributions
-        n_reject_dists (list): Acceptable distributions
-        n_reject_dist_nms (list): Named Acceptable distributions
         acf (AutoCorrelation): Auto-correlation class object
     """
 
@@ -57,17 +48,6 @@ class SeriesProfile:
 
         self.kurtosis_like_normal: bool = False
         self.skewness_like_normal: bool = False
-
-        self.n_outliers_upper: int = -1
-        self.n_outliers_lower: int = -1
-        self.n_outliers: int = -1
-        self.perc_outliers: float = -1.
-        self.perc_upp_outliers: float = -1.
-
-        self.reject_dists = []
-        self.reject_dist_nms = []
-        self.n_reject_dists = []
-        self.n_reject_dist_nms = []
 
         self.acf = AutoCorrelation(n_lags=n_lags, alpha=ALPHA)
         self.pacf = AutoCorrelation(n_lags=n_lags, alpha=ALPHA)
@@ -121,15 +101,6 @@ class SeriesProfile:
         self.kurtosis_like_normal = kurtosistest(series).pvalue < self.alpha
         self.skewness_like_normal = skewtest(series).pvalue < self.alpha
         self.stats['iqr'] = self.stats['75%'] - self.stats['25%']
-
-        # todo this outlier analysis is obsolete, rigth?
-        upper_outliers = series > self.stats['75%'] + self.stats['iqr'] * 1.5
-        lower_outliers = series < self.stats['25%'] - self.stats['iqr'] * 1.5
-        self.n_outliers_upper = np.sum(upper_outliers)
-        self.n_outliers_lower = np.sum(lower_outliers)
-        self.n_outliers = self.n_outliers_upper + self.n_outliers_lower
-        self.perc_outliers = np.round(100 * (self.n_outliers / self.stats['count']), 2)
-        self.perc_upp_outliers = np.round(100 * (self.n_outliers_upper / self.n_outliers), 2)
 
         self.acf.calc_acf(series)
         self.acf.significance_analysis(period=period)

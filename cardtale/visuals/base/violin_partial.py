@@ -41,7 +41,8 @@ class PartialViolinPlot:
                        group_col: str,
                        x_lab: str = '',
                        y_lab: str = '',
-                       title: str = ''):
+                       title: str = '',
+                       flip_coords: bool = False):
         """
         Creates a partial violin plot.
 
@@ -53,6 +54,7 @@ class PartialViolinPlot:
             x_lab (str, optional): Label for the x-axis. Defaults to ''.
             y_lab (str, optional): Label for the y-axis. Defaults to ''.
             title (str, optional): Title of the plot. Defaults to ''.
+            flip_coords (bool): Whether to flip_coords
 
         Returns:
             plotnine.ggplot: The generated partial violin plot.
@@ -91,6 +93,9 @@ class PartialViolinPlot:
             p9.ylab(y_lab) + \
             p9.ggtitle(title) + \
             p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst])
+
+        if flip_coords:
+            plot += p9.coord_flip()
 
         return plot
 

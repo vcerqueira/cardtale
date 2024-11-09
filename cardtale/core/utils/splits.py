@@ -105,13 +105,14 @@ class DataSplit:
         return df
 
     @staticmethod
-    def df_var_to_categorical(df: pd.DataFrame, variable: str):
+    def df_var_to_categorical(df: pd.DataFrame, variable: str, categories: Optional[List[str]] = None):
         """
         Converts a DataFrame variable to categorical type.
 
         Args:
             df (pd.DataFrame): Input DataFrame.
             variable (str): Column name to be converted to categorical.
+            categories (str): Unique categories
 
         Returns:
             pd.Categorical: Categorical variable.
@@ -119,8 +120,9 @@ class DataSplit:
 
         assert variable in df.columns, 'Unknown column'
 
-        unq_values = df[variable].unique()
+        if categories is None:
+            categories = df[variable].unique()
 
-        var_as_cat = pd.Categorical(df[variable], categories=unq_values)
+        var_as_cat = pd.Categorical(df[variable], categories=categories)
 
         return var_as_cat
