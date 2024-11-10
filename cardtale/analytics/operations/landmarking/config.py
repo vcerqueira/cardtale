@@ -3,7 +3,7 @@ import lightgbm as lgb
 N_TERMS = 3
 TEST_SIZE = 0.2
 N_WINDOWS = 1  # 5
-MODEL = {'lgb': lgb.LGBMRegressor(verbosity=-1)}
+MODEL = {'lgb': lgb.LGBMRegressor(verbosity=-1, linear_tree=True)}
 
 EXPERIMENT_MODES = {
     'trend': {

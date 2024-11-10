@@ -155,8 +155,11 @@ class CardsBuilder:
 
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M")
 
+        show_omitted = len(self.cards_to_omit) > 0
+
         self.cards_raw_html = template.render(toc_included=self.cards_included,
                                               toc_omitted=self.cards_to_omit,
+                                              show_omitted=show_omitted,
                                               card_content=self.cards_raw_str,
                                               generation_date=current_time,
                                               series_name=self.tsd.name)

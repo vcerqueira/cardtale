@@ -50,7 +50,9 @@ class TestingComponents:
         print('\trun_misc')
         self.variance.run_misc()
 
+        diff_arima = self.trend.trend_strength > 0.3
+
         print('Tests: Change Points')
         self.change.run_misc()
-        self.change.run_statistical_tests()
+        self.change.run_statistical_tests(difference=diff_arima)
         self.change.run_landmarks()

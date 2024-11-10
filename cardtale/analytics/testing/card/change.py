@@ -40,8 +40,8 @@ class ChangeTesting(UnivariateTester):
         self.method = ChangePointDetection.METHOD
         self.detection = ChangePointDetection(self.series)
         self.level_increased = False
-        self.change_in_distr = False
         self.chow_p_value = -1
+        self.arima_ord = None
         self.resid_df = None
 
     def run_misc(self, *args, **kwargs):
@@ -53,11 +53,9 @@ class ChangeTesting(UnivariateTester):
         if len(self.detection.change_points) > 0:
             self.detected_change = True
 
-            self.change_in_distr = self.change_significance(self.series)
-
-    def run_statistical_tests(self):
+    def run_statistical_tests(self, difference: bool = False):
         if len(self.detection.change_points) > 0:
-            self.chow_p_value = self.chow_test_on_resid()
+            self.chow_p_value = self.chow_test_on_resid(difference)
 
     def run_landmarks(self):
         if len(self.detection.change_points) > 0:
@@ -108,7 +106,10 @@ class ChangeTesting(UnivariateTester):
         return change_in_dist
 
     @staticmethod
-    def get_arima_residuals(data: pd.DataFrame, freq: str, freq_int: int, order=(2, 0, 2)):
+    def get_arima_residuals(data: pd.DataFrame,
+                            freq: str,
+                            freq_int: int,
+                            order=(2, 0, 2)):
         sf = StatsForecast(
             models=[ARIMA(order, season_length=freq_int)],
             freq=freq
@@ -122,16 +123,18 @@ class ChangeTesting(UnivariateTester):
 
         return resid.values
 
-    def chow_test_on_resid(self):
+    def chow_test_on_resid(self, difference: bool):
         cp, _ = self.get_change_points()
 
         assert len(cp) > 0, NO_CHANGE_ERROR
 
         before, after = DataSplit.change_partition(self.tsd.df, cp[0], return_data=True)
 
-        resid_before = self.get_arima_residuals(before, self.tsd.dt.freq_short, self.tsd.period)
-        resid_after = self.get_arima_residuals(after, self.tsd.dt.freq_short, self.tsd.period)
-        resid_all = self.get_arima_residuals(self.tsd.df, self.tsd.dt.freq_short, self.tsd.period)
+        self.arima_ord = (2, 1, 2) if difference else (2, 0, 2)
+
+        resid_before = self.get_arima_residuals(before, self.tsd.dt.freq_short, self.tsd.period, order=self.arima_ord)
+        resid_after = self.get_arima_residuals(after, self.tsd.dt.freq_short, self.tsd.period, order=self.arima_ord)
+        resid_all = self.get_arima_residuals(self.tsd.df, self.tsd.dt.freq_short, self.tsd.period, order=self.arima_ord)
         n_params = 5  # ARIMA(2,0,2)
 
         p_val = self._chow_test(resid_before, resid_after, resid_all, n_params=n_params)

@@ -1,5 +1,6 @@
 from typing import List, Optional
 
+import numpy as np
 import pandas as pd
 
 from cardtale.visuals.plot import Plot
@@ -99,6 +100,7 @@ class ChangeEffectPlots(Plot):
         else:
             conc_ = 'suggesting the underlying process structure remained similar despite the level shift'
             expr_fmt = expr.format(test_result='fails to reject',
+                                   order=self.tests.change.arima_ord,
                                    param_conclusion='remain stable',
                                    process_conclusion=conc_)
 
@@ -115,7 +117,26 @@ class ChangeEffectPlots(Plot):
 
         perf = pd.Series(self.tests.change.performance).round(2)
 
+        if np.abs(perf['base'] - perf['step']) < 0.001:
+            data = {
+                'intervention_effect': 'did not affect',
+                'comparison': 'remained the same'
+            }
+        elif perf['base'] > perf['step']:
+            data = {
+                'intervention_effect': 'improved',
+                'comparison': 'decreased to'
+            }
+        else:  # base < step
+            data = {
+                'intervention_effect': 'reduced',
+                'comparison': 'increased to'
+            }
 
+        expr = gettext('change_effect_accuracy')
+        expr_fmt = expr.format(intervention_effect=data['intervention_effect'],
+                               base=perf['base'],
+                               comparison=data['comparison'],
+                               step=perf['step'])
 
-
-
+        return expr_fmt

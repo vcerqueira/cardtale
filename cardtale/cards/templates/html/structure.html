@@ -167,6 +167,8 @@
          line-height: 1.4;
          }
 
+
+
     </style>
 </head>
 <body>
@@ -211,6 +213,8 @@
             </ol>
         </div>
 
+        {% if show_omitted %}
+
         <div class="omitted-section">
             <p class="omitted-text">Other aspects were explored but omitted from the final
                 report:
@@ -228,6 +232,8 @@
                 {% endfor %}
             </ul>
         </div>
+
+        {% endif %}
 
     </section>
 

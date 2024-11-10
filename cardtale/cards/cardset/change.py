@@ -2,7 +2,6 @@ from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.cards.cardset.base import Card
 from cardtale.visuals.plots.change_marking import ChangesMarksPlot
-from cardtale.visuals.plots.change_dist import ChangeDistPlots
 from cardtale.visuals.plots.change_effect import ChangeEffectPlots
 
 

@@ -31,6 +31,7 @@ dependencies = [
     "lightgbm==4.5.0",
     "neuralforecast==1.7.5",
     "mlforecast==0.13.4",
+    "statsforecast==1.7.8",
     "datasetsforecast==0.0.8",
     "numerize==0.12",
     "plotnine==0.13.6",
