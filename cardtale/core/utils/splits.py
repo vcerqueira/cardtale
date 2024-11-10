@@ -66,7 +66,7 @@ class DataSplit:
                          partition_names: Optional[List[str]] = None,
                          target_col: str = 'y',
                          time_col: str = 'ds',
-                         return_series: bool = False):
+                         return_data: bool = False):
         """
         Splits data into partitions based on a change point index.
 
@@ -76,7 +76,7 @@ class DataSplit:
             partition_names (List[str], optional): Names of the partitions. Defaults to CHANGE_DEFAULT_NAMES.
             target_col (str, optional): Column name for the target variable. Defaults to 'y'.
             time_col (str, optional): Column name for the time variable. Defaults to 'ds'.
-            return_series (bool, optional): Flag to return partitions as series. Defaults to False.
+            return_data (bool, optional): Flag to return partitions as series. Defaults to False.
 
         Returns:
             pd.DataFrame or tuple: DataFrame with partitioned data or tuple of series if return_series is True.
@@ -87,7 +87,7 @@ class DataSplit:
 
         before, after = train_test_split(data, train_size=cp_index, shuffle=False)
 
-        if return_series:
+        if return_data:
             return before, after
 
         n_bf, n_af = before.shape[0], after.shape[0]

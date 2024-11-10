@@ -1,11 +1,12 @@
 import pandas as pd
 from scipy.stats import ks_2samp
+from statsforecast import StatsForecast
+from statsforecast.models import ARIMA
 
 from cardtale.analytics.operations.tsa.change_points import ChangePointDetection
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
-from cardtale.analytics.operations.tsa.distributions import KolmogorovSmirnov
 from cardtale.core.utils.splits import DataSplit
 
 NO_CHANGE_ERROR = 'No change point has been detected'
@@ -52,10 +53,12 @@ class ChangeTesting(UnivariateTester):
             self.change_in_distr = self.change_significance(self.series)
 
             cp, _ = self.get_change_points()
+            print('cp')
+            print(cp)
 
-            before, after = DataSplit.change_partition(self.series, cp[0], return_series=True)
-            dist_bf, dist_af = KolmogorovSmirnov.best_dist_in_two_parts(before, after)
-            self.distr['before'], self.distr['after'] = dist_bf, dist_af
+            before, after = DataSplit.change_partition(self.series, cp[0], return_data=True)
+            # dist_bf, dist_af = KolmogorovSmirnov.best_dist_in_two_parts(before, after)
+            # self.distr['before'], self.distr['after'] = dist_bf, dist_af
 
     def get_change_points(self):
         """
@@ -103,3 +106,18 @@ class ChangeTesting(UnivariateTester):
 
     def run_landmarks(self):
         pass
+
+    @staticmethod
+    def get_arima_residuals(data: pd.DataFrame, freq: str, freq_int: int, order=(2, 0, 2)):
+        sf = StatsForecast(
+            models=[ARIMA(order, season_length=freq_int)],
+            freq=freq
+        )
+
+        sf.fit(data)
+        sf.forecast(fitted=True, h=1)
+        insample = sf.forecast_fitted_values().set_index('ds')
+
+        resid = insample['ARIMA'] - insample['y']
+
+        return resid

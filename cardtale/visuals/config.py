@@ -3,6 +3,7 @@ PLOT_NAMES = {
     'trend_dist': 'Long-term Growth',
     'change_marking': 'Change Points',
     'change_dist': 'Changes in Distribution',
+    'change_effect': 'Effect on Model Parameters',
     'seas_line': 'Seasonal Line Plot',
     'seas_subseries': 'Seasonal Sub-series Plot',
     'seas_summary': 'Mean and Standard Deviation Analysis',

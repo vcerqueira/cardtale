@@ -121,6 +121,7 @@
   "change_beforeafter_dists_p2none": "Before the change point, the data follows a {} distribution. But, after the first change point occurs, no appropriate distribution was found.",
   "change_beforeafter_dists_p1p2": "Before the change point, the data follows a {} distribution. But, after the first change point, a {} distribution is a better fit.",
   "change_beforeafter_1st_caption": "Figure {}: Time series analysis before and after the first detected change point occurs. Paired distributions before and after change (left), and overlapped density plot (right).",
+  "change_beforeafter_caption": "Figure {}: Distribution of ARIMA(2,0,2) model residuals before and after the first detected change point. The plot compares three kernel density estimates: residuals from the pre-change model, post-change model, and full series model. This comparison helps assess whether the structural break affects model adequacy and error distribution properties.",
   "change_beforeafter_1st_analysis_diff": "The distribution before and after the first change point are significantly different.",
   "change_beforeafter_1st_analysis_nodiff": "Although a change point was detected, we found no difference between the distributions before and after the first change point."
 }
