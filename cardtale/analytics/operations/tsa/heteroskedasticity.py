@@ -25,7 +25,6 @@ class Heteroskedasticity:
     }
 
     TEST_NAMES = [*TESTS.values()]
-    FORMULA = 'value ~ time'
 
     @classmethod
     def het_tests(cls, series: pd.Series, test: str):
@@ -82,7 +81,7 @@ class Heteroskedasticity:
         series.columns = ['time', 'value']
         series['time'] += 1
 
-        olsr = ols(cls.FORMULA, series).fit()
+        olsr = ols('value ~ time', series).fit()
 
         return olsr
 

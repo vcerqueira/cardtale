@@ -3,6 +3,8 @@ from typing import List, Union
 from scipy.stats import f_oneway, kruskal
 from scipy.stats import levene, bartlett
 
+from cardtale.core.config.analysis import ALPHA
+
 
 class GroupBasedTesting:
     """
@@ -26,36 +28,44 @@ class GroupBasedTesting:
         """Equal means"""
         _, p_value = f_oneway(*group_list)
 
-        return p_value
+        means_are_eq = p_value > ALPHA
+
+        return means_are_eq
 
     @staticmethod
     def kruskal_test(group_list: List[Union[float, int]]):
         """Equal medians, non-parametric"""
         _, p_value = kruskal(*group_list)
 
-        return p_value
+        medians_are_eq = p_value > ALPHA
+
+        return medians_are_eq
 
     @staticmethod
     def levene_test(group_list: List[Union[float, int]]):
         """Equal vars -> Not Normal, more robust"""
         _, p_value = levene(*group_list)
 
-        return p_value
+        var_is_eq = p_value > ALPHA
+
+        return var_is_eq
 
     @staticmethod
     def bartlett_test(group_list: List[Union[float, int]]):
         """Equal vars -> Normal"""
         _, p_value = bartlett(*group_list)
 
-        return p_value
+        varn_is_eq = p_value > ALPHA
+
+        return varn_is_eq
 
     @classmethod
     def run_tests(cls, group_list: List):
         comparisons = {
-            'eq_means': cls.anova_test(group_list),
-            'eq_medians': cls.kruskal_test(group_list),
-            'eq_std': cls.levene_test(group_list),
-            'eq_std_normal': cls.bartlett_test(group_list),
+            'means_are_eq': cls.anova_test(group_list),
+            'medians_are_eq': cls.kruskal_test(group_list),
+            'var_is_eq': cls.levene_test(group_list),
+            'varn_is_eq': cls.bartlett_test(group_list),
         }
 
         return comparisons

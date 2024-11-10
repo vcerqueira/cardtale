@@ -49,8 +49,6 @@ class TestingComponents:
         self.variance.run_landmarks()
         print('\trun_misc')
         self.variance.run_misc()
-        print('\tgroups_with_diff_var')
-        self.variance.groups_with_diff_var = self.seasonality.groups_with_diff_var
 
         print('Tests: Change Points')
         self.change.run_statistical_tests()

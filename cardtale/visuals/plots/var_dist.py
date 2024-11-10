@@ -1,5 +1,7 @@
 from typing import List, Optional
 
+import pandas as pd
+
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.violin_partial import PartialViolinPlot
 from cardtale.cards.strings import join_l, gettext
@@ -40,10 +42,6 @@ class VarianceDistPlots(Plot):
 
         self.tests = tests
 
-        # self.s = self.tsd.get_target_series(df=self.tsd.df,
-        #                                     time_col=self.tsd.time_col,
-        #                                     target_col=self.tsd.target_col)
-
     def build(self, *args, **kwargs):
         """
         Creates the variance distribution plots.
@@ -78,8 +76,8 @@ class VarianceDistPlots(Plot):
         if not self.show_me:
             return
 
-        plt_deq1 = self.deq_group_variances()
-        plt_deq2 = self.deq_heteroskedasticity_tests()
+        plt_deq1 = self.deq_heteroskedasticity_tests()
+        plt_deq2 = self.deq_group_variances()
         plt_deq3 = self.deq_accuracy_var_stabilizers()
 
         self.analysis = [plt_deq1, plt_deq2, plt_deq3]
@@ -93,11 +91,15 @@ class VarianceDistPlots(Plot):
             - Levene's test
         """
 
-        if len(self.tests.variance.groups_with_diff_var) > 0:
-            expr = gettext('variance_partition_analysis_seas')
-            expr_fmt = expr.format(join_l(self.tests.variance.groups_with_diff_var))
-        else:
-            expr_fmt = gettext('variance_partition_analysis_seas_none')
+        g_vars = self.tests.seasonality.group_vars
+
+        expr = gettext('variance_partition_analysis_seas')
+
+        expr_fmt = expr.format(
+            variances=''.join(
+                f"<li>{period} groups: {'no differences' if is_equal else 'differences'} in variance</li>"
+                for period, is_equal in g_vars.items())
+        )
 
         return expr_fmt
 
@@ -128,6 +130,8 @@ class VarianceDistPlots(Plot):
             expr = gettext('variance_partition_analysis_heterosk_prob_none')
             expr_fmt = expr.format(join_l(test_names))
 
+        expr_fmt += gettext('variance_partition_analysis_heterosk_model')
+
         return expr_fmt
 
     def deq_accuracy_var_stabilizers(self) -> Optional[str]:
@@ -140,24 +144,15 @@ class VarianceDistPlots(Plot):
             - CV
         """
 
-        # <strong>Preliminary experiments: </strong> Three variance stabilization preprocessing techniques were tested to improve the forecast accuracy of an auto-regressive LightGBM (with {}% SMAPE using lag-based features). Using the original time series led to a {}% SMAPE. The scores using the differenced and log differenced time series are {}% and {}%, respectively.
+        perf = pd.Series(self.tests.variance.performance)
+        perf['log_differences'] = self.tests.trend.performance['log_differences']
+        perf = perf.round(2)
 
-        tests = self.tests.variance
+        expr = gettext('variance_partition_analysis_perf')
 
-        log_improves = tests.performance['base'] > tests.performance['log']
-        logd_improves = tests.performance['base'] > self.tests.trend.performance['log_differences']
-        bc_improves = tests.performance['base'] > tests.performance['boxcox']
-
-        if log_improves or bc_improves:
-            if log_improves and bc_improves:
-                expr_fmt = gettext('variance_partition_analysis_perf_both')
-            else:
-                expr = gettext('variance_partition_analysis_perf_one')
-                if log_improves:
-                    expr_fmt = expr.format('logarithm', 'Box-Cox method')
-                else:
-                    expr_fmt = expr.format('Box-Cox method', 'logarithm')
-        else:
-            expr_fmt = gettext('variance_partition_analysis_perf_none')
+        expr_fmt = expr.format(baseline=perf['base'],
+                               differenced=perf['log_differences'],
+                               log=perf['log'],
+                               box_cox=perf['boxcox'])
 
         return expr_fmt

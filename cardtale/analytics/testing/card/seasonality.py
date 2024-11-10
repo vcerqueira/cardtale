@@ -9,7 +9,6 @@ from cardtale.analytics.operations.landmarking.seasonality import SeasonalLandma
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.analytics.testing.card.trend import UnivariateTrendTesting
 from cardtale.analytics.operations.tsa.decomposition import DecompositionSTL
-from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
 
 from cardtale.core.config.freq import PLOTTING_SEAS_CONFIGS
@@ -23,8 +22,7 @@ class SeasonalityTesting(UnivariateTester):
         tsd (TimeSeriesData): Time series data object.
         period_data (Dict): Dictionary containing period data for seasonality analysis.
         prob_seasonality (float): Probability of seasonality.
-        group_tests (dict): Results of group-based tests.
-        group_tests_b (dict): Boolean results of group-based tests.
+        group_tests (dict): Boolean results of group-based tests.
     """
 
     def __init__(self,
@@ -43,7 +41,6 @@ class SeasonalityTesting(UnivariateTester):
         self.period_data = period_data
         self.prob_seasonality = -1
         self.group_tests = {}
-        self.group_tests_b = {}
 
     def run_statistical_tests(self):
         """
@@ -94,8 +91,6 @@ class SeasonalityTesting(UnivariateTester):
         data_group_list = [x.values for _, x in data_group]
 
         self.group_tests = GroupBasedTesting.run_tests(data_group_list)
-        self.group_tests_b = {k: v < ALPHA
-                              for k, v in self.group_tests.items()}
 
 
 class SeasonalityTestingMulti:
@@ -107,7 +102,7 @@ class SeasonalityTestingMulti:
         period_data_l (list): List of period data configurations for seasonality analysis.
         tests (list): List of SeasonalityTesting objects for each period.
         seas_tests_on_main (pd.Series): Seasonality tests on the main period.
-        groups_with_diff_var (list): List of groups with different variance.
+        group_vars (Dict): Dict of groups with variance results.
         group_trends (dict): Dictionary of group trends.
         show_plots (dict): Dictionary indicating which plots to show.
         failed_periods (dict): Dictionary of failed periods.
@@ -127,7 +122,7 @@ class SeasonalityTestingMulti:
 
         self.tests = []
         self.seas_tests_on_main = None
-        self.groups_with_diff_var = []
+        self.group_vars = {}
         self.group_trends = {}
 
         self.show_plots = {}
@@ -146,11 +141,8 @@ class SeasonalityTestingMulti:
                 self.seas_tests_on_main = seas_tests.tests
 
             if period_['group_tests']:
-                # this info will be used in the variance card
-                if seas_tests.group_tests_b['eq_std']:
-                    self.groups_with_diff_var.append(period_['name'])
-
                 self.group_trends[period_['name']] = self.get_period_groups_trend(period_['name'])
+                self.group_vars[period_['name']] = seas_tests.group_tests['var_is_eq']
 
             self.tests.append(seas_tests)
 
@@ -270,9 +262,9 @@ class SeasonalityTestsParser:
         Returns:
             bool: Flag indicating whether to show the summary plot.
         """
-        grp_tests = tester.group_tests_b
+        grp_tests = tester.group_tests
 
-        show_plots_if = grp_tests['eq_means'] or grp_tests['eq_std']
+        show_plots_if = not (grp_tests['means_are_eq'] and grp_tests['var_is_eq'])
 
         return show_plots_if
 
