@@ -3,6 +3,7 @@ from cardtale.analytics.testing.base import TestingComponents
 from cardtale.cards.cardset.base import Card
 from cardtale.visuals.plots.change_marking import ChangesMarksPlot
 from cardtale.visuals.plots.change_dist import ChangeDistPlots
+from cardtale.visuals.plots.change_effect import ChangeEffectPlots
 
 
 class ChangePointCard(Card):
@@ -31,11 +32,8 @@ class ChangePointCard(Card):
 
         self.plots = {
             'marked_changes': ChangesMarksPlot(tsd=self.tsd, tests=self.tests, name='change_lines'),
-            # 'dist_changes': ChangeDistPlots(tsd=self.tsd, tests=self.tests, name=['parts_dist', 'parts_dens']),
+            'change_effect': ChangeEffectPlots(tsd=self.tsd, tests=self.tests, name='change_effect'),
         }
-
-        self.marked_changes = None
-        self.dist_changes = None
 
         self.metadata = {
             'section_id': 'change_detection',

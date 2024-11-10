@@ -42,6 +42,7 @@ class ChangeTesting(UnivariateTester):
         self.level_increased = False
         self.change_in_distr = False
         self.chow_p_value = -1
+        self.resid_df = None
 
     def run_misc(self, *args, **kwargs):
         """
@@ -134,6 +135,15 @@ class ChangeTesting(UnivariateTester):
         n_params = 5  # ARIMA(2,0,2)
 
         p_val = self._chow_test(resid_before, resid_after, resid_all, n_params=n_params)
+
+        resid_d = {
+            'Residuals Before': resid_before,
+            'Residuals After': resid_after,
+            'Full Residuals': resid_all
+        }
+
+        self.resid_df = pd.DataFrame({k: pd.Series(v) for k, v in resid_d.items()})
+        self.resid_df = self.resid_df.melt().rename(columns={'variable': 'Part', 'value': 'Residuals'})
 
         return p_val
 

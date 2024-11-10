@@ -1,12 +1,13 @@
 from typing import List, Optional
 
+import pandas as pd
+
 from cardtale.visuals.plot import Plot
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.testing.base import TestingComponents
-from cardtale.visuals.base.violin_partial import PartialViolinPlot
 from cardtale.visuals.base.density import PlotDensity
 from cardtale.cards.strings import gettext
-from cardtale.core.utils.splits import DataSplit
+from cardtale.core.config.analysis import ALPHA
 from cardtale.visuals.config import PLOT_NAMES
 
 
@@ -21,7 +22,7 @@ class ChangeEffectPlots(Plot):
         tests (TestingComponents): Testing components for change detection.
     """
 
-    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: List[str]):
+    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents, name: str):
         """
         Initializes the ChangeDistPlots class.
 
@@ -31,7 +32,7 @@ class ChangeEffectPlots(Plot):
             name (List[str]): Name(s) of the plot.
         """
 
-        super().__init__(tsd=tsd, multi_plot=True, name=name)
+        super().__init__(tsd=tsd, multi_plot=False, name=name)
 
         self.caption = gettext('change_beforeafter_caption')
         self.plot_name = PLOT_NAMES['change_effect']
@@ -46,21 +47,14 @@ class ChangeEffectPlots(Plot):
         if self.show_me:
             cp, _ = self.tests.change.get_change_points()
 
-            data_parts = DataSplit.change_partition(data=self.tsd.df,
-                                                    cp_index=cp[0],
-                                                    time_col=self.tsd.time_col,
-                                                    target_col=self.tsd.target_col)
-
-            parts_dist = PartialViolinPlot.partial_violin(data=data_parts,
-                                                          x_axis_col='Part',
-                                                          y_axis_col=self.tsd.target_col,
-                                                          group_col=self.tsd.time_col)
+            data_parts = self.tests.change.resid_df
 
             parts_dens = PlotDensity.by_pair(data_parts,
-                                             x_axis_col=self.tsd.target_col,
-                                             group_col='Part')
+                                             x_axis_col='Residuals',
+                                             group_col='Part',
+                                             x_lab='Residuals')
 
-            self.plot = {'lhs': parts_dist, 'rhs': parts_dens}
+            self.plot = parts_dens
 
     def analyse(self, *args, **kwargs):
         """
@@ -78,36 +72,50 @@ class ChangeEffectPlots(Plot):
         self.show_me = True
 
         # there's at least one change point
-        plt_deq1 = self.deq_change_point_distr()
-        self.analysis = [plt_deq1]
+        plt_deq1 = self.deq_chow_test()
+        plt_deq2 = self.deq_accuracy_step_intervention()
+
+        self.analysis = [plt_deq1, plt_deq2]
         self.analysis = [x for x in self.analysis if x is not None]
 
-    def deq_change_point_distr(self) -> Optional[str]:
+    def deq_chow_test(self) -> Optional[str]:
         """
         DEQ (Data Exploratory Question): Did the distribution change at the first change point?
 
         Approach:
             - PELT testing
+            - Chow test on residuals of ARIMA model
         """
 
-        dist_bf, dist_af = self.tests.change.distr['before'], self.tests.change.distr['after']
+        chow_rejects = self.tests.change.chow_p_value < ALPHA
 
-        if self.tests.change.change_in_distr:
-            expr_fmt = gettext('change_beforeafter_1st_analysis_diff')
+        expr = gettext('change_effect_chow')
 
-            if dist_bf == dist_af:
-                # if the dist are the same and None (no dist was found)
-                pass
-            else:
-                # dists are diff
-                if dist_bf is None:
-                    expr_fmt = gettext('change_beforeafter_dists_p1none').format(dist_af)
-                elif dist_af is None:
-                    expr_fmt = gettext('change_beforeafter_dists_p2none').format(dist_bf)
-                else:
-                    expr_fmt = gettext('change_beforeafter_dists_p1p2').format(dist_bf, dist_af)
-
+        if chow_rejects:
+            conc_ = 'indicating a structural change in the underlying process'
+            expr_fmt = expr.format(test_result='rejects',
+                                   param_conclusion='are significantly different',
+                                   process_conclusion=conc_)
         else:
-            expr_fmt = gettext('change_beforeafter_1st_analysis_nodiff')
+            conc_ = 'suggesting the underlying process structure remained similar despite the level shift'
+            expr_fmt = expr.format(test_result='fails to reject',
+                                   param_conclusion='remain stable',
+                                   process_conclusion=conc_)
 
         return expr_fmt
+
+    def deq_accuracy_step_intervention(self):
+        """
+        DEQ (Data Exploratory Question): Does a step intervention improve the model accuracy?
+
+        Approach:
+            - PELT testing
+            - Intervention using step function
+        """
+
+        perf = pd.Series(self.tests.change.performance).round(2)
+
+
+
+
+

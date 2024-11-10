@@ -39,6 +39,11 @@ class PlotDensity:
         colors = [THEME_PALETTE[THEME]['hard'],
                   THEME_PALETTE[THEME]['hard_alt']]
 
+        n_cats = data[group_col].nunique()
+
+        if n_cats == 3:
+            colors += [THEME_PALETTE[THEME]['hard_alt2']]
+
         data_grp = data.groupby(group_col, observed=False).mean().reset_index()
         data_grp.set_index(group_col, inplace=True)
 

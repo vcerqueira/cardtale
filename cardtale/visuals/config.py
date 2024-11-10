@@ -23,6 +23,7 @@ THEME_PALETTE = {
     'pistachio': {
         'hard': '#58a63e',
         'hard_alt': '#cf8806',
+        'hard_alt2': '#9b3eaa',
         'black': '#2b5c0e',
         'mid': '#a9d39e',
         'soft': '#b6dea8',
