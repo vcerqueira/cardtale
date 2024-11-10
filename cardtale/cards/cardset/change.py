@@ -31,7 +31,7 @@ class ChangePointCard(Card):
 
         self.plots = {
             'marked_changes': ChangesMarksPlot(tsd=self.tsd, tests=self.tests, name='change_lines'),
-            'dist_changes': ChangeDistPlots(tsd=self.tsd, tests=self.tests, name=['parts_dist', 'parts_dens']),
+            # 'dist_changes': ChangeDistPlots(tsd=self.tsd, tests=self.tests, name=['parts_dist', 'parts_dens']),
         }
 
         self.marked_changes = None

@@ -51,6 +51,6 @@ class TestingComponents:
         self.variance.run_misc()
 
         print('Tests: Change Points')
+        self.change.run_misc()
         self.change.run_statistical_tests()
         self.change.run_landmarks()
-        self.change.run_misc()

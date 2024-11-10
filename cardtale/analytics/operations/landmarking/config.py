@@ -24,4 +24,8 @@ EXPERIMENT_MODES = {
         'log': {'log': True, 'boxcox': False},
         'boxcox': {'log': False, 'boxcox': True},
     },
+    'change': {
+        'base': {'step': False},
+        'step': {'step': True},
+    },
 }
