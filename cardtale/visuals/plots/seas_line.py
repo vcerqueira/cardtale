@@ -111,7 +111,11 @@ class SeasonalLinePlot(Plot):
             - statistical tests
         """
 
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
+        tests = self.tests.seasonality.tests[self.named_seasonality].tests
+
+        seas_str = self.tests.seasonality.seasonal_strength
+
+        expr_fmt0 = gettext('series_seasonal_str').format(seas_str)
 
         freq_longly = f'{self.group_col}ly'.lower()
 
@@ -129,6 +133,8 @@ class SeasonalLinePlot(Plot):
             expr = gettext('seasonality_line_analysis_seas_mix')
             expr_fmt = expr.format(freq_longly, join_l(rej_tests), join_l(not_rej_tests))
 
+        expr_fmt = expr_fmt0 + expr_fmt
+
         return expr_fmt
 
     def deq_seasonality_landmarks(self) -> Optional[str]:
@@ -141,16 +147,28 @@ class SeasonalLinePlot(Plot):
         """
 
         main_freq = self.caption_expr[0]
-        show_analysis = self.tests.seasonality.show_plots
 
-        self_perf = show_analysis[main_freq]['seas_subseries']['which']['by_perf']
+        print('main_freq')
+        print(main_freq)
+        print('self.named_seasonality')
+        print(self.named_seasonality)
+        from pprint import pprint
+
+        perf = self.tests.seasonality.tests[self.named_seasonality].performance
+
+        improves = min(perf['fourier'], perf['seas_diffs'], perf['time_features']) < perf['base']
+
+        effect = 'can improve' if improves else 'does not improve'
 
         expr = gettext('seasonality_line_self_perf')
 
-        if self_perf:
-            expr_fmt = expr.format(main_freq.lower(), 'improves')
-        else:
-            expr_fmt = expr.format(main_freq.lower(), 'decreases')
+        expr_fmt = expr.format(named_frequency=self.named_seasonality,
+                               overall_effect=effect,
+                               base=perf['base'],
+                               fourier=perf['fourier'],
+                               diff=perf['seas_diffs'],
+                               time_unit=main_freq,
+                               time=perf['time_features'])
 
         return expr_fmt
 
@@ -180,6 +198,8 @@ class SeasonalLinePlot(Plot):
             expr_fmt1 = None
 
         if len(no_groupdiff_periods) > 0:
+            print('no_groupdiff_periods... ver qd e maior que 2 elements')
+            print(no_groupdiff_periods)
             # explain the outcome which led to the exclusion of the summary plot
             # in this case, I only show this here for the periods which also exclude subseries
             expr_fmt2 = gettext('seasonality_summary_fail').format(self.x_axis_col.lower())

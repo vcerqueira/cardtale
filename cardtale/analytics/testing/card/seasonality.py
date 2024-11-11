@@ -41,6 +41,7 @@ class SeasonalityTesting(UnivariateTester):
         self.period_data = period_data
         self.prob_seasonality = -1
         self.group_tests = {}
+        self.metadata = {}
 
     def run_statistical_tests(self):
         """
@@ -70,7 +71,7 @@ class SeasonalityTesting(UnivariateTester):
         """
 
         if self.period_data['period'] is None:
-            self.performance = {'base': 0, 'both': 0}
+            self.performance = {}
             return
 
         seasonal_lm = SeasonalLandmarks(tsd=self.tsd, target_period=self.period_data['period'])
@@ -91,6 +92,27 @@ class SeasonalityTesting(UnivariateTester):
         data_group_list = [x.values for _, x in data_group]
 
         self.group_tests = GroupBasedTesting.run_tests(data_group_list)
+        self.metadata['show_summary_plot'] = self._show_summary_plot()
+
+    def _show_summary_plot(self):
+
+        show_plots_if = not (self.group_tests['means_are_eq'] and self.group_tests['var_is_eq'])
+
+        return show_plots_if
+
+    def set_show_subseries_plot(self):
+        any_st_tests_rejects = any(self.tests > 0)
+        print(self.performance)
+        if len(self.performance) > 0:
+            perf_improve = pd.Series({
+                'fourier': self.performance['base'] > self.performance['fourier'],
+                'seas_diffs': self.performance['base'] > self.performance['seas_diffs'],
+                'time_features': self.performance['base'] > self.performance['time_features'],
+            })
+        else:
+            perf_improve = pd.Series()
+
+        self.metadata['show_subseries_plot'] = any_st_tests_rejects or perf_improve.any()
 
 
 class SeasonalityTestingMulti:
@@ -120,36 +142,43 @@ class SeasonalityTestingMulti:
 
         self.period_data_l = PLOTTING_SEAS_CONFIGS[self.tsd.dt.freq_longly.lower()]
 
-        self.tests = []
+        self.tests = {}
         self.seas_tests_on_main = None
         self.group_vars = {}
         self.group_trends = {}
 
-        self.show_plots = {}
-        self.failed_periods = {}
+        self.failed_periods = {
+            'seas_subseries': [],
+            'seas_summary': [],
+        }
 
         self.seasonal_strength = -1
 
     def run_tests(self):
-        for period_ in self.period_data_l:
-            seas_tests = SeasonalityTesting(tsd=self.tsd, period_data=period_)
+        for period_data in self.period_data_l:
+            seas_tests = SeasonalityTesting(tsd=self.tsd, period_data=period_data)
             seas_tests.run_statistical_tests()
             seas_tests.run_landmarks()
             seas_tests.run_misc()
+            seas_tests.set_show_subseries_plot()
 
-            if period_['main']:
+            if period_data['main']:
                 self.seas_tests_on_main = seas_tests.tests
 
-            if period_['group_tests']:
-                self.group_trends[period_['name']] = self.get_period_groups_trend(period_['name'])
-                self.group_vars[period_['name']] = seas_tests.group_tests['var_is_eq']
+            if period_data['group_tests']:
+                self.group_trends[period_data['name']] = self.get_period_groups_trend(period_data['name'])
+                self.group_vars[period_data['name']] = seas_tests.group_tests['var_is_eq']
 
-            self.tests.append(seas_tests)
+            self.tests[period_data['name']] = seas_tests
+            self.tests[period_data['name']].metadata = {**self.tests[period_data['name']].metadata, **period_data}
 
-        self.show_plots, self.failed_periods = SeasonalityTestsParser.get_show_analysis(tests=self.tests)
+            if not self.tests[period_data['name']].metadata['show_summary_plot']:
+                self.failed_periods['seas_summary'].append(period_data['name'])
+
+            if not self.tests[period_data['name']].metadata['show_subseries_plot']:
+                self.failed_periods['seas_subseries'].append(period_data['name'])
 
     def run_misc(self):
-
         self.seasonal_strength = DecompositionSTL.seasonal_strength(self.tsd.stl_df['Seasonal'],
                                                                     self.tsd.stl_df['Residuals'])
 
@@ -180,7 +209,7 @@ class SeasonalityTestingMulti:
 
         return within_group_analysis_s
 
-    def get_tests_by_named_seasonality(self, named_seasonality: str):
+    def get_st_by_named_seasonality(self, named_seasonality: str):
         """
         Gets the SeasonalityTesting object by named seasonality.
 
@@ -196,99 +225,3 @@ class SeasonalityTestingMulti:
                 return t
 
         return None
-
-
-class SeasonalityTestsParser:
-    """
-    Class for parsing seasonality test results and generating analysis text.
-
-    Methods:
-        get_show_analysis(tests) -> Tuple[Dict, Dict]:
-            Determines which plots to show based on seasonality test results.
-        show_summary_plot(tester) -> bool:
-            Determines whether to show a summary plot based on seasonality test results.
-        show_subseries(tester) -> Tuple[bool, Dict]:
-            Determines whether to show a subseries plot based on seasonality test results.
-    """
-
-    @classmethod
-    def get_show_analysis(cls, tests):
-        """
-        Determines which plots to show based on seasonality test results.
-
-        Args:
-            tests: SeasonalityTestingMulti.tests object containing the test results.
-
-        Returns:
-            Tuple[Dict, Dict]: Dictionary indicating which plots to show and dictionary of failed periods.
-        """
-        # if len(self.show_plots) > 0:
-        #     # analysis was already done
-        #     return self.show_plots, self.failed_periods
-
-        show_plots, failed_periods = {}, {}
-
-        for period_tests in tests:
-            show_ss, ss_partial_outcomes = cls.show_subseries(period_tests)
-            show_summary = cls.show_summary_plot(period_tests)
-
-            show_plots[period_tests.period_data['name']] = {
-                'seas_subseries': {
-                    'show': show_ss,
-                    'which': ss_partial_outcomes,
-                },
-                'seas_summary': {
-                    'show': show_summary,
-                }
-            }
-
-        failed_periods = {
-            'seas_subseries': [k for k, v in show_plots.items()
-                               if not v['seas_subseries']['show']],
-            'seas_summary': [k for k, v in show_plots.items()
-                             if not v['seas_summary']['show']],
-        }
-
-        return show_plots, failed_periods
-
-    @staticmethod
-    def show_summary_plot(tester) -> bool:
-        """
-        Determines whether to show a summary plot based on seasonality test results.
-
-        Args:
-            tester: SeasonalityTesting object containing the test results.
-
-        Returns:
-            bool: Flag indicating whether to show the summary plot.
-        """
-        grp_tests = tester.group_tests
-
-        show_plots_if = not (grp_tests['means_are_eq'] and grp_tests['var_is_eq'])
-
-        return show_plots_if
-
-    @staticmethod
-    def show_subseries(tester) -> Tuple[bool, Dict]:
-        """
-        Determines whether to show a subseries plot based on seasonality test results.
-
-        Args:
-            tester: SeasonalityTesting object containing the test results.
-
-        Returns:
-            Tuple[bool, Dict]: Flag indicating whether to show the subseries plot and dictionary of results.
-        """
-        period_tests = tester.tests
-
-        any_st_tests_rejects = any(period_tests > 0)
-        performance_improves = tester.performance['base'] > tester.performance['both']
-
-        show_results = {
-            'by_st': any_st_tests_rejects,
-            'by_perf': performance_improves,
-        }
-
-        show_me = any_st_tests_rejects or performance_improves
-
-        return show_me, show_results

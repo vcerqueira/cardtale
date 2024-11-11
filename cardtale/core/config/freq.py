@@ -205,3 +205,18 @@ FREQUENCY_INT_DICT = {
 }
 
 FREQ_INT_DF = pd.DataFrame(FREQUENCY_INT_DICT)
+
+TIME_FEATURES_FREQ = {
+    'ME': {
+        12: ['month'],
+        4: ['quarter'],
+    },
+    'MS': {
+        12: ['month'],
+        4: ['quarter'],
+    },
+    'M': {
+        12: ['month'],
+        4: ['quarter'],
+    }
+}

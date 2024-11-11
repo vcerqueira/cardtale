@@ -88,6 +88,7 @@ class SeasonalSubSeriesPlot(Plot):
         else:
             return
 
+
         plt_deq1 = self.deq_group_differences_aux()
         plt_deq2 = self.deq_seasonality_stationarity()
         plt_deq3 = self.deq_seasonality_trend()

@@ -2,11 +2,11 @@ from typing import Optional
 
 from mlforecast import MLForecast
 from mlforecast.target_transforms import Differences
-from utilsforecast.feature_engineering import fourier
+from utilsforecast.feature_engineering import fourier, time_features
 
 from cardtale.core.data import TimeSeriesData
 from cardtale.analytics.operations.landmarking.base import Landmarks
-from cardtale.core.config.freq import HORIZON_BY_FREQUENCY, LAGS_BY_FREQUENCY
+from cardtale.core.config.freq import HORIZON_BY_FREQUENCY, LAGS_BY_FREQUENCY, TIME_FEATURES_FREQ
 from cardtale.analytics.operations.landmarking.config import EXPERIMENT_MODES, MODEL, N_WINDOWS, N_TERMS
 
 
@@ -63,6 +63,14 @@ class SeasonalLandmarks(Landmarks):
                             season_length=self.target_period,
                             k=N_TERMS,
                             h=0)
+            static_features = []
+        elif conf['time_features']:
+            feats_ = TIME_FEATURES_FREQ[self.tsd.dt.freq_short][self.target_period]
+
+            df, _ = time_features(df=df_,
+                                  freq=self.tsd.dt.freq_short,
+                                  h=0,
+                                  features=feats_)
             static_features = []
         else:
             df = df_.copy()

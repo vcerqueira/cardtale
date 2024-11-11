@@ -14,10 +14,10 @@ EXPERIMENT_MODES = {
         'both': {'trend_feature': True, 'first_diff': True, 'log_diff': False},
     },
     'seasonality': {
-        'base': {'fourier': False, 'seasonal_differences': False},
-        'fourier': {'fourier': True, 'seasonal_differences': False},
-        'seas_diffs': {'fourier': False, 'seasonal_differences': True},
-        'both': {'fourier': True, 'seasonal_differences': True},
+        'base': {'fourier': False, 'seasonal_differences': False, 'time_features': False},
+        'fourier': {'fourier': True, 'seasonal_differences': False, 'time_features': False},
+        'seas_diffs': {'fourier': False, 'seasonal_differences': True, 'time_features': False},
+        'time_features': {'fourier': False, 'seasonal_differences': False, 'time_features': True},
     },
     'variance': {
         'base': {'log': False, 'boxcox': False},
