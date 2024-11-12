@@ -93,7 +93,6 @@ class CardsBuilder:
         if not self.cards_were_analysed:
 
             for card_name, card in self.cards.items():
-                print(card_name)
                 card.analyse()
 
                 if not card.show_content:
@@ -118,7 +117,6 @@ class CardsBuilder:
 
         self.cards_raw_str = ''
         for card_name, card in self.cards.items():
-
             card.build_plots()
             for plt in card.plots:
                 card.plots[plt].format_caption(self.plot_id)

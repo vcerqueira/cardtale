@@ -1,5 +1,7 @@
 from typing import Optional
 
+import pandas as pd
+
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 from cardtale.cards.strings import join_l, gettext
@@ -148,13 +150,8 @@ class SeasonalLinePlot(Plot):
 
         main_freq = self.caption_expr[0]
 
-        print('main_freq')
-        print(main_freq)
-        print('self.named_seasonality')
-        print(self.named_seasonality)
-        from pprint import pprint
-
         perf = self.tests.seasonality.tests[self.named_seasonality].performance
+        perf = pd.Series(perf).round(2)
 
         improves = min(perf['fourier'], perf['seas_diffs'], perf['time_features']) < perf['base']
 
@@ -162,7 +159,7 @@ class SeasonalLinePlot(Plot):
 
         expr = gettext('seasonality_line_self_perf')
 
-        expr_fmt = expr.format(named_frequency=self.named_seasonality,
+        expr_fmt = expr.format(named_frequency=self.named_seasonality.lower(),
                                overall_effect=effect,
                                base=perf['base'],
                                fourier=perf['fourier'],

@@ -81,13 +81,10 @@ class SeasonalSubSeriesPlot(Plot):
         The analysis includes checking for seasonality and summarizing the results.
         """
 
-        show_plots = self.tests.seasonality.show_plots
-
-        if show_plots[self.named_seasonality][self.plot_id]['show']:
+        if self.tests.seasonality.tests[self.named_seasonality].metadata['show_subseries_plot']:
             self.show_me = True
         else:
             return
-
 
         plt_deq1 = self.deq_group_differences_aux()
         plt_deq2 = self.deq_seasonality_stationarity()
@@ -121,9 +118,9 @@ class SeasonalSubSeriesPlot(Plot):
 
         freq_longly = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
 
-        show_plots = self.tests.seasonality.show_plots
+        tests = self.tests.seasonality.tests[freq_longly]
 
-        if not show_plots[freq_longly]['seas_summary']['show']:
+        if not tests.metadata['show_summary_plot']:
             expr = gettext('seasonality_summary_fail')
             expr_fmt = expr.format(self.x_axis_col.lower())
         else:
@@ -141,7 +138,7 @@ class SeasonalSubSeriesPlot(Plot):
 
         freq_longly = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
 
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality).tests
+        tests = self.tests.seasonality.tests[self.named_seasonality].tests
 
         all_tests = tests.index.tolist()
         rej_tests = tests[tests > 0].index.tolist()
@@ -229,20 +226,23 @@ class SeasonalSubSeriesPlot(Plot):
             - Statistical tests
         """
 
-        show_plots = self.tests.seasonality.show_plots
-
         freq_longly = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
 
-        by_st = show_plots[self.named_seasonality]['seas_subseries']['which']['by_st']
-        by_perf = show_plots[freq_longly]['seas_subseries']['which']['by_perf']
+        tests = self.tests.seasonality.tests[freq_longly]
 
-        if not by_st and not by_perf:
+        perf_improves = min(tests.performance['fourier'],
+                            tests.performance['seas_diffs'],
+                            tests.performance['time_features']) < tests.performance['base']
+
+        any_test_fails = (tests.tests > 0).any()
+
+        if not any_test_fails and not perf_improves:
             self.show_me = False
             return None
 
-        if not by_st and by_perf:
+        if not any_test_fails and perf_improves:
             expr = gettext('seasonality_subseries_opt1')
-        elif by_st and not by_perf:
+        elif any_test_fails and not perf_improves:
             expr = gettext('seasonality_subseries_opt2')
         else:
             expr = gettext('seasonality_subseries_opt3')

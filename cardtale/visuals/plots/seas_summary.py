@@ -86,9 +86,7 @@ class SeasonalSummaryPlots(Plot):
         The analysis includes checking for significant differences in means and standard deviations.
         """
 
-        show_plots = self.tests.seasonality.show_plots
-
-        if show_plots[self.named_seasonality][self.plot_id]['show']:
+        if self.tests.seasonality.tests[self.named_seasonality].metadata['show_summary_plot']:
             self.show_me = True
         else:
             return
