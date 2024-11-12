@@ -1,5 +1,7 @@
 from typing import Optional
 
+import pandas as pd
+
 from cardtale.visuals.plot import Plot
 from cardtale.visuals.base.seasonal import SeasonalPlot
 
@@ -88,10 +90,11 @@ class SeasonalSubSeriesPlot(Plot):
 
         plt_deq1 = self.deq_group_differences_aux()
         plt_deq2 = self.deq_seasonality_stationarity()
-        plt_deq3 = self.deq_seasonality_trend()
+        # plt_deq3 = self.deq_seasonality_trend()
         plt_deq4 = self.deq_seasonality_impact()
 
-        self.analysis = [plt_deq1, plt_deq2, plt_deq3, plt_deq4]
+        self.analysis = [plt_deq1, plt_deq2, plt_deq4]
+        # self.analysis = [plt_deq1, plt_deq2, plt_deq3, plt_deq4]
         self.analysis = [x for x in self.analysis if x is not None]
 
     def format_caption(self, plot_id: int):
@@ -122,7 +125,8 @@ class SeasonalSubSeriesPlot(Plot):
 
         if not tests.metadata['show_summary_plot']:
             expr = gettext('seasonality_summary_fail')
-            expr_fmt = expr.format(self.x_axis_col.lower())
+            expr_fmt = expr.format(freq_longly=freq_longly.lower(),
+                                   freq_long_plural=f'{self.x_axis_col.lower()}s')
         else:
             expr_fmt = None
 
@@ -148,19 +152,25 @@ class SeasonalSubSeriesPlot(Plot):
             return None
 
         if all(tests > 0):
-            expr = gettext('seasonality_line_analysis_seas_all1')
-            expr_fmt = expr.format(join_l(all_tests), freq_longly)
+            expr = gettext('series_components_analysis_seas_all1')
+            expr_fmt = expr.format(join_l(all_tests), freq_longly.lower())
         elif all(tests < 1):
-            expr = gettext('seasonality_line_analysis_seas_all0')
-            expr_fmt = expr.format(join_l(all_tests), freq_longly)
+            expr = gettext('series_components_analysis_seas_all0')
+            expr_fmt = expr.format(join_l(all_tests), freq_longly.lower())
         else:
-            expr = gettext('seasonality_line_analysis_seas_mix')
-            expr_fmt = expr.format(freq_longly, join_l(rej_tests), join_l(not_rej_tests))
+            expr = gettext('series_components_analysis_seas_mix')
+            conclusion = 'seasonal unit root' if rej_tests[0] == 'OCSB' else 'strong seasonality'
+            expr_fmt = expr.format(freq_longly=freq_longly,
+                                   test1=rej_tests[0],
+                                   test1_conclusion=conclusion,
+                                   test2=not_rej_tests[0])
 
         return expr_fmt
 
     def deq_seasonality_trend(self) -> Optional[str]:
         """
+        todo this analysis is quite sketchy
+
         DEQ (Data Exploratory Question): Is there a trend within seasonal periods of the time series?
 
         Approach:
@@ -240,13 +250,30 @@ class SeasonalSubSeriesPlot(Plot):
             self.show_me = False
             return None
 
-        if not any_test_fails and perf_improves:
-            expr = gettext('seasonality_subseries_opt1')
-        elif any_test_fails and not perf_improves:
-            expr = gettext('seasonality_subseries_opt2')
-        else:
-            expr = gettext('seasonality_subseries_opt3')
+        perf = self.tests.seasonality.tests[freq_longly].performance
+        perf = pd.Series(perf).round(2)
 
-        expr_fmt = expr.format(self.named_seasonality.lower())
+        improves = min(perf['fourier'], perf['seas_diffs'], perf['time_features']) < perf['base']
+
+        effect = 'can improve' if improves else 'does not improve'
+
+        if not any_test_fails and perf_improves:
+            expr_fmt0 = gettext('seasonality_subseries_st_opt1').format(freq_longly.lower())
+        elif any_test_fails and not perf_improves:
+            expr_fmt0 = gettext('seasonality_subseries_st_opt2').format(freq_longly.lower())
+        else:
+            expr_fmt0 = gettext('seasonality_subseries_st_opt3').format(freq_longly.lower())
+
+        expr = gettext('seasonality_subseries')
+
+        expr_fmt = expr.format(tests_result=expr_fmt0,
+                               named_frequency=self.named_seasonality.lower(),
+                               overall_effect=effect,
+                               base=perf['base'],
+                               fourier=perf['fourier'],
+                               freq_longly=freq_longly,
+                               diff=perf['seas_diffs'],
+                               time_unit=freq_longly,
+                               time=perf['time_features'])
 
         return expr_fmt
