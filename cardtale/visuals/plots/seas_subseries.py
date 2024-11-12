@@ -240,6 +240,10 @@ class SeasonalSubSeriesPlot(Plot):
 
         tests = self.tests.seasonality.tests[freq_longly]
 
+        if len(tests.performance) < 1:
+            self.show_me = False
+            return None
+
         perf_improves = min(tests.performance['fourier'],
                             tests.performance['seas_diffs'],
                             tests.performance['time_features']) < tests.performance['base']

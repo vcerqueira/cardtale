@@ -117,6 +117,12 @@ class SeriesComponentsPlot(Plot):
 
         seas_t = self.tests.seasonality.seas_tests_on_main
 
+        main_freq_longly = self.tsd.dt.formats.loc[self.tsd.dt.freq_short, 'main_period_name']
+
+        rej_tests = seas_t[seas_t > 0].index.tolist()
+        not_rej_tests = seas_t[seas_t < 1].index.tolist()
+        conclusion = 'seasonal unit root' if rej_tests[0] == 'OCSB' else 'strong seasonality'
+
         if all(seas_t > 0):
             expr = gettext('series_components_analysis_seas_all1')
             expr_fmt = expr.format(join_l(seas_t.index))
@@ -125,8 +131,11 @@ class SeriesComponentsPlot(Plot):
             expr_fmt = expr.format(join_l(seas_t.index))
         else:
             expr = gettext('series_components_analysis_seas_mix')
-            expr_fmt = expr.format(join_l(seas_t[seas_t > 0].index),
-                                   join_l(seas_t[seas_t < 1].index))
+
+            expr_fmt = expr.format(freq_longly=main_freq_longly,
+                                   test1=rej_tests[0],
+                                   test1_conclusion=conclusion,
+                                   test2=not_rej_tests[0])
 
         expr_fmt = expr_fmt0 + expr_fmt
 
