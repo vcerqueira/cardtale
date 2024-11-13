@@ -47,7 +47,7 @@
   "series_components_analysis_trend_all0": "All hypothesis tests carried out ({}) indicate that the time series is stationary in trend or level.",
   "series_components_analysis_trend_all1": "All hypothesis tests carried out ({}) indicate that the time series is not stationary in trend or level.",
   "series_components_analysis_trend_mix": "The following tests indicate that the time series is non-stationary in trend or level: {}. On the other hand, other tests ({}) fail to reject the hypothesis that the data is stationary.",
-  "series_components_analysis_seas_all0": "All hypothesis tests carried out ({}) indicate that the time series is stationary in seasonality for the specified period.",
+  "series_components_analysis_seas_all0": "All hypothesis tests carried out ({}) indicate that the time series is stationary in seasonality.",
   "series_components_analysis_seas_all1": "All hypothesis tests carried out ({}) indicate that the time series is not stationary in seasonality for the specified period.",
   "series_components_analysis_seas_mix": "Tests for {freq_longly} seasonal stationarity show mixed results: the {test1} test indicates presence of a {test1_conclusion}, while the {test2} test suggests stationarity.",
   "series_components_resid_symmetry_old": "The average value of residuals after a {} decomposition is {} (median equal to {}), with 0 being the perfect symmetry. ",
