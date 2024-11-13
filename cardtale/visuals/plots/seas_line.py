@@ -195,11 +195,19 @@ class SeasonalLinePlot(Plot):
             expr_fmt1 = None
 
         if len(no_groupdiff_periods) > 0:
-            print('no_groupdiff_periods... ver qd e maior que 2 elements')
-            print(no_groupdiff_periods)
+            # debug later
+            if len(no_groupdiff_periods) > 1:
+                print('no_groupdiff_periods... ver qd e maior que 2 elements')
+                print(no_groupdiff_periods)
             # explain the outcome which led to the exclusion of the summary plot
             # in this case, I only show this here for the periods which also exclude subseries
-            expr_fmt2 = gettext('seasonality_summary_fail').format(self.x_axis_col.lower())
+            expr2 = gettext('seasonality_summary_fail')
+
+            freq_plurals = [x[:-2] if x != 'Daily' else 'Days' for x in no_groupdiff_periods]
+
+            expr_fmt2 = expr2.format(freq_longly=join_l(no_groupdiff_periods),
+                                     freq_long_plural=join_l(freq_plurals))
+
             expr_fmt = f'{expr_fmt1} {expr_fmt2}' if expr_fmt1 else expr_fmt2
         else:
             expr_fmt = expr_fmt1

@@ -95,6 +95,7 @@ class ChangeEffectPlots(Plot):
         if chow_rejects:
             conc_ = 'indicating a structural change in the underlying process'
             expr_fmt = expr.format(test_result='rejects',
+                                   order=self.tests.change.arima_ord,
                                    param_conclusion='are significantly different',
                                    process_conclusion=conc_)
         else:

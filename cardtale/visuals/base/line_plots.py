@@ -142,13 +142,19 @@ class LinePlot:
 
         plot += p9.ylim(data[y_axis_col].min(), data[y_axis_col].max() * 1.1)
 
+        # plot = plot + \
+        #        p9.geom_label(label='Change Point',
+        #                      # y=int(data['Series'].max() * .95),
+        #                      y=data[y_axis_col].max(),
+        #                      fill=THEME_PALETTE[THEME]['fill'],
+        #                      x=cp_idx_0,
+        #                      size=11) + \
+        #        p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
+        #        p9.xlab(x_lab) + \
+        #        p9.ylab(y_lab) + \
+        #        p9.ggtitle(title)
+
         plot = plot + \
-               p9.geom_label(label='Change Point',
-                             # y=int(data['Series'].max() * .95),
-                             y=data[y_axis_col].max(),
-                             fill=THEME_PALETTE[THEME]['fill'],
-                             x=cp_idx_0,
-                             size=11) + \
                p9.scale_y_continuous(labels=lambda lst: [numerize.numerize(x) for x in lst]) + \
                p9.xlab(x_lab) + \
                p9.ylab(y_lab) + \

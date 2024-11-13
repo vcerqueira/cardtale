@@ -115,7 +115,7 @@ class ChangesMarksPlot(Plot):
 
         n_cp = len(cp)
 
-        cp_dir = 'increasing' if self.tests.change.level_increased else 'decreasing'
+        cp_dir = 'an increasing' if self.tests.change.level_increased else 'a decreasing'
         cp_time = cp_idx[0].strftime(self.tsd.date_format)
 
         prefix = '' if n_cp == 1 else 'first '

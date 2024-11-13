@@ -52,6 +52,7 @@ class ChangeTesting(UnivariateTester):
         self.detection.detect_changes()
         if len(self.detection.change_points) > 0:
             self.detected_change = True
+            self.change_significance(self.series)
 
     def run_statistical_tests(self, difference: bool = False):
         if len(self.detection.change_points) > 0:
@@ -97,13 +98,14 @@ class ChangeTesting(UnivariateTester):
         before = series.values[:cp[0]]
         after = series.values[cp[0]:]
 
+        # print(before)
+        # print(after)
+
         if after.mean() > before.mean():
             self.level_increased = True
 
-        _, change_p_value = stats.ks_2samp(before, after)
-        change_in_dist = change_p_value < ALPHA
-
-        return change_in_dist
+        # _, change_p_value = stats.ks_2samp(before, after)
+        # change_in_dist = change_p_value < ALPHA
 
     @staticmethod
     def get_arima_residuals(data: pd.DataFrame,

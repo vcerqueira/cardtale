@@ -121,7 +121,7 @@
   "change_line_plot_caption": "Figure {}: Time series plot with marked change points according to the {} method.",
   "change_line_npoints": "There are a total of {} change points over the time series",
   "change_line_1point": "A single change point was found in the time series.",
-  "change_line_analysis": "The {}change point was found at {} where the time series shows an {} level.",
+  "change_line_analysis": "The {}change point was found at {} where the time series shows {} level.",
   "change_beforeafter_dists_p1none": "The time series does not follow a common distribution before the first change point occurs. After the change point, the data follows a {} distribution.",
   "change_beforeafter_dists_p2none": "Before the change point, the data follows a {} distribution. But, after the first change point occurs, no appropriate distribution was found.",
   "change_beforeafter_dists_p1p2": "Before the change point, the data follows a {} distribution. But, after the first change point, a {} distribution is a better fit.",

@@ -102,7 +102,7 @@ class SeasonalityTesting(UnivariateTester):
 
     def set_show_subseries_plot(self):
         any_st_tests_rejects = any(self.tests > 0)
-        print(self.performance)
+
         if len(self.performance) > 0:
             perf_improve = pd.Series({
                 'fourier': self.performance['base'] > self.performance['fourier'],
