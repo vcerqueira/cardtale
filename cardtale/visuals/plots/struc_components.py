@@ -117,7 +117,7 @@ class SeriesComponentsPlot(Plot):
 
         seas_t = self.tests.seasonality.seas_tests_on_main
 
-        main_freq_longly = self.tsd.dt.formats.loc[self.tsd.dt.freq_short, 'main_period_name']
+        main_freq_longly = self.tsd.dt.formats.loc[self.tsd.dt.freq_short, 'main_period_name'][0]
 
         rej_tests = seas_t[seas_t > 0].index.tolist()
         not_rej_tests = seas_t[seas_t < 1].index.tolist()

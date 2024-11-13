@@ -160,7 +160,7 @@ class SeasonalSubSeriesPlot(Plot):
         else:
             expr = gettext('series_components_analysis_seas_mix')
             conclusion = 'seasonal unit root' if rej_tests[0] == 'OCSB' else 'strong seasonality'
-            expr_fmt = expr.format(freq_longly=freq_longly,
+            expr_fmt = expr.format(freq_longly=freq_longly.lower(),
                                    test1=rej_tests[0],
                                    test1_conclusion=conclusion,
                                    test2=not_rej_tests[0])
