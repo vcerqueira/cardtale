@@ -132,7 +132,7 @@ class SeriesComponentsPlot(Plot):
             not_rej_tests = seas_t[seas_t < 1].index.tolist()
             conclusion = 'seasonal unit root' if rej_tests[0] == 'OCSB' else 'strong seasonality'
 
-            expr_fmt = expr.format(freq_longly=main_freq_longly,
+            expr_fmt = expr.format(freq_longly=main_freq_longly.lower(),
                                    test1=rej_tests[0],
                                    test1_conclusion=conclusion,
                                    test2=not_rej_tests[0])

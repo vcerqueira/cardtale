@@ -208,20 +208,3 @@ class SeasonalityTestingMulti:
         within_group_analysis_s = pd.Series(within_group_analysis)
 
         return within_group_analysis_s
-
-    # def get_st_by_named_seasonality(self, named_seasonality: str):
-    #     """
-    #     Gets the SeasonalityTesting object by named seasonality.
-    #
-    #     Args:
-    #         named_seasonality (str): Name of the seasonal pattern (e.g., 'Yearly').
-    #
-    #     Returns:
-    #         SeasonalityTesting: SeasonalityTesting object for the specified named seasonality.
-    #     """
-    #
-    #     for t in self.tests:
-    #         if t.period_data['name'] == named_seasonality:
-    #             return t
-    #
-    #     return None

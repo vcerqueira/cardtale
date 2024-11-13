@@ -105,7 +105,7 @@
   "seasonality_subseries_group2none": "But, the data is constant around a level in each {}.",
   "seasonality_subseries_group2": "{} each group, there is{} indication that the data is not constant around a level in {} of the {}s.",
   "seasonality_summary_plot_caption": "Figure {}: Mean plot (left) and standard deviation plot (right) of {} values.",
-  "seasonality_summary_plot_analysis": "The data shows significantly different {} when grouped by {}.",
+  "seasonality_summary_plot_analysis": "Analysis of {freq_longly} patterns shows {mean_conclusion} ({mean_test} test) {splitter} {var_conclusion} ({var_test} test).",
   "seasonality_summary_fail": "Statistical analysis of {freq_longly} data shows no evidence of systematic differences across {freq_long_plural}, with both means (Kruskal-Wallis test) and variances (Levene's test) being statistically similar.",
   "seasonality_bp_month_year_caption": "Figure {}: Seasonal boxplot of {} distributions{}.",
   "seasonality_hm_month_year_caption": "Figure {}: Seasonal heatmap of {} values grouped by {}.",

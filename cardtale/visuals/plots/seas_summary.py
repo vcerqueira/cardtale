@@ -5,12 +5,9 @@ from cardtale.visuals.base.summary import SummaryStatPlot
 
 from cardtale.cards.strings import gettext
 from cardtale.core.data import TimeSeriesData
+from cardtale.core.config.analysis import VAR_TEST, MEAN_TEST
 from cardtale.analytics.testing.base import TestingComponents
 from cardtale.visuals.config import PLOT_NAMES
-
-MEAN_AND_STD = 'mean and standard deviation'
-MEAN_ONLY = 'mean'
-STD_ONLY = 'standard deviation'
 
 
 class SeasonalSummaryPlots(Plot):
@@ -118,20 +115,24 @@ class SeasonalSummaryPlots(Plot):
             - bartlett_test
         """
 
-        tests = self.tests.seasonality.get_tests_by_named_seasonality(self.named_seasonality)
+        tests = self.tests.seasonality.tests[self.named_seasonality]
 
-        rej_mean, rej_std = tests.group_tests_b['eq_means'], tests.group_tests_b['eq_std']
+        eq_mean, eq_var = tests.group_tests['medians_are_eq'], tests.group_tests['var_is_eq']
 
-        if rej_mean and rej_std:
-            expr = gettext('seasonality_summary_plot_analysis')
-            expr_fmt = expr.format(MEAN_AND_STD, self.x_axis_col.lower())
-        elif rej_mean and not rej_std:
-            expr = gettext('seasonality_summary_plot_analysis')
-            expr_fmt = expr.format(MEAN_ONLY, self.x_axis_col.lower())
-        elif not rej_mean and rej_std:
-            expr = gettext('seasonality_summary_plot_analysis')
-            expr_fmt = expr.format(STD_ONLY, self.x_axis_col.lower())
-        else:
+        if eq_mean and eq_var:
             return None
+
+        expr = gettext('seasonality_summary_plot_analysis')
+
+        mean_conclusion = 'similar means' if eq_mean else 'significant differences in central tendency'
+        var_conclusion = 'similar dispersion' if eq_var else 'significant differences in dispersion'
+        splitter = 'and' if eq_mean == eq_var else 'but'
+
+        expr_fmt = expr.format(freq_longly=f'{self.x_axis_col.lower()}ly',
+                               mean_conclusion=mean_conclusion,
+                               mean_test=MEAN_TEST,
+                               splitter=splitter,
+                               var_conclusion=var_conclusion,
+                               var_test=VAR_TEST)
 
         return expr_fmt
