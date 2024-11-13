@@ -88,10 +88,19 @@ class TrendLinePlot(Plot):
         trend_label = dt[dt < 0].index[0]
 
         expr_fmt = gettext('trend_line_analysis2').format(trend_label, corr_side)
-        expr_fmt += gettext('trend_line_analysis1').format(join_l(trend))
+        if len(trend) > 0:
+            plural_str_t = 's' if len(trend) > 1 else ''
+            expr_fmt += gettext('trend_line_analysis1').format(plural_str=plural_str_t,
+                                                               tests=join_l(trend))
+            lead_expr = 'But, the'
+        else:
+            lead_expr = 'The'
 
         if len(no_trend) > 0:
-            expr_fmt += gettext('trend_line_analysis3').format(join_l(no_trend))
+            plural_str_nt = 's' if len(no_trend) > 1 else ''
+            expr_fmt += gettext('trend_line_analysis3').format(lead_expr=lead_expr,
+                                                               plural_str=plural_str_nt,
+                                                               tests=join_l(no_trend))
 
         return expr_fmt
 
@@ -105,13 +114,27 @@ class TrendLinePlot(Plot):
 
         _, _, level, no_level = self.tests.trend.results_in_list()
 
-        if len(level) > 0:
-            expr_fmt = gettext('trend_line_analysis4').format(join_l(level))
+        expr_lead = gettext('trend_line_level_lead')
+        # all 0, len(no_level)=3, len(level)=0
+        if len(level) < 1:
+            expr_fmt = expr_lead + gettext('trend_line_level_all_0')
+            return expr_fmt
 
-            if len(no_level) > 0:
-                expr_fmt += gettext('trend_line_analysis4ifany').format(join_l(no_level))
-        else:
-            expr_fmt = gettext('trend_line_analysis4none')
+        # len(no_level)=0, len(level)=3
+        if len(no_level) < 1:
+            expr_fmt = expr_lead + gettext('trend_line_level_all_1')
+            return expr_fmt
+
+        expr = gettext('trend_line_level_mix')
+        # at least one in each
+
+        plural_str1 = 's' if len(level) > 1 else ''
+        plural_str0 = 's' if len(no_level) > 1 else ''
+
+        expr_fmt = expr_lead + expr.format(plural_str1=plural_str1,
+                                           tests1=join_l(level),
+                                           plural_str0=plural_str0,
+                                           tests0=join_l(no_level))
 
         return expr_fmt
 
