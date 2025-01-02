@@ -120,7 +120,7 @@ class AutoCorrelation:
                 break
 
         self.acf_analysis['seasonal_lags'] = pd.Series(seasonal_lags)
-        self.acf_analysis['seasonal_lags_sig'] = self.acf_analysis['seasonal_lags'] > self.significance_thr
+        self.acf_analysis['seasonal_lags_sig'] = self.acf_analysis['seasonal_lags'].abs() > self.significance_thr
         self.acf_analysis['auto_seasonality'] = self._get_seasonality_length(raw_seasonality)
         self.acf_analysis['significant_ids'] = np.argwhere(np.abs(self.acf) > self.significance_thr).flatten()
         self.acf_analysis['significant_ids'] = [x for x in self.acf_analysis['significant_ids'] if x != 0]

@@ -82,8 +82,8 @@ class DecompositionSTL:
             'auto_corr_exists_avg': auto_corr_exists.mean(),
             'avg_resid': avg_resid,
             'med_resid': med_resid,
-            'positive_pct': (residuals > 0).mean().round(2) * 100,
-            'negative_pct': (residuals < 0).mean().round(2) * 100,
+            'positive_pct': ((residuals > 0).mean() * 100).round(2),
+            'negative_pct': ((residuals < 0).mean() * 100).round(2),
             'pos_mean': residuals[residuals > 0].mean().round(3),
             'neg_mean': residuals[residuals < 0].mean().round(3)
         }
