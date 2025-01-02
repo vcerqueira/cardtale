@@ -81,9 +81,6 @@ class TrendDistPlots(Plot):
         """
         Analyzes the trend distribution plots.
 
-        # todo lagplot (check nist) analysis
-        ## .. maybe not...already done on ACF??
-
         The analysis includes checking for rejected distributions, outliers, skewness, and kurtosis.
         """
 

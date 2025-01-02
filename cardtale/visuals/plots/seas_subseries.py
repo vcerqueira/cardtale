@@ -167,67 +167,6 @@ class SeasonalSubSeriesPlot(Plot):
 
         return expr_fmt
 
-    def deq_seasonality_trend(self) -> Optional[str]:
-        """
-        todo this analysis is quite sketchy
-
-        DEQ (Data Exploratory Question): Is there a trend within seasonal periods of the time series?
-
-        Approach:
-            - Statistical tests
-        """
-
-        freq_longly = 'Daily' if self.x_axis_col == 'Day' else f'{self.x_axis_col}ly'
-
-        if freq_longly not in self.tests.seasonality.group_trends:
-            return None
-
-        prob = self.tests.trend.prob_level
-
-        if prob < 0.3:
-            named_level_st = 'no evidence'
-        elif prob < 0.6:
-            named_level_st = 'a slight evidence'
-        elif prob < 0.9:
-            named_level_st = 'a reasonable evidence'
-        else:
-            named_level_st = 'a strong evidence'
-
-        g_trend = self.tests.seasonality.group_trends[freq_longly]
-
-        if named_level_st == 'no evidence':
-            preprend = 'But, within'
-            emphasis = ''
-        else:
-            preprend = 'Within'
-            emphasis = ' also'
-
-        perc_within = 100 * (g_trend > 0.6).mean()
-        perc_within_str = f'{int(perc_within)}%'
-        if perc_within_str == '100%':
-            perc_within_str = 'all'
-        elif perc_within_str == '0%':
-            perc_within_str = 'none'
-
-        expr_fmt1 = gettext('seasonality_subseries_group1').format(named_level_st)
-        if named_level_st == 'no evidence':
-            if perc_within_str == 'none':
-                expr_fmt2 = gettext('seasonality_subseries_group2bothnone').format(self.x_axis_col)
-                expr_fmt = f'{expr_fmt1} {expr_fmt2}'
-                return expr_fmt
-        else:
-            if perc_within_str == 'none':
-                expr_fmt2 = gettext('seasonality_subseries_group2none').format(self.x_axis_col)
-                expr_fmt = f'{expr_fmt1} {expr_fmt2}'
-                return expr_fmt
-
-        expr2 = gettext('seasonality_subseries_group2')
-        expr_fmt2 = expr2.format(preprend, emphasis, perc_within_str, self.x_axis_col)
-
-        expr_fmt = f'{expr_fmt1} {expr_fmt2}'
-
-        return expr_fmt
-
     def deq_seasonality_impact(self) -> Optional[str]:
         """
         DEQ (Data Exploratory Question): Is there a trend within seasonal periods of the time series?

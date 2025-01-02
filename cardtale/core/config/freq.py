@@ -218,5 +218,10 @@ TIME_FEATURES_FREQ = {
     'M': {
         12: ['month'],
         4: ['quarter'],
+    },
+    'D': {
+        7: ['week'],
+        30: ['month'],
+        365: ['year'],
     }
 }

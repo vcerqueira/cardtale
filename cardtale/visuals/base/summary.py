@@ -58,8 +58,6 @@ class SummaryStatPlot:
                      title: str = ''):
         """
         Creates a summary plot for the specified statistic.
-        todo Anova/kruskal post hoc comparison to check which groups differ
-        todo Posso decidir mostrar a meanplot ou stdplot se uma moving average ajudar nas previsões?
 
         Args:
             data (pd.DataFrame): Data for the plot.

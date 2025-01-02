@@ -1,5 +1,9 @@
 upcoming
 
+biased towards:
+- monthly univariate time series
+
+
 # cardtale
 
 Cardtale is a Python package for generating automated model and data cards, streamlining the documentation process for machine learning models and datasets.
