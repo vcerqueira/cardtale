@@ -1,3 +1,5 @@
+from typing import Dict, Optional
+
 from jinja2 import Environment, FileSystemLoader
 
 from cardtale.core.data import TimeSeriesData
@@ -21,7 +23,9 @@ class Card:
         content_pdf (str): PDF content of the card.
     """
 
-    def __init__(self, tsd: TimeSeriesData, tests: TestingComponents):
+    def __init__(self,
+                 tsd: Optional[TimeSeriesData],
+                 tests: Optional[TestingComponents]):
         """
         Initializes the Card with the given time series data and testing components.
 
@@ -105,3 +109,29 @@ class Card:
             analysis_introduction=gettext(self.metadata['section_intro_str']),
             img_data=img_data,
         )
+
+
+class ModelCard(Card):
+
+    def __init__(self, plots: Dict):
+        super().__init__(tsd=None, tests=None)
+
+        self.plots = plots
+        self.toc_content = {}
+        self.metadata = {
+            'section_id': 'change_detection',#todo
+            'section_header_str': 'change_section_header',
+            'section_intro_str': 'change_section_intro',
+            'section_toc_success': 'change_toc_success',
+            'section_toc_failure': 'change_toc_failure',
+        }
+
+    def analyse(self):
+        self.set_toc_content()
+
+    def set_toc_content(self):
+        self.toc_content = {
+            'id': self.metadata['section_id'],
+            'title': gettext(self.metadata['section_header_str']),
+            'message': gettext(self.metadata['section_toc_success'])
+        }

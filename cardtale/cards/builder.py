@@ -6,6 +6,7 @@ from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
 from cardtale.core.data import TimeSeriesData
+from cardtale.cards.cardset.base import Card
 from cardtale.cards.cardset.change import ChangePointCard
 from cardtale.cards.cardset.seasonality import SeasonalityCard
 from cardtale.cards.cardset.structural import StructuralCard
@@ -104,6 +105,12 @@ class CardsBuilder:
 
         if render_html:
             self.render_doc_html()
+
+    def add_model_card(self, model_card: Card):
+
+
+
+        self.cards['model'] = model_card
 
     def render_doc_html(self):
         """
