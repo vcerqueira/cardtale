@@ -133,4 +133,4 @@ dmypy.json
 .pyre/
 .Rproj.user
 
-scripts/dev/
+scripts/
