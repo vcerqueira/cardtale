@@ -6,7 +6,6 @@
 [![Downloads](https://static.pepy.tech/badge/cardtale)](https://pepy.tech/project/cardtale)
 
 
-
 **cardtale** is a Python package for generating automated model 
 and data cards for time series, streamlining the documentation process 
 for machine learning models and datasets.
