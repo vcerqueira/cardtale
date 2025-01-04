@@ -10,13 +10,14 @@ authors = [
     {name = "Vitor Cerqueira", email = "cerqueira.vitormanuel@gmail.com" },
 ]
 keywords = [
-    "Machine Learning",
     "Model Cards",
+    "Data Cards",
     "Data Science",
+    "Machine Learning",
     "Time Series",
     "Forecasting"
 ]
-description = "Data and Model Cards for Time Series"
+description = "Data, Model, and Algorithm Cards for Time Series"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
