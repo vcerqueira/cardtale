@@ -1,6 +1,5 @@
 from typing import List, Optional, Dict
 
-import numpy as np
 import pandas as pd
 import plotnine as p9
 from plotnine.geoms.geom_hline import geom_hline
@@ -16,7 +15,8 @@ class LinePlot:
     Class for creating various types of line plots.
 
     Methods:
-        univariate(data, x_axis_col, y_axis_col, line_color, hline_color, x_lab, y_lab, title, hlines, add_smooth, ribbons):
+        univariate(data, x_axis_col, y_axis_col, line_color, hline_color,
+        x_lab, y_lab, title, hlines, add_smooth, ribbons):
             Creates a univariate line plot with optional smoothing and ribbons.
         univariate_change(data, x_axis_col, y_axis_col, change_points, x_lab, y_lab, title):
             Creates a univariate line plot with change points.
@@ -120,7 +120,7 @@ class LinePlot:
             plotnine.ggplot: The generated line plot.
         """
 
-        cp_idx_0 = np.where(data[x_axis_col] == change_points[0])[0][0]
+        # cp_idx_0 = np.where(data[x_axis_col] == change_points[0])[0][0]
 
         aes_ = {'x': x_axis_col, 'y': y_axis_col, 'group': 1}
 

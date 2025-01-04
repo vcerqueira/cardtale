@@ -159,8 +159,8 @@ class SeriesProfile:
                 if rounded_v != 0:
                     growth_flt[k] = rounded_v
                     break
-                else:
-                    round_st += 1
+
+                round_st += 1
 
         growth_non_flt = {
             'direction_changes': (rets > 0).diff().abs().sum(),

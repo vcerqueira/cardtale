@@ -7,7 +7,6 @@ from statsforecast.models import ARIMA
 from cardtale.analytics.operations.tsa.change_points import ChangePointDetection
 from cardtale.analytics.testing.card.base import UnivariateTester
 from cardtale.analytics.operations.landmarking.change import ChangeLandmarks
-from cardtale.core.config.analysis import ALPHA
 from cardtale.core.data import TimeSeriesData
 from cardtale.core.utils.splits import DataSplit
 

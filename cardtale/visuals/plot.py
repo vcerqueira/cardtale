@@ -1,7 +1,7 @@
 import warnings
 import io
 import base64
-from typing import Union, List, Optional, Dict
+from typing import Union, List
 
 from plotnine.exceptions import PlotnineWarning
 
@@ -42,7 +42,7 @@ class Plot:
     WIDTH = 12
     WIDTH_SMALL = 6
 
-    def __init__(self, tsd: Optional[TimeSeriesData], name: NameOptList, multi_plot: bool):
+    def __init__(self, tsd: TimeSeriesData, name: NameOptList, multi_plot: bool):
         """
         Initializes the Plot class.
 
@@ -155,28 +155,3 @@ class Plot:
         img_buffer.seek(0)
         decode_str = base64.b64encode(img_buffer.getvalue()).decode()
         return decode_str
-
-
-class PreBuiltPlot(Plot):
-
-    def __init__(self, plot_data: Dict):
-        """
-
-        Args:
-            plot_data (Dict): The plot object data as a dict containing the following keys: 'plot_id'
-            'src' (or 'src_lhs' and 'src_rhs'), 'caption', 'plot_name', 'analysis' (list), 'side_by_side'
-        """
-
-        super().__init__(tsd=None, multi_plot=plot_data['multiplot'], name='')
-
-        self.show_me = True
-        self.img_data = plot_data
-        self.caption = plot_data['caption']
-        self.plot_id = plot_data['plot_id']
-        self.analysis = plot_data['analysis']
-
-    def build(self, *args, **kwargs):
-        pass
-
-    def analyse(self, *args, **kwargs):
-        pass

@@ -57,3 +57,12 @@ class UnivariateTester(Tester):
         self.series = tsd.get_target_series(df=self.tsd.df,
                                             time_col=self.tsd.time_col,
                                             target_col=self.tsd.target_col)
+
+    def run_statistical_tests(self):
+        pass
+
+    def run_landmarks(self):
+        pass
+
+    def run_misc(self, **kwargs):
+        pass

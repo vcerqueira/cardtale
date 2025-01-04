@@ -29,7 +29,7 @@ class TimeSeriesData:
     Time series dataset following a Nixtla-based structure.
 
     Attributes:
-        df (pd.DataFrame): Series as a pd.DF (index as column)
+        df (pd.DataFrame): Series as a pd.DataFrame (index as column)
         period (Period): Main period of the data (e.g. 12 for monthly data)
         dt (TimeDF): Temporal information class object
         summary (SeriesSummary): Summary stats of the series

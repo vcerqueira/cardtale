@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from statsmodels.tsa.seasonal import STL
-from statsmodels.stats.diagnostic import acorr_ljungbox, acorr_breusch_godfrey
+from statsmodels.stats.diagnostic import acorr_ljungbox#, acorr_breusch_godfrey
 
 
 class DecompositionSTL:

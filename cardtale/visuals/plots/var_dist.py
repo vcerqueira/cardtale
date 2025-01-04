@@ -71,7 +71,7 @@ class VarianceDistPlots(Plot):
         The analysis includes checking for significant differences in variance and summarizing the results.
         """
 
-        self.show_me, show_results = VarianceTestsParser.show_distribution_plot(self.tests.variance)
+        self.show_me, _ = VarianceTestsParser.show_distribution_plot(self.tests.variance)
 
         if not self.show_me:
             return
