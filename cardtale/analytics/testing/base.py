@@ -33,26 +33,19 @@ class TestingComponents:
         """
         Run all tests
         """
-        print('Tests: Trend')
         self.trend.run_statistical_tests()
         self.trend.run_landmarks()
         self.trend.run_misc()
 
-        print('Tests: Seasonality')
         self.seasonality.run_tests()
         self.seasonality.run_misc()
 
-        print('Tests: Variance')
-        print('\trun_statistical_tests')
         self.variance.run_statistical_tests()
-        print('\trun_landmarks')
         self.variance.run_landmarks()
-        print('\trun_misc')
         self.variance.run_misc()
 
         diff_arima = self.trend.trend_strength > 0.3
 
-        print('Tests: Change Points')
         self.change.run_misc()
         self.change.run_statistical_tests(difference=diff_arima)
         self.change.run_landmarks()
