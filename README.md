@@ -127,3 +127,7 @@ While it doesn't replace the expertise of data scientists or
 domain experts, Cardtale speeds up the creation of model and 
 data cards, guiding analysts towards key insights and 
 areas that may require further exploration.
+
+### Project Funded by
+
+> Agenda “Center for Responsible AI”, nr. C645008882-00000055, investment project nr. 62, financed by the Recovery and Resilience Plan (PRR) and by European Union - NextGeneration EU.
