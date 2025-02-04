@@ -14,7 +14,7 @@ for machine learning models and datasets.
 
 - Automated generation of PDF reports with comprehensive time series analysis
 - Built-in statistical analysis and visualization of temporal patterns
-- Support for univariate time series data (will support other structures in future iterations)
+- Support for univariate time series data
 
 Each time series is studied from multiple dimensions, including:
 - **Data Overview**: Fundamental characteristics and statistical properties analysis
@@ -40,7 +40,7 @@ series_df = df.query(f'unique_id=="{uid}"').reset_index(drop=True)
 
 tcard = CardsBuilder(series_df, freq)
 tcard.build_cards()
-tcard.get_pdf(path='examples/cards/example.pdf')
+tcard.get_pdf(path='example.pdf')
 
 ```
 
