@@ -10,4 +10,4 @@ series_df = df.query(f'unique_id=="{uid}"').reset_index(drop=True)
 
 tcard = CardsBuilder(series_df, freq)
 tcard.build_cards()
-tcard.get_pdf(path='examples/cards/example.pdf')
+tcard.get_pdf(path='notebooks/cards/example.pdf')
