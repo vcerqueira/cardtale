@@ -19,9 +19,9 @@ for machine learning models and datasets.
 Each time series is studied from multiple dimensions, including:
 - **Data Overview**: Fundamental characteristics and statistical properties analysis
 - **Trend Analysis**: Long-term growth patterns and level stabilization assessment
-- **Seasonality Detection**: Multiple seasonality levels with strength metrics
+- **Seasonality Detection**: Analysis of multiple seasonality levels with strength metrics
 - **Variance Analysis**: Heteroskedasticity testing and variance stabilization methods
-- **Change Point Detection**: Identification of structural changes and regime shifts
+- **Change Point Detection**: Identification of structural changes and their impact
 
 ## Basic Example
 
@@ -95,7 +95,7 @@ weasyprint==62.3
 You can install **cardtale** using pip:
 
 ```bash
-pip install cardtale
+pip install cardtale -U
 ```
 
 ### [Optional] Installation from source
