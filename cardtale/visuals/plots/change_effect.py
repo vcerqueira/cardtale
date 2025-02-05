@@ -126,12 +126,12 @@ class ChangeEffectPlots(Plot):
         elif perf['base'] > perf['step']:
             data = {
                 'intervention_effect': 'improved',
-                'comparison': 'decreased to'
+                'comparison': 'decreased'
             }
         else:  # base < step
             data = {
                 'intervention_effect': 'reduced',
-                'comparison': 'increased to'
+                'comparison': 'increased'
             }
 
         expr = gettext('change_effect_accuracy')
