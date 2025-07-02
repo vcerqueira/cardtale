@@ -91,7 +91,12 @@ class TimeSeriesData:
 
         self.date_format = self.dt.formats['format_pretty'][self.dt.freq_short]
 
-        self.summary = SeriesProfile(n_lags=self.period * 2, freq_pretty=self.dt.freq_pretty)
+        if self.df.shape[0] > self.period * 3:
+            n_lags_ = self.period * 2
+        else:
+            n_lags_ = self.period
+
+        self.summary = SeriesProfile(n_lags=n_lags_, freq_pretty=self.dt.freq_pretty)
 
         self.setup()
 
